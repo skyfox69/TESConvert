@@ -23,18 +23,6 @@ Tes3SubRecordVNML::~Tes3SubRecordVNML()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordVNML::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordVNML::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordVNML::dump(const short depth)
 {
 	string		indent(depth, ' ');

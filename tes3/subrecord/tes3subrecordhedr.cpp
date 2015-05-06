@@ -19,18 +19,6 @@ Tes3SubRecordHEDR::~Tes3SubRecordHEDR()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordHEDR::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordHEDR::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordHEDR::dump(const short depth)
 {
 	string		indent(depth, ' ');

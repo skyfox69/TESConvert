@@ -9,7 +9,8 @@ TESOptions*	TESOptions::_pInstance = nullptr;
 TESOptions::TESOptions()
 	:	_verbose   (false),
 		_dumpFinalS(false),
-		_dumpFinalT(false)
+		_dumpFinalT(false),
+		_drawGrid  (false)
 {}
 
 //-----------------------------------------------------------------------------

@@ -16,9 +16,11 @@ class TESOptions
 	public:
 		string								_fileNameC;
 		string								_fileNameH;
+		string								_fileNameL;
 		bool								_verbose;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
+		bool								_drawGrid;
 
 		virtual								~TESOptions();
 		static	TESOptions*					getInstance();

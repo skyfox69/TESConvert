@@ -16,6 +16,7 @@ class Endian
 		void	toLong   (long& value, unsigned char* pBuffer);
 		void	toLong8  (long& value, unsigned char* pBuffer);
 		void	toUShort (unsigned short& value, unsigned char* pBuffer);
+		void	toUShort4(unsigned long& value, unsigned char* pBuffer);
 		void	toShort  (short& value, unsigned char* pBuffer);
 		void	toFloat4 (float& value, unsigned char* pBuffer);
 		void	toHash4  (unsigned long& value, unsigned char* pBuffer);

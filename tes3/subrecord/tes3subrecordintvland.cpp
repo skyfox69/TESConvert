@@ -17,18 +17,6 @@ Tes3SubRecordINTVLAND::~Tes3SubRecordINTVLAND()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordINTVLAND::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordINTVLAND::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordINTVLAND::dump(const short depth)
 {
 	string		indent(depth, ' ');

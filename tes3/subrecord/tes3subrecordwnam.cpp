@@ -21,18 +21,6 @@ Tes3SubRecordWNAM::~Tes3SubRecordWNAM()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordWNAM::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordWNAM::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordWNAM::dump(const short depth)
 {
 	string		indent(depth, ' ');

@@ -25,18 +25,6 @@ Tes3SubRecordVHGT::~Tes3SubRecordVHGT()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordVHGT::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordVHGT::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordVHGT::dump(const short depth)
 {
 	string		indent(depth, ' ');

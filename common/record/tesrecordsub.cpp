@@ -12,13 +12,13 @@ TesRecordSub::~TesRecordSub()
 //-----------------------------------------------------------------------------
 size_t TesRecordSub::sizeRecord()
 {
-	return _size;
+	return (_fileType == TesFileType::TES4) ? 6 : 8;
 }
 
 //-----------------------------------------------------------------------------
 size_t TesRecordSub::sizeTotal()
 {
-	return _size;
+	return _size + sizeRecord();
 }
 
 //-----------------------------------------------------------------------------

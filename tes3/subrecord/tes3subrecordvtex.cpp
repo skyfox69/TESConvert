@@ -10,7 +10,7 @@ Tes3SubRecordVTEX::Tes3SubRecordVTEX(unsigned char* pBuffer)
 		pBuffer += 8;
 		for (short i(0); i < 16; ++i) {
 			for (short j(0); j < 16; ++j, pBuffer += 2) {
-				toUShort(_texIds[i][j] ,pBuffer);
+				toUShort(_texIds[j][i] ,pBuffer);
 			}
 		}
 	}
@@ -19,18 +19,6 @@ Tes3SubRecordVTEX::Tes3SubRecordVTEX(unsigned char* pBuffer)
 //-----------------------------------------------------------------------------
 Tes3SubRecordVTEX::~Tes3SubRecordVTEX()
 {}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordVTEX::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordVTEX::sizeTotal()
-{
-	return _size + sizeRecord();
-}
 
 //-----------------------------------------------------------------------------
 void Tes3SubRecordVTEX::dump(const short depth)

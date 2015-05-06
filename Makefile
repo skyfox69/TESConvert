@@ -46,6 +46,21 @@ SRC = main.cpp \
       tes3/subrecord/tes3subrecordintvland.cpp \
       tes3/subrecord/tes3subrecorddatafrmr.cpp \
       tes3/subrecord/tes3subrecorddatates3.cpp \
+      tes4/tes4recordfactory.cpp \
+      tes4/tes4processor.cpp \
+      tes4/record/tes4recordgeneric.cpp \
+      tes4/record/tes4recordgroup.cpp \
+      tes4/subrecord/tes4subrecordhedr.cpp \
+      tes4/subrecord/tes4subrecordmnam.cpp \
+      tes4/subrecord/tes4subrecordvnml.cpp \
+      tes4/subrecord/tes4subrecordvhgt.cpp \
+      tes4/subrecord/tes4subrecordxclccell.cpp \
+      tes4/subrecord/tes4subrecordsinglestring.cpp \
+      tes4/subrecord/tes4subrecordsingleulong.cpp \
+      tes4/subrecord/tes4subrecordsingleushort.cpp \
+      tes4/subrecord/tes4subrecordsingleuchar.cpp \
+      tes4/subrecord/tes4subrecorddoublelong.cpp \
+      tes4/subrecord/tes4subrecordflags.cpp \
 
 OBJ = ${SRC:%.cpp=%.o}
 

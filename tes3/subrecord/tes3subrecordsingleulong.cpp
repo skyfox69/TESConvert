@@ -16,18 +16,6 @@ Tes3SubRecordSingleULong::~Tes3SubRecordSingleULong()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordSingleULong::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordSingleULong::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordSingleULong::dump(const short depth)
 {
 	string		indent(depth, ' ');

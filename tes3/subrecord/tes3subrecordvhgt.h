@@ -20,8 +20,6 @@ class Tes3SubRecordVHGT : public TesRecordSub
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
 
 		//  override TesRecordSub
-		virtual	size_t						sizeRecord();
-		virtual	size_t						sizeTotal();
 		virtual	void						dump(const short depth);
 };
 

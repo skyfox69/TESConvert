@@ -17,6 +17,8 @@ void usage()
 			"  -C FILE\twrite vertex colors to <FILE>.bmp\n"
 			"  -ds\t\tdump final token structure sort by file sequence\n"
 			"  -dt\t\tdump final token structure sort by token\n"
+			"  -g\t\tdraw square cell sized grids on all image exports\n"
+			"  -L FILE\twrite texture occurance to <FILE>.bmp\n"
 			"  -V FILE\twrite vertex heights to <FILE>.bmp\n"
 			"  -v\t\tverbose - more output\n"
 			"\n"
@@ -31,7 +33,7 @@ int main(int argc, char** argv)
 	int				opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "C:d:vV:")) != -1) {
+	while ((opt = getopt(argc, argv, "C:d:gL:vV:")) != -1) {
 		switch (opt) {
 			case 'C':
 				pOptions->_fileNameC = optarg;
@@ -48,6 +50,15 @@ int main(int argc, char** argv)
 				}
 				else {
 					usage();
+					exit(EX_USAGE);
+				}
+				break;
+			case 'g':
+				pOptions->_drawGrid = true;
+				break;
+			case 'L':
+				pOptions->_fileNameL = optarg;
+				if (pOptions->_fileNameL.empty() || (pOptions->_fileNameL[0] == '-')) {
 					exit(EX_USAGE);
 				}
 				break;
@@ -96,6 +107,10 @@ int main(int argc, char** argv)
 		//  dump height map
 		if (!pOptions->_fileNameH.empty()) {
 			tesProcessor.dumpVhgtMap(pOptions->_fileNameH);
+		}
+		//  dump texture map
+		if (!pOptions->_fileNameL.empty()) {
+			tesProcessor.dumpVtexMap(pOptions->_fileNameL);
 		}
 		
 	}

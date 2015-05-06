@@ -18,18 +18,6 @@ Tes3SubRecordDATACELL::~Tes3SubRecordDATACELL()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordDATACELL::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordDATACELL::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordDATACELL::dump(const short depth)
 {
 	string		indent(depth, ' ');

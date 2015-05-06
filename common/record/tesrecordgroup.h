@@ -14,7 +14,8 @@ class TesRecordGroup : public TesRecordBase, public Endian, public vector<TesRec
 		unsigned long						_groupType;
 		unsigned short						_timestamp;
 		unsigned short						_version;
-		unsigned short						_unknown[2];
+		unsigned short						_unknown1;
+		unsigned short						_unknown2;
 
 											TesRecordGroup(TesFileType const fileType);
 		virtual								~TesRecordGroup();

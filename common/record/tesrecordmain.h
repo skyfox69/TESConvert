@@ -24,6 +24,7 @@ class TesRecordMain : public TesRecordBase, public Endian, public vector<TesReco
 		virtual	size_t						sizeTotal();
 		virtual	void						dump(const short depth);
 		virtual	TesRecordBase*				findSubRecord(string const token);
+		virtual	bool						compressed();
 };
 
 #endif	/* TESRECORDMAIN_H */

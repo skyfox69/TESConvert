@@ -40,6 +40,12 @@ void Endian::toUShort(unsigned short& value, unsigned char* pBuffer) {
 }
 
 //-----------------------------------------------------------------------------
+void Endian::toUShort4(unsigned long& value, unsigned char* pBuffer) {
+	value = 0;
+	value |= (pBuffer[1] << 8) | pBuffer[0];
+}
+
+//-----------------------------------------------------------------------------
 void Endian::toShort(short& value, unsigned char* pBuffer) {
 	value = (pBuffer[1] << 8) | pBuffer[0];
 }

@@ -41,7 +41,11 @@ void TesRecordMain::dump(const short depth)
 {
 	string		indent(depth, ' ');
 	
-	printf("----------------------------------\n%s%s\n", indent.c_str(), _name.c_str());
+	printf("----------------------------------\n%s%s [%d|%d]\n", indent.c_str(), _name.c_str(), sizeTotal(), sizeRecord());
+	printf("%s  flags:: 0x%08X\n", indent.c_str(), _flags);
+	if (_id != 0) {
+		printf("%s  id::    %d\n", indent.c_str(), _id);
+	}
 	for_each(begin(),
 			 end(),
 			 [depth](TesRecordBase* pRecord) {
@@ -62,4 +66,10 @@ TesRecordBase* TesRecordMain::findSubRecord(const string token)
 						   );
 	return (pSubRecord != end()) ? *pSubRecord : nullptr;
 
+}
+
+//-----------------------------------------------------------------------------
+bool TesRecordMain::compressed()
+{
+	return (_flags & 0x00040000) != 0;
 }

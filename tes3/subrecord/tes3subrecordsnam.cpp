@@ -17,18 +17,6 @@ Tes3SubRecordSNAM::~Tes3SubRecordSNAM()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordSNAM::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordSNAM::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordSNAM::dump(const short depth)
 {
 	string		indent(depth, ' ');

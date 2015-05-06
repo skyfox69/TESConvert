@@ -12,6 +12,7 @@ class TesProcessor
 		map<string, vector<TesRecordBase*>>	_mapRecords;
 		
 		virtual	bool						prepareRecordMap();
+		virtual	bool						prepareRecordMapRecursive(vector<TesRecordBase*>& collection);
 
 	public:
 											TesProcessor();
@@ -22,5 +23,6 @@ class TesProcessor
 		virtual	void						dumpTokensBySequence();
 		virtual	bool						dumpVclrMap(string const fileName);
 		virtual	bool						dumpVhgtMap(string const fileName);
+		virtual	bool						dumpVtexMap(string const fileName);
 };
 #endif  /* TESPROCESSOR_H */

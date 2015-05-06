@@ -21,18 +21,6 @@ Tes3SubRecordDATAFRMR::~Tes3SubRecordDATAFRMR()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordDATAFRMR::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordDATAFRMR::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordDATAFRMR::dump(const short depth)
 {
 	string		indent(depth, ' ');

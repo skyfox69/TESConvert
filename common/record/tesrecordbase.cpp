@@ -22,3 +22,9 @@ TesFileType TesRecordBase::fileType()
 {
 	return _fileType;
 }
+
+//-----------------------------------------------------------------------------
+bool TesRecordBase::compressed()
+{
+	return false;
+}

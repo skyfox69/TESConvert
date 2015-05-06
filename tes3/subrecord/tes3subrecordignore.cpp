@@ -15,18 +15,6 @@ Tes3SubRecordIgnore::~Tes3SubRecordIgnore()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordIgnore::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordIgnore::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordIgnore::dump(const short depth)
 {
 	string		indent(depth, ' ');

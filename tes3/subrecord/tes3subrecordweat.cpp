@@ -22,18 +22,6 @@ Tes3SubRecordWEAT::~Tes3SubRecordWEAT()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordWEAT::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordWEAT::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordWEAT::dump(const short depth)
 {
 	string		indent(depth, ' ');

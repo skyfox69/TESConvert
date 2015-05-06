@@ -27,6 +27,7 @@ class TesRecordBase
 		virtual	size_t						sizeTotal() = 0;
 		virtual	void						dump(const short depth) = 0;
 		virtual	TesRecordBase*				findSubRecord(string const token) = 0;
+		virtual	bool						compressed();
 };
 
 #endif	/* TESRECORDBASE_H */

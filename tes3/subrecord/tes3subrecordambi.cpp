@@ -19,18 +19,6 @@ Tes3SubRecordAMBI::~Tes3SubRecordAMBI()
 {}
 
 //-----------------------------------------------------------------------------
-size_t Tes3SubRecordAMBI::sizeRecord()
-{
-	return 8;
-}
-
-//-----------------------------------------------------------------------------
-size_t Tes3SubRecordAMBI::sizeTotal()
-{
-	return _size + sizeRecord();
-}
-
-//-----------------------------------------------------------------------------
 void Tes3SubRecordAMBI::dump(const short depth)
 {
 	string		indent(depth, ' ');

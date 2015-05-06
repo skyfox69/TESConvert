@@ -3,8 +3,10 @@
 #include "common/record/tesrecordmain.h"
 #include "common/record/tesrecordgroup.h"
 #include "tes3/tes3recordfactory.h"
+#include "tes4/tes4recordfactory.h"
 #include "util/tesoptions.h"
 #include <algorithm>
+#include <zlib.h>
 
 using namespace std;
 
@@ -87,6 +89,7 @@ bool TesParser::parse(string const fileName)
 		}
 		else if (token == "TES4") {
 			_fileType = TesFileType::TES4;
+			_pFactory = new Tes4RecordFactory();
 			printf("  found TES4 header => assuming \x1B[32mSkyrim\033[0m file\n");
 		}
 		else {
@@ -137,7 +140,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 		}
 
 		switch (pRecordNew->recordType()) {
-			case TesRecordType::RECORDGROUP:
+			case TesRecordType::RECORDGROUP: {
 				if (_verbose)	printf("found \x1B[33m%s\033[0m [GROUP]\n", token.c_str());
 				if (pRecordNew->_fileType == TesFileType::TES3) {
 					pRecordNew->_size = pBlockEnd - pStart;
@@ -145,7 +148,8 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 
 				pStart = parsePartial(pStart + pRecordNew->sizeRecord(),
 									  pStart + pRecordNew->sizeTotal(),
-									  (TesRecordGroup*) pRecordNew, pRecordNew);
+									  (TesRecordGroup*) pRecordNew,
+									  pRecordNew);
 
 				if (pCollection != nullptr) {
 					pCollection->push_back(pRecordNew);
@@ -156,18 +160,32 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 					return nullptr;
 				}
 				continue;
-				break;
+				break;}
 				
 			case TesRecordType::RECORD:
 				if (_verbose)	printf("found \x1B[33m%s\033[0m [RECORD]\n", token.c_str());
-				if (parsePartial(pStart + pRecordNew->sizeRecord(),
-								 pStart + pRecordNew->sizeTotal(),
-								 (TesRecordMain*) pRecordNew, pRecordNew) == nullptr) {
-					if (pCollection != nullptr) {
-						pCollection->push_back(pRecordNew);
+				if (pRecordNew->compressed()) {
+					if (parseCompressed(pStart + pRecordNew->sizeRecord(),
+										pStart + pRecordNew->sizeTotal(),
+										(TesRecordMain*) pRecordNew,
+										pRecordNew) == nullptr) {
+						if (pCollection != nullptr) {
+							pCollection->push_back(pRecordNew);
+						}
+						pRecordNew->dump(0);
+						return nullptr;
 					}
-					pRecordNew->dump(0);
-					return nullptr;
+				} else {
+					if (parsePartial(pStart + pRecordNew->sizeRecord(),
+									 pStart + pRecordNew->sizeTotal(),
+									 (TesRecordMain*) pRecordNew,
+									 pRecordNew) == nullptr) {
+						if (pCollection != nullptr) {
+							pCollection->push_back(pRecordNew);
+						}
+						pRecordNew->dump(0);
+						return nullptr;
+					}
 				}
 				break;
 				
@@ -194,3 +212,59 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 	
 	return pStart;
 }
+
+//-----------------------------------------------------------------------------
+unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent)
+{
+	size_t	sizeComp  (pParent->_size - 4);
+	size_t	sizeDecomp(0);
+
+	toSizeT(sizeDecomp, pBlockStart);
+	pBlockStart += 4;
+
+	unsigned char*		pBufIntern(new unsigned char[sizeDecomp]);
+	unsigned char*		pBufEnd   (pBufIntern + sizeDecomp);
+	unsigned char*		pStart    (pBufIntern);
+
+	inflateBuffer(pBlockStart, sizeComp, pBufIntern, sizeDecomp);
+	
+	if (parsePartial(pBufIntern,
+					 pBufEnd,
+					 (TesRecordMain*) pParent, pParent) == nullptr) {
+		return nullptr;
+	}
+
+	delete[] pBufIntern;
+
+	return pBlockEnd;
+}
+
+//-----------------------------------------------------------------------------
+int TesParser::inflateBuffer(const void* pBufSrc, const int lenSrc, void* pBufDst, const int lenDst)
+{
+	z_stream	strm = {0};
+	int			retCode(-1);
+	
+	strm.total_in  = lenSrc;
+	strm.avail_in  = lenSrc;
+	strm.total_out = lenDst;
+	strm.avail_out = lenDst;
+	strm.next_in   = (Bytef*) pBufSrc;
+	strm.next_out  = (Bytef*) pBufDst;
+	strm.zalloc    = Z_NULL;
+	strm.zfree     = Z_NULL;
+	strm.opaque    = Z_NULL;
+
+	retCode = inflateInit2(&strm, (15 + 32));
+	if (retCode == Z_OK) {
+		retCode = inflate(&strm, Z_FINISH);
+		if (retCode == Z_STREAM_END) {
+			retCode = strm.total_out;
+		}
+	}
+
+	inflateEnd(&strm);
+
+	return retCode;
+}
+
