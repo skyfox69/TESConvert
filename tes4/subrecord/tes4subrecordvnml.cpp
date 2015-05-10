@@ -1,4 +1,5 @@
 #include "tes4/subrecord/tes4subrecordvnml.h"
+#include <cstring>
 
 //-----------------------------------------------------------------------------
 Tes4SubRecordVNML::Tes4SubRecordVNML(unsigned char* pBuffer)
@@ -7,14 +8,7 @@ Tes4SubRecordVNML::Tes4SubRecordVNML(unsigned char* pBuffer)
 	if (pBuffer != nullptr) {
 		toString4(_name,  pBuffer);
 		toUShort4(_size,  &pBuffer[4]);
-		pBuffer += 6;
-		for (short i(0); i < 33; ++i) {
-			for (short j(0); j < 33; ++j, pBuffer += 3) {
-				_buffer[j][i]._xr = pBuffer[0];
-				_buffer[j][i]._yg = pBuffer[1];
-				_buffer[j][i]._zb = pBuffer[2];
-			}
-		}
+		memcpy(_buffer, &(pBuffer[6]), 33*33*3*sizeof(unsigned char));
 	}
 }
 

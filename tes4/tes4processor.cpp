@@ -184,7 +184,7 @@ bool Tes4Processor::dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 
 			for (short pixY(1); pixY <= SIZE_CELL_32; ++pixY) {
 				for (short pixX(1); pixX <= SIZE_CELL_32; ++pixX) {
-					Tes4SubRecordVNML::BufferEntry&		pixel(pSubLandVclr->_buffer[pixX][pixY]);
+					Tes4SubRecordVNML::BufferEntry&		pixel(pSubLandVclr->_buffer[pixY][pixX]);
 
 					idx           = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_32 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_32 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_32 + pixX);
 					if (idx >= pFillFuncIn->_sizeMap) {
@@ -242,7 +242,7 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 
 			for (short pixY(0); pixY <= SIZE_CELL_32; ++pixY) {
 				if (pixY > 0) {
-					float	value(((signed char) pSubLandVhgt->_height[0][pixY]));
+					float	value(((signed char) pSubLandVhgt->_height[pixY][0]));
 
 					offsetCol += value;
 				}
@@ -251,7 +251,7 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 
 				for (short pixX(0); pixX <= SIZE_CELL_32; ++pixX) {
 					if (pixX > 0) {
-						float	value(((signed char) pSubLandVhgt->_height[pixX][pixY]));
+						float	value(((signed char) pSubLandVhgt->_height[pixY][pixX]));
 
 						offsetRow += value;
 					}

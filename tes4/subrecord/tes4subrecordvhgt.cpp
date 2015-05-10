@@ -1,4 +1,5 @@
 #include "tes4/subrecord/tes4subrecordvhgt.h"
+#include <cstring>
 
 //-----------------------------------------------------------------------------
 Tes4SubRecordVHGT::Tes4SubRecordVHGT(unsigned char* pBuffer)
@@ -8,12 +9,8 @@ Tes4SubRecordVHGT::Tes4SubRecordVHGT(unsigned char* pBuffer)
 		toString4(_name,   pBuffer);
 		toUShort4(_size,   &pBuffer[4]);
 		toFloat4 (_offset, &pBuffer[6]);
-		pBuffer += 10;
-		for (short i(0); i < 33; ++i) {
-			for (short j(0); j < 33; ++j, ++pBuffer) {
-				_height[j][i] = pBuffer[0];
-			}
-		}
+		memcpy(_height, &(pBuffer[10]), 33*33*sizeof(unsigned char));
+		pBuffer += 10 + 33*33*sizeof(unsigned char);
 		_unknown[0] = pBuffer[0];
 		_unknown[1] = pBuffer[1];
 		_unknown[2] = pBuffer[2];
