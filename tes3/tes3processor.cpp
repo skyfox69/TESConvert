@@ -4,6 +4,7 @@
 #include "tes3/subrecord/tes3subrecordvhgt.h"
 #include "tes3/subrecord/tes3subrecordvtex.h"
 #include "common/util/tesoptions.h"
+#include "common/record/tesrecordmain.h"
 #include <cstring>
 
 #define	SIZE_MAP_MAX	100
@@ -55,7 +56,7 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 	printf("generating bitmap file\n  getting sizes: ");
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
-		if (pSubLandIntv) {
+		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
 			if (pSubLandIntv->_cellX < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubLandIntv->_cellX;
 			if (pSubLandIntv->_cellX > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubLandIntv->_cellX;
 			if (pSubLandIntv->_cellY < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubLandIntv->_cellY;
@@ -180,9 +181,6 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 	size_t					idx         (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
-	fprintf(stderr, "%d, %d, %d, %d, %d, %d, %d\n", pFillFuncIn->_sizeMinX, pFillFuncIn->_sizeMaxX, pFillFuncIn->_sizeMinY, pFillFuncIn->_sizeMaxY, pFillFuncIn->_sizeX, pFillFuncIn->_sizeY, pFillFuncIn->_sizeMap);
-	
-	
 	for (unsigned char *pStart(pBmBuffer), *pEnd(pBmBuffer+pFillFuncIn->_sizeMap*3); pStart < pEnd;) {
 		*pStart++ = 0x00;
 		*pStart++ = 0xFF;
