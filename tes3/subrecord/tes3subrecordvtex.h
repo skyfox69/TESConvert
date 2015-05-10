@@ -9,6 +9,7 @@ class Tes3SubRecordVTEX : public TesRecordSub
 {
 	public:
 		unsigned short						_texIds[16][16];
+		unsigned short						_texStd[16][16];
 
 											Tes3SubRecordVTEX(unsigned char* pBuffer);
 		virtual								~Tes3SubRecordVTEX();

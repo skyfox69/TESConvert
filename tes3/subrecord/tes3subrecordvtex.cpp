@@ -1,6 +1,8 @@
 #include "tes3/subrecord/tes3subrecordvtex.h"
 #include <cstring>
 
+static int	quads[4][3] = {{0, 0, 0}, {8, 0, 64} , {0, 8, 256} , {8, 8, 320}};
+
 //-----------------------------------------------------------------------------
 Tes3SubRecordVTEX::Tes3SubRecordVTEX(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES3)
@@ -9,6 +11,28 @@ Tes3SubRecordVTEX::Tes3SubRecordVTEX(unsigned char* pBuffer)
 		toString4(_name,   pBuffer);
 		toSizeT  (_size,   &pBuffer[4]);
 		memcpy(_texIds, &(pBuffer[8]), 16*16*sizeof(unsigned short));
+		
+		//  standardize texture map
+		unsigned char*		pOrig ((unsigned char*) &_texIds[0][0]);
+		int					quadX (0);
+		int					quadY (0);
+		int					offset(0);
+		
+		for (int quad(0); quad < 4; ++quad) {
+			quadX  = quads[quad][0];
+			quadY  = quads[quad][1];
+			offset = quads[quad][2];
+
+			for (int i(0); i < 2; ++i) {
+				offset += (i*64);
+				for (int j(0); j < 2; ++j) {
+					for (int k(0); k < 4; ++k) {
+						memcpy(&_texStd[quadY+k+(4*i)][quadX+(4*j)], pOrig + offset, 8);
+						offset += 8;
+					}
+				}
+			}
+		}
 	}
 }
 

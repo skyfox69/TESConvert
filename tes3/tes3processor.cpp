@@ -265,7 +265,7 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 	size_t					idx         (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
-	memset(pBmBuffer, 0xff, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
+	memset(pBmBuffer, 0x00, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
 
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
@@ -277,7 +277,7 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 
 				for (short pixY(0); pixY < SIZE_CELL_16; ++pixY) {
 					for (short pixX(0); pixX < SIZE_CELL_16; ++pixX) {
-						unsigned short	texIdx = pSubLandVtex->_texIds[pixX/4][pixY/4];
+						unsigned short	texIdx = pSubLandVtex->_texStd[pixY][pixX];
 
 						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_16 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_16 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_16 + pixX);
 						if (idx >= pFillFuncIn->_sizeMap) {
@@ -287,13 +287,13 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 						idx *= 3;
 
 						if (drawGrid && ((pixX == 0) || (pixY == 0))) {
-							pBmBuffer[idx]   = 0;
+							pBmBuffer[idx]   = 0xff;
 							pBmBuffer[idx+1] = 0;
 							pBmBuffer[idx+2] = 0;
 						} else {
-							pBmBuffer[idx]   = texIdx;
-							pBmBuffer[idx+1] = texIdx;
-							pBmBuffer[idx+2] = texIdx;
+							pBmBuffer[idx]   = (unsigned char) (((texIdx & 0x0000001F) >> 0) << 3);
+							pBmBuffer[idx+1] = (unsigned char) (((texIdx & 0x000003E0) >> 4) << 2);
+							pBmBuffer[idx+2] = (unsigned char) (((texIdx & 0x00007C00) >> 8) << 1);
 						}
 					}  //  for (short pixX(0); pixX < SIZE_CELL; ++pixX)
 				}  //  for (short pixY(0); pixY < SIZE_CELL; ++pixY)
