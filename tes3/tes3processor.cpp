@@ -201,7 +201,7 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 
 				for (short pixY(0); pixY <= SIZE_CELL_64; ++pixY) {
 					if (pixY > 0) {
-						float	value(((signed char) pSubLandVhgt->_height[0][pixY]));
+						float	value(((signed char) pSubLandVhgt->_height[pixY][0]));
 
 						offsetCol += value;
 					}
@@ -210,7 +210,7 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 
 					for (short pixX(0); pixX <= SIZE_CELL_64; ++pixX) {
 						if (pixX > 0) {
-							float	value(((signed char) pSubLandVhgt->_height[pixX][pixY]));
+							float	value(((signed char) pSubLandVhgt->_height[pixY][pixX]));
 
 							offsetRow += value;
 						}
