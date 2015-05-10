@@ -7,7 +7,8 @@
 #include <cstring>
 
 #define	SIZE_MAP_MAX	100
-#define	SIZE_CELL		 64
+#define	SIZE_CELL_64	 64
+#define	SIZE_CELL_16	 16
 
 //-----------------------------------------------------------------------------
 Tes3Processor::Tes3Processor(map<string, vector<TesRecordBase*>>& mapRecords)
@@ -29,69 +30,63 @@ bool Tes3Processor::prepareData()
 //-----------------------------------------------------------------------------
 bool Tes3Processor::dumpVclrMap(string const fileName)
 {
-	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVclr);
+	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVclr, SIZE_CELL_64);
 }
 
 //-----------------------------------------------------------------------------
 bool Tes3Processor::dumpVhgtMap(string const fileName)
 {
-	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVhgt);
+	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVhgt, SIZE_CELL_64);
 }
 
 //-----------------------------------------------------------------------------
 bool Tes3Processor::dumpVtexMap(string const fileName)
 {
-	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVtex);
+	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVtex, SIZE_CELL_16);
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunction)
+bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunction, unsigned short cellSize)
 {
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
-	long					sizeMinX    (999999);
-	long					sizeMaxX    (-999999);
-	long					sizeMinY    (999999);
-	long					sizeMaxY    (-999999);
-	size_t					sizeX       (0);
-	size_t					sizeY       (0);
-	size_t					sizeMap     (SIZE_MAP_MAX * SIZE_MAP_MAX);
+	Tes3FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
 
 	//  get size of map
 	printf("generating bitmap file\n  getting sizes: ");
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
 		if (pSubLandIntv) {
-			if (pSubLandIntv->_cellX < sizeMinX)		sizeMinX = pSubLandIntv->_cellX;
-			if (pSubLandIntv->_cellX > sizeMaxX)		sizeMaxX = pSubLandIntv->_cellX;
-			if (pSubLandIntv->_cellY < sizeMinY)		sizeMinY = pSubLandIntv->_cellY;
-			if (pSubLandIntv->_cellY > sizeMaxY)		sizeMaxY = pSubLandIntv->_cellY;
+			if (pSubLandIntv->_cellX < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubLandIntv->_cellX;
+			if (pSubLandIntv->_cellX > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubLandIntv->_cellX;
+			if (pSubLandIntv->_cellY < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubLandIntv->_cellY;
+			if (pSubLandIntv->_cellY > fillFuncIn._sizeMaxY)		fillFuncIn._sizeMaxY = pSubLandIntv->_cellY;
 		}
 	}
 
-	printf("minX: %d, maxX: %d, minY: %d, maxY: %d\n", sizeMinX, sizeMaxX, sizeMinY, sizeMaxY);
-	sizeX = (sizeMaxX - sizeMinX + 1);
-	sizeY = (sizeMaxY - sizeMinY + 1);
-	if ((sizeMap = (sizeX * sizeY)) <= 1) {
+	printf("minX: %d, maxX: %d, minY: %d, maxY: %d\n", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
+	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 1);
+	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 1);
+	if ((fillFuncIn._sizeMap = (fillFuncIn._sizeX * fillFuncIn._sizeY)) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
-	sizeMap *= SIZE_CELL*SIZE_CELL;
+	fillFuncIn._sizeMap *= cellSize*cellSize;
 	printf("  building internal bitmap\n");
 
-	unsigned char*	pBmBuffer = new unsigned char[sizeMap*3];
+	unsigned char*	pBmBuffer = new unsigned char[fillFuncIn._sizeMap*3];
 
 	//  call bitmap fill function
-	if (pFillFunction(this, pBmBuffer, sizeMinX, sizeMaxX, sizeMinY, sizeMaxY, sizeX, sizeY, sizeMap)) {
+	if (pFillFunction(this, pBmBuffer, &fillFuncIn)) {
 		//  generate bitmap file
 		printf("  writing bitmap file\n");
 
 		unsigned char	bmpfileheader[14] = {'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0};
 		unsigned char	bmpinfoheader[40] = {40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0};
 		unsigned char	bmppad[3] = {0,0,0};
-		int				filesize(54 + 3 * sizeMap);
-		int				w       (sizeX * SIZE_CELL);
-		int				h       (sizeY * SIZE_CELL);
+		int				filesize(54 + 3 * fillFuncIn._sizeMap);
+		int				w       (fillFuncIn._sizeX * cellSize);
+		int				h       (fillFuncIn._sizeY * cellSize);
 
 		bmpfileheader[ 2] = (unsigned char)(filesize    );
 		bmpfileheader[ 3] = (unsigned char)(filesize>> 8);
@@ -113,7 +108,7 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 			fwrite(bmpfileheader, 1, 14, pFile);
 			fwrite(bmpinfoheader, 1, 40, pFile);
 
-			for (size_t idx(0); idx < sizeMap; ++idx) {
+			for (size_t idx(0); idx < fillFuncIn._sizeMap; ++idx) {
 				fwrite(pBmBuffer+(idx*3),   3, 1, pFile);
 				if ((idx > 0) && ((idx % w) == 0)) {
 					fwrite(bmppad, 1, (4-(w*3)%4)%4, pFile);
@@ -131,14 +126,14 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap)
+bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn)
 {
 	Tes3SubRecordVNML*		pSubLandVclr(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
 	size_t					idx         (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
-	memset(pBmBuffer, 0xff, sizeMap * 3 * sizeof (unsigned char));
+	memset(pBmBuffer, 0xff, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
 
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
@@ -148,13 +143,13 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 				unsigned long	posMapX(pSubLandIntv->_cellX);
 				unsigned long	posMapY(pSubLandIntv->_cellY);
 
-				for (short pixY(1); pixY <= SIZE_CELL; ++pixY) {
-					for (short pixX(1); pixX <= SIZE_CELL; ++pixX) {
-						Tes3SubRecordVNML::BufferEntry&		pixel(pSubLandVclr->_buffer[pixX][pixY]);
+				for (short pixY(1); pixY <= SIZE_CELL_64; ++pixY) {
+					for (short pixX(1); pixX <= SIZE_CELL_64; ++pixX) {
+						Tes3SubRecordVNML::BufferEntry&		pixel(pSubLandVclr->_buffer[pixY][pixX]);
 
-						idx = ((posMapY - sizeMinY) * SIZE_CELL + pixY) * sizeX * SIZE_CELL + ((posMapX - sizeMinX) * SIZE_CELL + pixX);
-						if (idx >= sizeMap) {
-							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - sizeMap));
+						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_64 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX);
+						if (idx >= pFillFuncIn->_sizeMap) {
+							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 							break;
 						}
 						idx *= 3;
@@ -168,8 +163,8 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 							pBmBuffer[idx+1] = pixel._yg;
 							pBmBuffer[idx+2] = pixel._xr;
 						}
-					}  //  for (short pixX(0); pixX < SIZE_CELL; ++pixX)
-				}  //  for (short pixY(0); pixY < SIZE_CELL; ++pixY)
+					}  //  for (short pixX(0); pixX < SIZE_CELL_64; ++pixX)
+				}  //  for (short pixY(0); pixY < SIZE_CELL_64; ++pixY)
 			}  //  if (pSubLandVclr != nullptr)
 		}  //  if (pSubLandIntv != nullptr)
 	}  //  for (auto pRecord : _mapRecords["LAND"])
@@ -178,14 +173,17 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap)
+bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn)
 {
 	Tes3SubRecordVHGT*		pSubLandVhgt(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
 	size_t					idx         (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
-	for (unsigned char *pStart(pBmBuffer), *pEnd(pBmBuffer+sizeMap*3); pStart < pEnd;) {
+	fprintf(stderr, "%d, %d, %d, %d, %d, %d, %d\n", pFillFuncIn->_sizeMinX, pFillFuncIn->_sizeMaxX, pFillFuncIn->_sizeMinY, pFillFuncIn->_sizeMaxY, pFillFuncIn->_sizeX, pFillFuncIn->_sizeY, pFillFuncIn->_sizeMap);
+	
+	
+	for (unsigned char *pStart(pBmBuffer), *pEnd(pBmBuffer+pFillFuncIn->_sizeMap*3); pStart < pEnd;) {
 		*pStart++ = 0x00;
 		*pStart++ = 0xFF;
 		*pStart++ = 0xFF;
@@ -203,7 +201,7 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 				float			offsetCol (((signed char) pSubLandVhgt->_height[0][0]));
 				int				realHeight(0);
 
-				for (short pixY(0); pixY <= SIZE_CELL; ++pixY) {
+				for (short pixY(0); pixY <= SIZE_CELL_64; ++pixY) {
 					if (pixY > 0) {
 						float	value(((signed char) pSubLandVhgt->_height[0][pixY]));
 
@@ -212,7 +210,7 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 
 					offsetRow = offsetCell + offsetCol;
 
-					for (short pixX(0); pixX <= SIZE_CELL; ++pixX) {
+					for (short pixX(0); pixX <= SIZE_CELL_64; ++pixX) {
 						if (pixX > 0) {
 							float	value(((signed char) pSubLandVhgt->_height[pixX][pixY]));
 
@@ -221,17 +219,19 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 
 						realHeight = (int) offsetRow;
 
-						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
-							idx = ((posMapY - sizeMinY) * SIZE_CELL + pixY) * sizeX * SIZE_CELL + ((posMapX - sizeMinX) * SIZE_CELL + pixX);
-							if (idx >= sizeMap) {
-								fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - sizeMap));
-								break;
-							}
-							idx *= 3;
+						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_64 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX);
+						if (idx >= pFillFuncIn->_sizeMap) {
+							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
+							break;
+						}
+						idx *= 3;
 
-							if (drawGrid && (pixX == 1) && (pixY == 1)) {
-								realHeight = 0;
-							}
+						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
+							pBmBuffer[idx]   = 0;
+							pBmBuffer[idx+1] = 0;
+							pBmBuffer[idx+2] = 0;
+						}
+						else if ((pixY > 0) && (pixX > 0)) {
 							pBmBuffer[idx]   = (unsigned char) (realHeight >> 0);
 							pBmBuffer[idx+1] = (unsigned char) (realHeight >> 8);
 							pBmBuffer[idx+2] = (unsigned char) (realHeight >> 16);
@@ -246,7 +246,7 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap)
+bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn)
 {
 #if 0
 	Tes3SubRecordSingleULong*		pSubLtexINTV(nullptr);
@@ -267,7 +267,7 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 	size_t					idx         (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
-	memset(pBmBuffer, 0xff, sizeMap * 3 * sizeof (unsigned char));
+	memset(pBmBuffer, 0xff, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
 
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
@@ -277,13 +277,13 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, long sizeMinX, long sizeM
 				unsigned long	posMapX(pSubLandIntv->_cellX);
 				unsigned long	posMapY(pSubLandIntv->_cellY);
 
-				for (short pixY(0); pixY < SIZE_CELL; ++pixY) {
-					for (short pixX(0); pixX < SIZE_CELL; ++pixX) {
+				for (short pixY(0); pixY < SIZE_CELL_16; ++pixY) {
+					for (short pixX(0); pixX < SIZE_CELL_16; ++pixX) {
 						unsigned short	texIdx = pSubLandVtex->_texIds[pixX/4][pixY/4];
 
-						idx = ((posMapY - sizeMinY) * SIZE_CELL + pixY) * sizeX * SIZE_CELL + ((posMapX - sizeMinX) * SIZE_CELL + pixX);
-						if (idx >= sizeMap) {
-							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - sizeMap));
+						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_16 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_16 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_16 + pixX);
+						if (idx >= pFillFuncIn->_sizeMap) {
+							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 							break;
 						}
 						idx *= 3;

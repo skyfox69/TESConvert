@@ -8,6 +8,17 @@
 class Tes4RecordGeneric;
 class Tes4RecordGroup;
 
+//-----------------------------------------------------------------------------
+struct Tes4FillFuncIn
+{
+	long	_sizeMinX;
+	long	_sizeMaxX;
+	long	_sizeMinY;
+	long	_sizeMaxY;
+	size_t	_sizeX;
+	size_t	_sizeY;
+	size_t	_sizeMap;
+};
 
 //-----------------------------------------------------------------------------
 class Tes4Processor
@@ -19,9 +30,9 @@ class Tes4Processor
 
 		virtual	bool							prepareData();
 		virtual	bool							prepareDataRecursive(vector<TesRecordBase*>& records, map<unsigned long, Tes4RecordGeneric*>& mapRecordIds, Tes4RecordGroup* pGroup = nullptr);
-		virtual	bool							dumpToMap(const string fileName, Tes4FillFunction pFillFunction);
-		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap);
-		virtual	bool							dumpVclr(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap);
+		virtual	bool							dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
+		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
 
 	public:
 												Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records);

@@ -6,16 +6,28 @@
 #include <map>
 
 //-----------------------------------------------------------------------------
+struct Tes3FillFuncIn
+{
+	long	_sizeMinX;
+	long	_sizeMaxX;
+	long	_sizeMinY;
+	long	_sizeMaxY;
+	size_t	_sizeX;
+	size_t	_sizeY;
+	size_t	_sizeMap;
+};
+
+//-----------------------------------------------------------------------------
 class Tes3Processor
 {
 	private:
 		map<string, vector<TesRecordBase*>>&	_mapRecords;
 
 		virtual	bool							prepareData();
-		virtual	bool							dumpToMap(const string fileName, Tes3FillFunction pFillFunction);
-		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap);
-		virtual	bool							dumpVclr(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap);
-		virtual	bool							dumpVtex(unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap);
+		virtual	bool							dumpToMap(const string fileName, Tes3FillFunction pFillFunction, unsigned short cellSize);
+		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVclr(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn);
 
 	public:
 												Tes3Processor(map<string, vector<TesRecordBase*>>& mapRecords);

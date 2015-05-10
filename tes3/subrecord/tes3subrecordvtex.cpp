@@ -1,4 +1,5 @@
 #include "tes3/subrecord/tes3subrecordvtex.h"
+#include <cstring>
 
 //-----------------------------------------------------------------------------
 Tes3SubRecordVTEX::Tes3SubRecordVTEX(unsigned char* pBuffer)
@@ -7,12 +8,7 @@ Tes3SubRecordVTEX::Tes3SubRecordVTEX(unsigned char* pBuffer)
 	if (pBuffer != nullptr) {
 		toString4(_name,   pBuffer);
 		toSizeT  (_size,   &pBuffer[4]);
-		pBuffer += 8;
-		for (short i(0); i < 16; ++i) {
-			for (short j(0); j < 16; ++j, pBuffer += 2) {
-				toUShort(_texIds[j][i] ,pBuffer);
-			}
-		}
+		memcpy(_texIds, &(pBuffer[8]), 16*16*sizeof(unsigned short));
 	}
 }
 

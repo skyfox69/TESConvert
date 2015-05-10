@@ -14,10 +14,12 @@ typedef TesRecordBase* (*TesCreateFunction)(unsigned char*);
 
 //-----------------------------------------------------------------------------
 class Tes3Processor;
-using Tes3FillFunction = function<bool (Tes3Processor*, unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap)>;
+struct Tes3FillFuncIn;
+using Tes3FillFunction = function<bool (Tes3Processor*, unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn)>;
 
 //-----------------------------------------------------------------------------
 class Tes4Processor;
-using Tes4FillFunction = function<bool (Tes4Processor*, unsigned char* pBmBuffer, long sizeMinX, long sizeMaxX, long sizeMinY, long sizeMaxY, size_t sizeX, size_t sizeY, size_t sizeMap)>;
+struct Tes4FillFuncIn;
+using Tes4FillFunction = function<bool (Tes4Processor*, unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn)>;
 
 #endif  /* TESFUNCTIONTYPES_H */
