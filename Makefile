@@ -54,6 +54,8 @@ SRC = main.cpp \
       tes4/subrecord/tes4subrecordmnam.cpp \
       tes4/subrecord/tes4subrecordvnml.cpp \
       tes4/subrecord/tes4subrecordvhgt.cpp \
+      tes4/subrecord/tes4subrecordatxt.cpp \
+      tes4/subrecord/tes4subrecordvtxt.cpp \
       tes4/subrecord/tes4subrecordxclccell.cpp \
       tes4/subrecord/tes4subrecordsinglestring.cpp \
       tes4/subrecord/tes4subrecordsingleulong.cpp \

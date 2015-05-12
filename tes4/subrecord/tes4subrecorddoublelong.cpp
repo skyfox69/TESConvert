@@ -37,4 +37,5 @@ void Tes4SubRecordDoubleLong::registerClass(map<string, TesCreateFunction>& mapR
 {
 	mapRecords["WRLDNAM0"] = Tes4SubRecordDoubleLong::create;
 	mapRecords["WRLDNAM9"] = Tes4SubRecordDoubleLong::create;
+	mapRecords["TES4DATA"] = Tes4SubRecordDoubleLong::create;
 }

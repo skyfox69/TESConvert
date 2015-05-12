@@ -5,12 +5,15 @@
 #include "tes4/subrecord/tes4subrecordvnml.h"
 #include "tes4/subrecord/tes4subrecordvhgt.h"
 #include "common/util/tesoptions.h"
+#include "subrecord/tes4subrecordatxt.h"
+#include "subrecord/tes4subrecordvtxt.h"
 #include <cstring>
 #include <sstream>
 
 #define	SIZE_MAP_MAX	100
 #define	SIZE_CELL_64	 64
 #define	SIZE_CELL_32	 32
+#define	SIZE_CELL_34	 34
 #define	SIZE_CELL_16	 16
 
 //-----------------------------------------------------------------------------
@@ -82,13 +85,19 @@ bool Tes4Processor::dumpVhgtMap(string const fileName)
 }
 
 //-----------------------------------------------------------------------------
+bool Tes4Processor::dumpVtexMap(string const fileName)
+{
+	return dumpToMap(fileName + ".bmp", &Tes4Processor::dumpVtex, SIZE_CELL_34);
+}
+
+//-----------------------------------------------------------------------------
 bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize)
 {
 	Tes4SubRecordXCLCCELL*	pSubCellXclc(nullptr);
 	Tes4FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
 
 	//  get size of map
-	printf("generating bitmap file\n  getting sizes: ");
+	printf("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
 	for (auto pRecord : _mapRecords["CELL"]) {
 		pSubCellXclc = dynamic_cast<Tes4SubRecordXCLCCELL*>(pRecord->findSubRecord("XCLC"));
 		if (pSubCellXclc) {
@@ -166,11 +175,14 @@ bool Tes4Processor::dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 {
 	Tes4SubRecordVNML*		pSubLandVclr(nullptr);
 	char*					pChar       (nullptr);
+	string					markPos     (TESOptions::getInstance()->_markPos);
 	size_t					idx         (0);
 	long					posMapX     (0);
 	long					posMapY     (0);
 	char					cBuffer[1000] = {0};
+	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
+	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	memset(pBmBuffer, 0xff, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
 
@@ -182,13 +194,20 @@ bool Tes4Processor::dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 			posMapX = atol(cBuffer);
 			posMapY = atol(++pChar);
 
+			if ((posMapX < pFillFuncIn->_sizeMinX) || (posMapX > pFillFuncIn->_sizeMaxX) ||
+				(posMapY < pFillFuncIn->_sizeMinY) || (posMapY > pFillFuncIn->_sizeMaxY)) {
+				continue;
+			}
+
+			sprintf(coordBuf, "%d,%d", posMapX, posMapY);
+
 			for (short pixY(1); pixY <= SIZE_CELL_32; ++pixY) {
 				for (short pixX(1); pixX <= SIZE_CELL_32; ++pixX) {
 					Tes4SubRecordVNML::BufferEntry&		pixel(pSubLandVclr->_buffer[pixY][pixX]);
 
 					idx           = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_32 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_32 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_32 + pixX);
 					if (idx >= pFillFuncIn->_sizeMap) {
-						fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
+						if (verbose)	fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 						break;
 					}
 					idx *= 3;
@@ -197,6 +216,10 @@ bool Tes4Processor::dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 						pBmBuffer[idx]   = 0;
 						pBmBuffer[idx+1] = 0;
 						pBmBuffer[idx+2] = 0;
+					} else if (markPos == coordBuf) {
+						pBmBuffer[idx]   = 0xff;
+						pBmBuffer[idx+1] = 0x00;
+						pBmBuffer[idx+2] = 0xff;
 					} else {
 						pBmBuffer[idx]   = pixel._zb;
 						pBmBuffer[idx+1] = pixel._yg;
@@ -215,11 +238,14 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 {
 	Tes4SubRecordVHGT*		pSubLandVhgt(nullptr);
 	char*					pChar       (nullptr);
+	string					markPos     (TESOptions::getInstance()->_markPos);
 	size_t					idx         (0);
 	long					posMapX     (0);
 	long					posMapY     (0);
 	char					cBuffer[1000] = {0};
+	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
+	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	for (unsigned char *pStart(pBmBuffer), *pEnd(pBmBuffer+pFillFuncIn->_sizeMap*3); pStart < pEnd;) {
 		*pStart++ = 0x00;
@@ -234,6 +260,13 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 			pChar = strchr(cBuffer, ';');
 			posMapX = atol(cBuffer);
 			posMapY = atol(++pChar);
+
+			if ((posMapX < pFillFuncIn->_sizeMinX) || (posMapX > pFillFuncIn->_sizeMaxX) ||
+				(posMapY < pFillFuncIn->_sizeMinY) || (posMapY > pFillFuncIn->_sizeMaxY)) {
+				continue;
+			}
+
+			sprintf(coordBuf, "%d,%d", posMapX, posMapY);
 
 			float	offsetCell(pSubLandVhgt->_offset);
 			float	offsetRow (0.0);
@@ -260,7 +293,7 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 
 					idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_32 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_32 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_32 + pixX);
 					if (idx >= pFillFuncIn->_sizeMap) {
-						fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
+						if (verbose)	fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 						break;
 					}
 					idx *= 3;
@@ -269,8 +302,11 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 						pBmBuffer[idx]   = 0;
 						pBmBuffer[idx+1] = 0;
 						pBmBuffer[idx+2] = 0;
-					}
-					else if ((pixY > 0) && (pixX > 0)) {
+					} else if (markPos == coordBuf) {
+						pBmBuffer[idx]   = 0xff;
+						pBmBuffer[idx+1] = 0x00;
+						pBmBuffer[idx+2] = 0xff;
+					} else if ((pixY > 0) && (pixX > 0)) {
 						pBmBuffer[idx]   = (unsigned char) (realHeight >> 0);
 						pBmBuffer[idx+1] = (unsigned char) (realHeight >> 8);
 						pBmBuffer[idx+2] = (unsigned char) (realHeight >> 16);
@@ -280,5 +316,70 @@ bool Tes4Processor::dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFunc
 		}  //  if (pSubLandVhgt != nullptr)
 	}  //  for (auto pRecord : _mapRecords["LAND"])
 
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+bool Tes4Processor::dumpVtex(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn)
+{
+	char*					pChar       (nullptr);
+	string					markPos     (TESOptions::getInstance()->_markPos);
+	long					posMapX     (0);
+	long					posMapY     (0);
+	unsigned long			textureId   (0);
+	unsigned long			idx         (0);
+	unsigned long			offPosX     (0);
+	unsigned long			offPosY     (0);
+	unsigned long			pixX        (0);
+	unsigned long			pixY        (0);
+	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
+	unsigned char	quadrant            (0);
+	char					cBuffer[1000] = {0};
+	char					coordBuf[100] = {0};
+
+	memset(pBmBuffer, 0x00, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
+
+	for (auto entry : _mapRecordsLand) {
+		strncpy(cBuffer, entry.first.c_str(), 1000);
+		pChar = strchr(cBuffer, ';');
+		posMapX = atol(cBuffer);
+		posMapY = atol(++pChar);
+
+		sprintf(coordBuf, "%d,%d", posMapX, posMapY);
+
+		for (auto& pSubRecord : *entry.second) {
+			if (pSubRecord->_name == "ATXT") {
+				quadrant  = ((Tes4SubRecordATXT*) pSubRecord)->_quadrant;
+				textureId = ((Tes4SubRecordATXT*) pSubRecord)->_textureId;
+				offPosX   = (quadrant % 2) * 17 + posMapX * SIZE_CELL_34;
+				offPosY   = (quadrant / 2) * pFillFuncIn->_sizeX * SIZE_CELL_34 * 17 + posMapY * pFillFuncIn->_sizeX * SIZE_CELL_34 * SIZE_CELL_34;
+			} else if (pSubRecord->_name == "VTXT") {
+				Tes4SubRecordVTXT*	pVtxt((Tes4SubRecordVTXT*) pSubRecord);
+
+				for (unsigned long i(0); i < pVtxt->_count; ++i) {
+					pixX = pVtxt->_pEntries[i]._position % 17;
+					pixY = pVtxt->_pEntries[i]._position / 17;
+
+					idx = (offPosY + pixY * pFillFuncIn->_sizeX * SIZE_CELL_34) + (offPosX + pixX);
+					idx *= 3;
+
+					if (drawGrid && ((pixX == 0) || (pixY == 0))) {
+						pBmBuffer[idx]   = 0x00;
+						pBmBuffer[idx+1] = 0x00;
+						pBmBuffer[idx+2] = 0x00;
+					} else if (markPos == coordBuf) {
+						pBmBuffer[idx]   = 0xff;
+						pBmBuffer[idx+1] = 0x00;
+						pBmBuffer[idx+2] = 0xff;
+					} else {
+						pBmBuffer[idx]   = (unsigned char) (textureId >> 0);
+						pBmBuffer[idx+1] = (unsigned char) (textureId >> 8);
+						pBmBuffer[idx+2] = (unsigned char) (textureId >> 16);
+					}
+				}  //  for (unsigned long i(0); i < pVtxt->_count; ++i)
+			}  //  else if (pSubRecord->_name == "VTXT")
+		}  //  for (auto& pSubRecord : *entry.second)
+	}  //  for (auto entry : _mapRecordsLand)
+	
 	return true;
 }

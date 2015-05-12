@@ -17,6 +17,7 @@ class TESOptions
 		string								_fileNameC;
 		string								_fileNameH;
 		string								_fileNameL;
+		string								_markPos;
 		bool								_verbose;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;

@@ -33,6 +33,7 @@ class Tes4Processor
 		virtual	bool							dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
 		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
 		virtual	bool							dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVtex(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
 
 	public:
 												Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records);
@@ -40,5 +41,6 @@ class Tes4Processor
 
 		virtual	bool							dumpVclrMap(string const fileName);
 		virtual	bool							dumpVhgtMap(string const fileName);
+		virtual	bool							dumpVtexMap(string const fileName);
 };
 #endif  /* TES4PROCESSOR_H */

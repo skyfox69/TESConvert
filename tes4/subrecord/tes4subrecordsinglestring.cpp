@@ -34,6 +34,7 @@ TesRecordBase* Tes4SubRecordSingleString::create(unsigned char* pBuffer)
 void Tes4SubRecordSingleString::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["TES4CNAM"] = Tes4SubRecordSingleString::create;
+	mapRecords["TES4MAST"] = Tes4SubRecordSingleString::create;
 	mapRecords["WRLDEDID"] = Tes4SubRecordSingleString::create;
 	mapRecords["WRLDFULL"] = Tes4SubRecordSingleString::create;
 }

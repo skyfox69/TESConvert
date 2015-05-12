@@ -12,6 +12,8 @@
 #include "tes4/subrecord/tes4subrecordflags.h"
 #include "tes4/subrecord/tes4subrecordvnml.h"
 #include "tes4/subrecord/tes4subrecordvhgt.h"
+#include "tes4/subrecord/tes4subrecordatxt.h"
+#include "tes4/subrecord/tes4subrecordvtxt.h"
 
 //-----------------------------------------------------------------------------
 Tes4RecordFactory::Tes4RecordFactory()
@@ -33,6 +35,8 @@ void Tes4RecordFactory::registerClasses()
 	Tes4SubRecordMNAM::registerClass(_mapKnownRecords);
 	Tes4SubRecordVNML::registerClass(_mapKnownRecords);
 	Tes4SubRecordVHGT::registerClass(_mapKnownRecords);
+	Tes4SubRecordATXT::registerClass(_mapKnownRecords);
+	Tes4SubRecordVTXT::registerClass(_mapKnownRecords);
 	Tes4SubRecordXCLCCELL::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleString::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleULong::registerClass(_mapKnownRecords);

@@ -115,10 +115,10 @@ bool TesProcessor::dumpVtexMap(string const fileName)
 			return subProcessor.dumpVtexMap(fileName);
 		}
 		case TesFileType::TES4:
-		{/*
+		{
 			Tes4Processor	subProcessor(_mapRecords, _parser);
-			return subProcessor.dumpVTexMap(fileName);
-		*/}
+			return subProcessor.dumpVtexMap(fileName);
+		}
 	}
 	return false;
 }

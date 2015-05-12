@@ -19,6 +19,7 @@ void usage()
 			"  -dt\t\tdump final token structure sort by token\n"
 			"  -g\t\tdraw square cell sized grids on all image exports\n"
 			"  -L FILE\twrite texture occurance to <FILE>.bmp\n"
+			"  -m x,y\tdraw mark on cell at x,y\n"
 			"  -V FILE\twrite vertex heights to <FILE>.bmp\n"
 			"  -v\t\tverbose - more output\n"
 			"\n"
@@ -33,11 +34,12 @@ int main(int argc, char** argv)
 	int				opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "C:d:gL:vV:")) != -1) {
+	while ((opt = getopt(argc, argv, "C:d:gL:m:vV:")) != -1) {
 		switch (opt) {
 			case 'C':
 				pOptions->_fileNameC = optarg;
 				if (pOptions->_fileNameC.empty() || (pOptions->_fileNameC[0] == '-')) {
+					usage();
 					exit(EX_USAGE);
 				}
 				break;
@@ -59,12 +61,30 @@ int main(int argc, char** argv)
 			case 'L':
 				pOptions->_fileNameL = optarg;
 				if (pOptions->_fileNameL.empty() || (pOptions->_fileNameL[0] == '-')) {
+					usage();
+					exit(EX_USAGE);
+				}
+				break;
+			case 'm':
+				pOptions->_markPos = optarg;
+				if (!pOptions->_markPos.empty()) {
+					for (auto aChar : pOptions->_markPos) {
+						fprintf(stderr, "%c", aChar);
+						if (!isdigit(aChar) && (aChar != '-') && (aChar != ',')) {
+							pOptions->_markPos = "";
+							break;
+						}
+					}
+				}
+				if (pOptions->_markPos.empty()) {
+					usage();
 					exit(EX_USAGE);
 				}
 				break;
 			case 'V':
 				pOptions->_fileNameH = optarg;
 				if (pOptions->_fileNameH.empty() || (pOptions->_fileNameH[0] == '-')) {
+					usage();
 					exit(EX_USAGE);
 				}
 				break;

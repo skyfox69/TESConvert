@@ -53,7 +53,7 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 	Tes3FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
 
 	//  get size of map
-	printf("generating bitmap file\n  getting sizes: ");
+	printf("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
 		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
@@ -131,8 +131,11 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 {
 	Tes3SubRecordVNML*		pSubLandVclr(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
+	string					markPos     (TESOptions::getInstance()->_markPos);
 	size_t					idx         (0);
+	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
+	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	memset(pBmBuffer, 0xff, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
 
@@ -141,8 +144,15 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 		if (pSubLandIntv != nullptr) {
 			pSubLandVclr = dynamic_cast<Tes3SubRecordVNML*>(pRecord->findSubRecord("VCLR"));
 			if (pSubLandVclr != nullptr) {
-				unsigned long	posMapX(pSubLandIntv->_cellX);
-				unsigned long	posMapY(pSubLandIntv->_cellY);
+				long	posMapX(pSubLandIntv->_cellX);
+				long	posMapY(pSubLandIntv->_cellY);
+
+				if ((posMapX < pFillFuncIn->_sizeMinX) || (posMapX > pFillFuncIn->_sizeMaxX) ||
+					(posMapY < pFillFuncIn->_sizeMinY) || (posMapY > pFillFuncIn->_sizeMaxY)) {
+					continue;
+				}
+
+				sprintf(coordBuf, "%d,%d", posMapX, posMapY);
 
 				for (short pixY(1); pixY <= SIZE_CELL_64; ++pixY) {
 					for (short pixX(1); pixX <= SIZE_CELL_64; ++pixX) {
@@ -150,7 +160,7 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 
 						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_64 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX);
 						if (idx >= pFillFuncIn->_sizeMap) {
-							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
+							if (verbose)	fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 							break;
 						}
 						idx *= 3;
@@ -159,6 +169,10 @@ bool Tes3Processor::dumpVclr(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 							pBmBuffer[idx]   = 0;
 							pBmBuffer[idx+1] = 0;
 							pBmBuffer[idx+2] = 0;
+						} else if (markPos == coordBuf) {
+							pBmBuffer[idx]   = 0xff;
+							pBmBuffer[idx+1] = 0x00;
+							pBmBuffer[idx+2] = 0xff;
 						} else {
 							pBmBuffer[idx]   = pixel._zb;
 							pBmBuffer[idx+1] = pixel._yg;
@@ -178,8 +192,11 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 {
 	Tes3SubRecordVHGT*		pSubLandVhgt(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
+	string					markPos     (TESOptions::getInstance()->_markPos);
 	size_t					idx         (0);
+	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
+	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	for (unsigned char *pStart(pBmBuffer), *pEnd(pBmBuffer+pFillFuncIn->_sizeMap*3); pStart < pEnd;) {
 		*pStart++ = 0x00;
@@ -192,12 +209,19 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 		if (pSubLandIntv != nullptr) {
 			pSubLandVhgt = dynamic_cast<Tes3SubRecordVHGT*>(pRecord->findSubRecord("VHGT"));
 			if (pSubLandVhgt != nullptr) {
-				unsigned long	posMapX   (pSubLandIntv->_cellX);
-				unsigned long	posMapY   (pSubLandIntv->_cellY);
+				long			posMapX   (pSubLandIntv->_cellX);
+				long			posMapY   (pSubLandIntv->_cellY);
 				float			offsetCell(pSubLandVhgt->_offset);
 				float			offsetRow (0.0);
 				float			offsetCol (((signed char) pSubLandVhgt->_height[0][0]));
 				int				realHeight(0);
+
+				if ((posMapX < pFillFuncIn->_sizeMinX) || (posMapX > pFillFuncIn->_sizeMaxX) ||
+					(posMapY < pFillFuncIn->_sizeMinY) || (posMapY > pFillFuncIn->_sizeMaxY)) {
+					continue;
+				}
+
+				sprintf(coordBuf, "%d,%d", posMapX, posMapY);
 
 				for (short pixY(0); pixY <= SIZE_CELL_64; ++pixY) {
 					if (pixY > 0) {
@@ -219,7 +243,7 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 
 						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_64 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX);
 						if (idx >= pFillFuncIn->_sizeMap) {
-							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
+							if (verbose)	fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 							break;
 						}
 						idx *= 3;
@@ -228,8 +252,11 @@ bool Tes3Processor::dumpVhgt(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 							pBmBuffer[idx]   = 0;
 							pBmBuffer[idx+1] = 0;
 							pBmBuffer[idx+2] = 0;
-						}
-						else if ((pixY > 0) && (pixX > 0)) {
+						} else if (markPos == coordBuf) {
+							pBmBuffer[idx]   = 0xff;
+							pBmBuffer[idx+1] = 0x00;
+							pBmBuffer[idx+2] = 0xff;
+						} else if ((pixY > 0) && (pixX > 0)) {
 							pBmBuffer[idx]   = (unsigned char) (realHeight >> 0);
 							pBmBuffer[idx+1] = (unsigned char) (realHeight >> 8);
 							pBmBuffer[idx+2] = (unsigned char) (realHeight >> 16);
@@ -262,8 +289,11 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 #endif
 	Tes3SubRecordVTEX*		pSubLandVtex(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
+	string					markPos     (TESOptions::getInstance()->_markPos);
 	size_t					idx         (0);
+	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
+	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	memset(pBmBuffer, 0x00, pFillFuncIn->_sizeMap * 3 * sizeof (unsigned char));
 
@@ -272,8 +302,15 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 		if (pSubLandIntv != nullptr) {
 			pSubLandVtex = dynamic_cast<Tes3SubRecordVTEX*>(pRecord->findSubRecord("VTEX"));
 			if (pSubLandVtex != nullptr) {
-				unsigned long	posMapX(pSubLandIntv->_cellX);
-				unsigned long	posMapY(pSubLandIntv->_cellY);
+				long	posMapX(pSubLandIntv->_cellX);
+				long	posMapY(pSubLandIntv->_cellY);
+
+				if ((posMapX < pFillFuncIn->_sizeMinX) || (posMapX > pFillFuncIn->_sizeMaxX) ||
+					(posMapY < pFillFuncIn->_sizeMinY) || (posMapY > pFillFuncIn->_sizeMaxY)) {
+					continue;
+				}
+
+				sprintf(coordBuf, "%d,%d", posMapX, posMapY);
 
 				for (short pixY(0); pixY < SIZE_CELL_16; ++pixY) {
 					for (short pixX(0); pixX < SIZE_CELL_16; ++pixX) {
@@ -281,7 +318,7 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 
 						idx = ((posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_16 + pixY) * pFillFuncIn->_sizeX * SIZE_CELL_16 + ((posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_16 + pixX);
 						if (idx >= pFillFuncIn->_sizeMap) {
-							fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
+							if (verbose)	fprintf(stderr, "    \x1B[31mover: %d,%d:: %d,%d => %d\033[0m\n", posMapX, posMapY, pixX, pixY, (idx - pFillFuncIn->_sizeMap));
 							break;
 						}
 						idx *= 3;
@@ -290,6 +327,10 @@ bool Tes3Processor::dumpVtex(unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFunc
 							pBmBuffer[idx]   = 0xff;
 							pBmBuffer[idx+1] = 0;
 							pBmBuffer[idx+2] = 0;
+						} else if (markPos == coordBuf) {
+							pBmBuffer[idx]   = 0xff;
+							pBmBuffer[idx+1] = 0x00;
+							pBmBuffer[idx+2] = 0xff;
 						} else {
 							pBmBuffer[idx]   = (unsigned char) (((texIdx & 0x0000001F) >> 0) << 3);
 							pBmBuffer[idx+1] = (unsigned char) (((texIdx & 0x000003E0) >> 4) << 2);
