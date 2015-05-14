@@ -17,13 +17,17 @@ class TESOptions
 		string								_fileNameC;
 		string								_fileNameH;
 		string								_fileNameL;
+		string								_fileNameT;
 		string								_markPos;
 		bool								_verbose;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
 		bool								_drawGrid;
+		unsigned char						_targetVersion;
 
 		virtual								~TESOptions();
 		static	TESOptions*					getInstance();
+		
+		virtual bool						parse(int argc, char** argv);
 };
 #endif  /* TESOPTIONS_H */

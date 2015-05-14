@@ -1,4 +1,5 @@
 #include "common/tesprocessor.h"
+#include "common/util/tesoptions.h"
 #include "record/tesrecordbase.h"
 #include "tes3/tes3processor.h"
 #include "tes4/tes4processor.h"
@@ -7,12 +8,66 @@
 #include <cstring>
 
 //-----------------------------------------------------------------------------
+TesProcessor*	TesProcessor::_pInstance = nullptr;
+
+//-----------------------------------------------------------------------------
 TesProcessor::TesProcessor()
 {}
 
 //-----------------------------------------------------------------------------
 TesProcessor::~TesProcessor()
 {}
+
+//-----------------------------------------------------------------------------
+TesProcessor* TesProcessor::getInstance()
+{
+	if (_pInstance == nullptr) {
+		_pInstance = new TesProcessor();
+	}
+	
+	return _pInstance;
+}
+
+//-----------------------------------------------------------------------------
+bool TesProcessor::process(int argc, char** argv, int offset)
+{
+	TESOptions*		pOptions(TESOptions::getInstance());
+	bool			isParsed(true);
+	
+	for (int i(offset); (i < argc) && isParsed; ++i) {
+		isParsed &= parse(argv[i]);
+	}
+	
+	if (isParsed) {
+		//  dump token structure by token name
+		if (pOptions->_dumpFinalT) {
+			dumpTokensByName();
+		}
+		//  dump token structure by file occurancy
+		if (pOptions->_dumpFinalS) {
+			dumpTokensBySequence();
+		}
+		//  dump vertex color map
+		if (!pOptions->_fileNameC.empty()) {
+			dumpVclrMap(pOptions->_fileNameC);
+		}
+		//  dump height map
+		if (!pOptions->_fileNameH.empty()) {
+			dumpVhgtMap(pOptions->_fileNameH);
+		}
+		//  dump texture map
+		if (!pOptions->_fileNameL.empty()) {
+			dumpVtexMap(pOptions->_fileNameL);
+		}
+		//  convert to TES4
+		if (!pOptions->_fileNameT.empty() && (pOptions->_targetVersion == 4)) {
+			convertToTES4(pOptions->_fileNameT);
+		}
+		
+	}
+
+	return isParsed;
+}
 
 //-----------------------------------------------------------------------------
 bool TesProcessor::prepareRecordMap()
@@ -121,4 +176,13 @@ bool TesProcessor::dumpVtexMap(string const fileName)
 		}
 	}
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool TesProcessor::convertToTES4(const string fileName)
+{
+	
+	
+	
+	return true;
 }
