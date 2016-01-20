@@ -19,6 +19,7 @@ class TESOptions
 		string								_fileNameL;
 		string								_fileNameT;
 		string								_markPos;
+		string								_worldspace;
 		bool								_verbose;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
@@ -29,5 +30,6 @@ class TESOptions
 		static	TESOptions*					getInstance();
 		
 		virtual bool						parse(int argc, char** argv);
+		virtual	bool						usage();
 };
 #endif  /* TESOPTIONS_H */

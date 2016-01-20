@@ -5,8 +5,10 @@
 #include "tes3/tes3recordfactory.h"
 #include "tes4/tes4recordfactory.h"
 #include "util/tesoptions.h"
+#include "tes4/subrecord/tes4subrecordsinglestring.h"
 #include <algorithm>
 #include <zlib.h>
+#include <cstring>
 
 using namespace std;
 
@@ -17,7 +19,8 @@ TesParser::TesParser()
 		_pFileBufferEnd(nullptr),
 		_fileType      (TesFileType::UNKNOWN)
 {
-	_verbose = TESOptions::getInstance()->_verbose;
+	_verbose    = TESOptions::getInstance()->_verbose;
+	_worldspace = TESOptions::getInstance()->_worldspace;
 }
 
 //-----------------------------------------------------------------------------
@@ -74,7 +77,8 @@ bool TesParser::parse(string const fileName)
 	
 	//  parse file
 	if (_pFileBuffer != nullptr) {
-		string		token;
+		TesParserBreakReason	breakReason(TesParserBreakReason::ALL_OK);
+		string					token;
 
 		if (_pFactory != nullptr) {
 			delete _pFactory;
@@ -99,7 +103,7 @@ bool TesParser::parse(string const fileName)
 		
 		//  parse buffer
 		printf("begin parsing\n");
-		retVal = (parsePartial(_pFileBuffer, _pFileBufferEnd, this, nullptr) != nullptr);
+		retVal = (parsePartial(_pFileBuffer, _pFileBufferEnd, this, nullptr, breakReason) != nullptr);
 		printf("\nend parsing\n");
 
 	}  //  if (_pFileBuffer != nullptr)
@@ -112,7 +116,7 @@ bool TesParser::parse(string const fileName)
 }
 
 //-----------------------------------------------------------------------------
-unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent)
+unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent, TesParserBreakReason& breakReason)
 {
 	TesRecordBase*	pRecordNew(nullptr);
 	unsigned char*	pStart    (pBlockStart);
@@ -136,11 +140,24 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 
 		if (pRecordNew == nullptr) {
 			_message = "\x1B[31munknown record \x1B[1;31m" + token + "\033[0m";
+			breakReason = TesParserBreakReason::UNKNOWN_RECORD;
 			return nullptr;
+		}
+
+		if ((tokenAct == "WRLD") && (token == "EDID") && !_worldspace.empty()) {
+			Tes4SubRecordSingleString*	pSubStr(dynamic_cast<Tes4SubRecordSingleString*>(pRecordNew));
+
+			if ((pSubStr != nullptr) && (strcmp(pSubStr->_text.c_str(), _worldspace.c_str()) != 0)) {
+				delete pRecordNew;
+				breakReason = TesParserBreakReason::WRONG_WORLDSPACE;
+				return nullptr;
+			}
 		}
 
 		switch (pRecordNew->recordType()) {
 			case TesRecordType::RECORDGROUP: {
+				unsigned char* pStartGrp(pStart);
+
 				if (_verbose)	printf("found \x1B[33m%s\033[0m [GROUP]\n", token.c_str());
 				if (pRecordNew->_fileType == TesFileType::TES3) {
 					pRecordNew->_size = pBlockEnd - pStart;
@@ -149,45 +166,59 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 				pStart = parsePartial(pStart + pRecordNew->sizeRecord(),
 									  pStart + pRecordNew->sizeTotal(),
 									  (TesRecordGroup*) pRecordNew,
-									  pRecordNew);
+									  pRecordNew, breakReason);
 
-				if (pCollection != nullptr) {
-					pCollection->push_back(pRecordNew);
-				}
+				if (breakReason == TesParserBreakReason::WRONG_WORLDSPACE) {
+					pStart = pStartGrp + pRecordNew->sizeTotal();
+					delete pRecordNew;
+				} else {
+					if (pCollection != nullptr) {
+						pCollection->push_back(pRecordNew);
+					}
 
-				if (pStart == nullptr) {
-					pRecordNew->dump(0);
-					return nullptr;
+					if (pStart == nullptr) {
+						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+							pRecordNew->dump(0);
+						}
+						return nullptr;
+					}
 				}
 				continue;
-				break;}
+			}
 				
-			case TesRecordType::RECORD:
+			case TesRecordType::RECORD: {
 				if (_verbose)	printf("found \x1B[33m%s\033[0m [RECORD]\n", token.c_str());
 				if (pRecordNew->compressed()) {
 					if (parseCompressed(pStart + pRecordNew->sizeRecord(),
 										pStart + pRecordNew->sizeTotal(),
 										(TesRecordMain*) pRecordNew,
-										pRecordNew) == nullptr) {
+										pRecordNew,
+										breakReason) == nullptr) {
 						if (pCollection != nullptr) {
 							pCollection->push_back(pRecordNew);
 						}
-						pRecordNew->dump(0);
+						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+							pRecordNew->dump(0);
+						}
 						return nullptr;
 					}
 				} else {
 					if (parsePartial(pStart + pRecordNew->sizeRecord(),
 									 pStart + pRecordNew->sizeTotal(),
 									 (TesRecordMain*) pRecordNew,
-									 pRecordNew) == nullptr) {
+									 pRecordNew,
+									 breakReason) == nullptr) {
 						if (pCollection != nullptr) {
 							pCollection->push_back(pRecordNew);
 						}
-						pRecordNew->dump(0);
+						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+							pRecordNew->dump(0);
+						}
 						return nullptr;
 					}
 				}
 				break;
+			}
 				
 			case TesRecordType::SUBRECORD:
 				if (_verbose)	printf("found \x1B[33m%s\033[0m [SUBRECORD]\n", token.c_str());
@@ -195,6 +226,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 				
 			default:
 				_message = "\x1B[31munknown record \x1B[1;31m" + token + "\033[0m";
+				breakReason = TesParserBreakReason::UNKNOWN_RECORD;
 				return nullptr;
 		}
 		
@@ -214,7 +246,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 }
 
 //-----------------------------------------------------------------------------
-unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent)
+unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent, TesParserBreakReason& breakReason)
 {
 	size_t	sizeComp  (pParent->_size - 4);
 	size_t	sizeDecomp(0);
@@ -230,7 +262,9 @@ unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned c
 	
 	if (parsePartial(pBufIntern,
 					 pBufEnd,
-					 (TesRecordMain*) pParent, pParent) == nullptr) {
+					 (TesRecordMain*) pParent,
+					 pParent,
+					 breakReason) == nullptr) {
 		return nullptr;
 	}
 

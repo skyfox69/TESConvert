@@ -33,12 +33,12 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "C:d:gL:m:o:t:vV:")) != -1) {
+	while ((opt = getopt(argc, argv, "C:d:gL:m:o:t:vV:w:")) != -1) {
 		switch (opt) {
 			case 'C':
 				_fileNameC = optarg;
 				if (_fileNameC.empty() || (_fileNameC[0] == '-')) {
-					return false;
+					return usage();
 				}
 				break;
 			case 'd':
@@ -49,7 +49,7 @@ bool TESOptions::parse(int argc, char** argv)
 					_dumpFinalS = true;
 				}
 				else {
-					return false;
+					return usage();
 				}
 				break;
 			case 'g':
@@ -58,7 +58,7 @@ bool TESOptions::parse(int argc, char** argv)
 			case 'L':
 				_fileNameL = optarg;
 				if (_fileNameL.empty() || (_fileNameL[0] == '-')) {
-					return false;
+					return usage();
 				}
 				break;
 			case 'm':
@@ -73,45 +73,73 @@ bool TESOptions::parse(int argc, char** argv)
 					}
 				}
 				if (_markPos.empty()) {
-					return false;
+					return usage();
 				}
 				break;
 			case 'o':
 				_fileNameT = optarg;
 				if (_fileNameT.empty() || (_fileNameT[0] == '-')) {
-					return false;
+					return usage();
 				}
 				break;
 			case 't':
 				_targetVersion = atoi(optarg);
 				if ((_targetVersion < 3) || (_targetVersion > 4)) {
-					return false;
+					return usage();
 				}
 				break;
 			case 'V':
 				_fileNameH = optarg;
 				if (_fileNameH.empty() || (_fileNameH[0] == '-')) {
-					return false;
+					return usage();
 				}
 				break;
 			case 'v':
 				_verbose = true;
 				break;
+			case 'w':
+				_worldspace = optarg;
+				if (_worldspace.empty() || (_worldspace[0] == '-')) {
+					return usage();
+				}
+				break;
 			default:
-				return false;
+				return usage();
 		}
 	}
 
 	//  check input file name (at least one needed))
 	if (optind >= argc) {
-		return false;
+		return usage();
 	}
 	
 	//  check parameters
 	if ((_targetVersion != 0) && _fileNameT.empty()) {
 		printf("Please specify outfile with -o for option -t%d\n", _targetVersion);
-		return false;
+		return usage();
 	}
 
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+bool TESOptions::usage()
+{
+	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
+			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
+			"  -C FILE\t\twrite vertex colors to <FILE>.bmp\n"
+			"  -ds\t\t\tdump final token structure sort by file sequence\n"
+			"  -dt\t\t\tdump final token structure sort by token\n"
+			"  -g\t\t\tdraw square cell sized grids on all image exports\n"
+			"  -L FILE\t\twrite texture occurance to <FILE>.bmp\n"
+			"  -m x,y\t\tdraw mark on cell at x,y\n"
+			"  -o FILE\t\tname of outfile for conversion target\n"
+			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
+			"  -V FILE\t\twrite vertex heights to <FILE>.bmp\n"
+			"  -v\t\t\tverbose - more output\n"
+			"  -w WORLDSPACE\t\tname of worldspace to export/import (TES4 only)\n"
+			"\n"
+		);
+
+	return false;
 }
