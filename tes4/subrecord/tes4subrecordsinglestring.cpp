@@ -36,5 +36,18 @@ void Tes4SubRecordSingleString::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["TES4CNAM"] = Tes4SubRecordSingleString::create;
 	mapRecords["TES4MAST"] = Tes4SubRecordSingleString::create;
 	mapRecords["WRLDEDID"] = Tes4SubRecordSingleString::create;
-	mapRecords["WRLDFULL"] = Tes4SubRecordSingleString::create;
+	mapRecords["WRLDTNAM"] = Tes4SubRecordSingleString::create;
+	mapRecords["WRLDUNAM"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTEDID"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX00"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX01"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX02"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX03"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX04"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX05"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX06"] = Tes4SubRecordSingleString::create;
+	mapRecords["TXSTTX07"] = Tes4SubRecordSingleString::create;
+	mapRecords["LTEXEDID"] = Tes4SubRecordSingleString::create;
+	mapRecords["CELLEDID"] = Tes4SubRecordSingleString::create;
+	mapRecords["CELLXWEM"] = Tes4SubRecordSingleString::create;
 }

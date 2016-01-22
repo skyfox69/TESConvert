@@ -6,11 +6,12 @@ TESOptions*	TESOptions::_pInstance = nullptr;
 
 //-----------------------------------------------------------------------------
 TESOptions::TESOptions()
-	:	_verbose      (false),
-		_dumpFinalS   (false),
-		_dumpFinalT   (false),
-		_drawGrid     (false),
-		_targetVersion(0)
+	:	_verbose       (false),
+		_dumpFinalS    (false),
+		_dumpFinalT    (false),
+		_drawGrid      (false),
+		_dumpCompressed(0),
+		_targetVersion (0)
 {}
 
 //-----------------------------------------------------------------------------
@@ -33,7 +34,7 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "C:d:gL:m:o:t:vV:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "C:d:D:gL:m:o:t:vV:w:")) != -1) {
 		switch (opt) {
 			case 'C':
 				_fileNameC = optarg;
@@ -50,6 +51,12 @@ bool TESOptions::parse(int argc, char** argv)
 				}
 				else {
 					return usage();
+				}
+				break;
+			case 'D':
+				_dumpCompressed = 1;
+				if (*optarg == 'l') {
+					_dumpCompressed = 2;
 				}
 				break;
 			case 'g':
@@ -128,6 +135,7 @@ bool TESOptions::usage()
 	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
 			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
 			"  -C FILE\t\twrite vertex colors to <FILE>.bmp\n"
+			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"
 			"  -ds\t\t\tdump final token structure sort by file sequence\n"
 			"  -dt\t\t\tdump final token structure sort by token\n"
 			"  -g\t\t\tdraw square cell sized grids on all image exports\n"

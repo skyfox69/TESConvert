@@ -34,4 +34,5 @@ TesRecordBase* Tes4SubRecordSingleUChar::create(unsigned char* pBuffer)
 void Tes4SubRecordSingleUChar::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["WRLDDATA"] = Tes4SubRecordSingleUChar::create;
+	mapRecords["LTEXSNAM"] = Tes4SubRecordSingleUChar::create;
 }

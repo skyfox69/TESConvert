@@ -24,6 +24,7 @@ class TESOptions
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
 		bool								_drawGrid;
+		unsigned char						_dumpCompressed;
 		unsigned char						_targetVersion;
 
 		virtual								~TESOptions();

@@ -21,7 +21,7 @@ void Tes4SubRecordSingleULong::dump(const short depth)
 	string		indent(depth, ' ');
 	
 	printf("%s%s\n", indent.c_str(), _name.c_str());
-	printf("%s  %d\n", indent.c_str(), _value);
+	printf("%s  0x%08X - %d\n", indent.c_str(), _value, _value);
 }
 
 //-----------------------------------------------------------------------------
@@ -34,4 +34,30 @@ TesRecordBase* Tes4SubRecordSingleULong::create(unsigned char* pBuffer)
 void Tes4SubRecordSingleULong::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["WRLDNAM2"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDNAM3"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDCNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDZNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDXLCN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDWNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDLTMP"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDXEZN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["TES4INTV"] = Tes4SubRecordSingleULong::create;
+	mapRecords["LTEXTNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["LTEXMNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["LTEXGNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLLTMP"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXCIM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXLCN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXCMO"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXEZN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXCAS"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXCCM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXOWN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXILL"] = Tes4SubRecordSingleULong::create;
+	mapRecords["WRLDFULL"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLFULL"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXCWT"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLLNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXWCN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["CELLXWCS"] = Tes4SubRecordSingleULong::create;
 }

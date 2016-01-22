@@ -50,19 +50,30 @@ SRC = main.cpp \
       tes4/tes4processor.cpp \
       tes4/record/tes4recordgeneric.cpp \
       tes4/record/tes4recordgroup.cpp \
+      tes4/record/tes4recordignore.cpp \
       tes4/subrecord/tes4subrecordhedr.cpp \
       tes4/subrecord/tes4subrecordmnam.cpp \
       tes4/subrecord/tes4subrecordvnml.cpp \
       tes4/subrecord/tes4subrecordvhgt.cpp \
       tes4/subrecord/tes4subrecordatxt.cpp \
+      tes4/subrecord/tes4subrecordbtxt.cpp \
       tes4/subrecord/tes4subrecordvtxt.cpp \
+      tes4/subrecord/tes4subrecordobnd.cpp \
+      tes4/subrecord/tes4subrecorddodt.cpp \
+      tes4/subrecord/tes4subrecordonam.cpp \
+      tes4/subrecord/tes4subrecordxxxx.cpp \
       tes4/subrecord/tes4subrecordxclccell.cpp \
+      tes4/subrecord/tes4subrecordsinglefloat.cpp \
       tes4/subrecord/tes4subrecordsinglestring.cpp \
       tes4/subrecord/tes4subrecordsingleulong.cpp \
       tes4/subrecord/tes4subrecordsingleushort.cpp \
       tes4/subrecord/tes4subrecordsingleuchar.cpp \
       tes4/subrecord/tes4subrecorddoublelong.cpp \
+      tes4/subrecord/tes4subrecorddoubleuchar.cpp \
+      tes4/subrecord/tes4subrecorddoublefloat.cpp \
+      tes4/subrecord/tes4subrecorddoubleshort.cpp \
       tes4/subrecord/tes4subrecordflags.cpp \
+      tes4/subrecord/tes4subrecordignore.cpp \
 
 OBJ = ${SRC:%.cpp=%.o}
 

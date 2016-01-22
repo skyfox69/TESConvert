@@ -11,7 +11,7 @@ class ITesRecordFactory;
 //-----------------------------------------------------------------------------
 class TesParser : public Endian, public vector<TesRecordBase*>
 {
-	enum class TesParserBreakReason : std::int8_t { ALL_OK = 0, UNKNOWN_RECORD = 1, WRONG_WORLDSPACE = 2};
+	enum class TesParserBreakReason : std::int8_t { ALL_OK = 0, UNKNOWN_RECORD = 1, WRONG_WORLDSPACE = 2, WAS_DUMPED = 3};
 
 	private:
 		ITesRecordFactory*					_pFactory;
@@ -20,6 +20,7 @@ class TesParser : public Endian, public vector<TesRecordBase*>
 		string								_message;
 		string								_worldspace;
 		TesFileType							_fileType;
+		unsigned char						_dumpCompressed;
 		bool								_verbose;
 
 		virtual	bool						readFile(string const fileName);

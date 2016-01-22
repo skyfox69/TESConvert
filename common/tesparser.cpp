@@ -19,8 +19,9 @@ TesParser::TesParser()
 		_pFileBufferEnd(nullptr),
 		_fileType      (TesFileType::UNKNOWN)
 {
-	_verbose    = TESOptions::getInstance()->_verbose;
-	_worldspace = TESOptions::getInstance()->_worldspace;
+	_verbose        = TESOptions::getInstance()->_verbose;
+	_worldspace     = TESOptions::getInstance()->_worldspace;
+	_dumpCompressed = TESOptions::getInstance()->_dumpCompressed;
 }
 
 //-----------------------------------------------------------------------------
@@ -178,6 +179,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 
 					if (pStart == nullptr) {
 						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+							breakReason = TesParserBreakReason::WAS_DUMPED;
 							pRecordNew->dump(0);
 						}
 						return nullptr;
@@ -198,6 +200,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 							pCollection->push_back(pRecordNew);
 						}
 						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+							breakReason = TesParserBreakReason::WAS_DUMPED;
 							pRecordNew->dump(0);
 						}
 						return nullptr;
@@ -212,6 +215,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 							pCollection->push_back(pRecordNew);
 						}
 						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+							breakReason = TesParserBreakReason::WAS_DUMPED;
 							pRecordNew->dump(0);
 						}
 						return nullptr;
@@ -251,6 +255,11 @@ unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned c
 	size_t	sizeComp  (pParent->_size - 4);
 	size_t	sizeDecomp(0);
 
+	//  early return for ignored records
+	if (pBlockStart >= pBlockEnd) {
+		return pBlockStart;
+	}
+
 	toSizeT(sizeDecomp, pBlockStart);
 	pBlockStart += 4;
 
@@ -259,7 +268,25 @@ unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned c
 	unsigned char*		pStart    (pBufIntern);
 
 	inflateBuffer(pBlockStart, sizeComp, pBufIntern, sizeDecomp);
-	
+
+	if (_dumpCompressed > 0) {
+		char	fileName[100] = {0};
+
+		if (_dumpCompressed == 2 ) {
+			sprintf(fileName, "./block_last.bin");
+		} else {
+			sprintf(fileName, "./block_at_0x%08x.bin", pBlockStart);
+		}
+		
+		FILE*	pFile(fopen(fileName, "wb"));
+
+		if (pFile != NULL) {
+			fwrite(pBufIntern, sizeDecomp, 1, pFile);
+			fflush(pFile);
+			fclose(pFile);
+		}
+	}  //  if (_dumpCompressed)
+
 	if (parsePartial(pBufIntern,
 					 pBufEnd,
 					 (TesRecordMain*) pParent,

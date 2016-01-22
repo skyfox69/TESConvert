@@ -42,4 +42,7 @@ TesRecordBase* Tes4SubRecordSingleUShort::create(unsigned char* pBuffer)
 void Tes4SubRecordSingleUShort::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["CELLDATA"] = Tes4SubRecordSingleUShort::create;
+	mapRecords["TXSTDNAM"] = Tes4SubRecordSingleUShort::create;
+	mapRecords["CELLXNAM"] = Tes4SubRecordSingleUShort::create;
+	mapRecords["WRLDPNAM"] = Tes4SubRecordSingleUShort::create;
 }
