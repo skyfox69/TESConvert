@@ -62,6 +62,10 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 
 		//  specific processor needed
 		if (pSubProcessor != nullptr) {
+			//  dump worldspaces
+			if (pOptions->_worldspace == "l") {
+				pSubProcessor->dumpWorldspaces();
+			}
 			//  dump vertex color map
 			if (!pOptions->_fileNameC.empty()) {
 				pSubProcessor->dumpVclrMap(pOptions->_fileNameC);

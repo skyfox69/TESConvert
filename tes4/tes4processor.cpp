@@ -7,6 +7,7 @@
 #include "common/util/tesoptions.h"
 #include "subrecord/tes4subrecordatxt.h"
 #include "subrecord/tes4subrecordvtxt.h"
+#include "subrecord/tes4subrecordsinglestring.h"
 #include <cstring>
 #include <sstream>
 
@@ -69,6 +70,30 @@ bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, map<un
 		}
 	}
 
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+bool Tes4Processor::dumpWorldspaces()
+{
+	Tes4RecordGeneric*			pRecMain(nullptr);
+	Tes4SubRecordSingleString*	pRecSub (nullptr);
+
+	printf("\nKnown Worldspaces:\n");
+	for (auto& pRecord : _mapRecords["WRLD"]) {
+		pRecMain = dynamic_cast<Tes4RecordGeneric*>(pRecord);
+		if (pRecMain != nullptr) {
+			for (auto& pSubRecord : *pRecMain) {
+				if (pSubRecord->_name == "EDID") {
+					pRecSub = dynamic_cast<Tes4SubRecordSingleString*>(pSubRecord);
+					if (pRecSub != nullptr) {
+						printf(" - %s\n", pRecSub->_text.c_str());
+					}
+				}
+			}
+		}
+	}
+	printf("\n");
 	return true;
 }
 

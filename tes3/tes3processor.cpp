@@ -29,6 +29,13 @@ bool Tes3Processor::prepareData()
 }
 
 //-----------------------------------------------------------------------------
+bool Tes3Processor::dumpWorldspaces()
+{
+	printf("There are no worldspaces in TES3 files.\n");
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes3Processor::dumpVclrMap(string const fileName)
 {
 	return dumpToMap(fileName + ".bmp", &Tes3Processor::dumpVclr, SIZE_CELL_64);

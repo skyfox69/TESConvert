@@ -40,8 +40,9 @@ class Tes4Processor : public ITesProcessor
 												Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records);
 		virtual									~Tes4Processor();
 
-		virtual	bool							dumpVclrMap(string const fileName) override;
-		virtual	bool							dumpVhgtMap(string const fileName) override;
-		virtual	bool							dumpVtexMap(string const fileName) override;
+		virtual	bool							dumpVclrMap    (string const fileName) override;
+		virtual	bool							dumpVhgtMap    (string const fileName) override;
+		virtual	bool							dumpVtexMap    (string const fileName) override;
+		virtual	bool							dumpWorldspaces() override;
 };
 #endif  /* TES4PROCESSOR_H */
