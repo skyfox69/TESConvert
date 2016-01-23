@@ -32,4 +32,5 @@ TesRecordBase* Tes3SubRecordIgnore::create(unsigned char* pBuffer)
 void Tes3SubRecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["FRMRUNAM"] = Tes3SubRecordIgnore::create;
+	mapRecords["DELE"] = Tes3SubRecordIgnore::create;
 }
