@@ -42,6 +42,7 @@ void Tes4SubRecordSingleULong::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["WRLDLTMP"] = Tes4SubRecordSingleULong::create;
 	mapRecords["WRLDXEZN"] = Tes4SubRecordSingleULong::create;
 	mapRecords["TES4INTV"] = Tes4SubRecordSingleULong::create;
+	mapRecords["TES4INCC"] = Tes4SubRecordSingleULong::create;
 	mapRecords["LTEXTNAM"] = Tes4SubRecordSingleULong::create;
 	mapRecords["LTEXMNAM"] = Tes4SubRecordSingleULong::create;
 	mapRecords["LTEXGNAM"] = Tes4SubRecordSingleULong::create;

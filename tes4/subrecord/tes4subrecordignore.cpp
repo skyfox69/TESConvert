@@ -39,4 +39,5 @@ void Tes4SubRecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecor
 	mapRecords["WRLDRNAM"] = Tes4SubRecordIgnore::create;
 	mapRecords["WRLDOFST"] = Tes4SubRecordIgnore::create;
 	mapRecords["WRLDMHDT"] = Tes4SubRecordIgnore::create;
+	mapRecords["TES4ONAM"] = Tes4SubRecordIgnore::create;
 }
