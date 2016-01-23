@@ -11,7 +11,7 @@ CFLAGS = -g -O0 -std=c++11 -I. -pipe -Wp,-fexceptions -fstack-protector --param=
 
 LIBS =
 
-LDFLAGS = -g -lpthread -lz -lm -lrt -lssl -lcrypto -ldl
+LDFLAGS = -g -lpthread -lz -lm -lrt -ldl
 
 PRG = tesconvert
 SRC = main.cpp \
