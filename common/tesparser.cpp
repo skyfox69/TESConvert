@@ -113,6 +113,13 @@ bool TesParser::parse(string const fileName)
 		printf("%s\n", _message.c_str());
 	}
 	
+	//  print fund worldspaces if wanted
+	if (!_worldspaces.empty()) {
+		for (auto worldspace : _worldspaces) {
+			printf("Worldspace: %s\n", worldspace.c_str());
+		}
+	}
+
 	return retVal;
 }
 
@@ -148,10 +155,14 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 		if ((tokenAct == "WRLD") && (token == "EDID") && !_worldspace.empty()) {
 			Tes4SubRecordSingleString*	pSubStr(dynamic_cast<Tes4SubRecordSingleString*>(pRecordNew));
 
-			if ((pSubStr != nullptr) && (strcmp(pSubStr->_text.c_str(), _worldspace.c_str()) != 0)) {
-				delete pRecordNew;
-				breakReason = TesParserBreakReason::WRONG_WORLDSPACE;
-				return nullptr;
+			if (pSubStr != nullptr) {
+				if (_worldspace == "l") {
+					_worldspaces.push_back(pSubStr->_text);
+				} else if ((strcmp(pSubStr->_text.c_str(), _worldspace.c_str()) != 0)) {
+					delete pRecordNew;
+					breakReason = TesParserBreakReason::WRONG_WORLDSPACE;
+					return nullptr;
+				}
 			}
 		}
 

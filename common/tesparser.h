@@ -17,6 +17,7 @@ class TesParser : public Endian, public vector<TesRecordBase*>
 		ITesRecordFactory*					_pFactory;
 		unsigned char*						_pFileBuffer;
 		unsigned char*						_pFileBufferEnd;
+		vector<string>						_worldspaces;
 		string								_message;
 		string								_worldspace;
 		TesFileType							_fileType;

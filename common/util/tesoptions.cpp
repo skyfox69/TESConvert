@@ -145,7 +145,7 @@ bool TESOptions::usage()
 			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
 			"  -V FILE\t\twrite vertex heights to <FILE>.bmp\n"
 			"  -v\t\t\tverbose - more output\n"
-			"  -w WORLDSPACE\t\tname of worldspace to export/import (TES4 only)\n"
+			"  -w [l|WORLDSPACE]\tname of worldspace to export/import, -wl to list all worldspaces (TES4 only)\n"
 			"\n"
 		);
 
