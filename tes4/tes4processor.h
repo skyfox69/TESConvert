@@ -1,6 +1,7 @@
 #ifndef	TES4PROCESSOR_H
 #define	TES4PROCESSOR_H
 
+#include "common/itesprocessor.h"
 #include "common/tesparser.h"
 #include "common/types/tesfunctiontypes.h"
 #include <map>
@@ -21,12 +22,12 @@ struct Tes4FillFuncIn
 };
 
 //-----------------------------------------------------------------------------
-class Tes4Processor
+class Tes4Processor : public ITesProcessor
 {
 	private:
-		map<string, vector<TesRecordBase*>>&	_mapRecords;
+		map<string, vector<TesRecordBase*>>&	_mapRecords;		//  all records by name
 		map<string, Tes4RecordGeneric*>			_mapRecordsLand;
-		vector<TesRecordBase*>&					_records;
+		vector<TesRecordBase*>&					_records;			//  all records by structure/appearance
 
 		virtual	bool							prepareData();
 		virtual	bool							prepareDataRecursive(vector<TesRecordBase*>& records, map<unsigned long, Tes4RecordGeneric*>& mapRecordIds, Tes4RecordGroup* pGroup = nullptr);
@@ -39,8 +40,8 @@ class Tes4Processor
 												Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records);
 		virtual									~Tes4Processor();
 
-		virtual	bool							dumpVclrMap(string const fileName);
-		virtual	bool							dumpVhgtMap(string const fileName);
-		virtual	bool							dumpVtexMap(string const fileName);
+		virtual	bool							dumpVclrMap(string const fileName) override;
+		virtual	bool							dumpVhgtMap(string const fileName) override;
+		virtual	bool							dumpVtexMap(string const fileName) override;
 };
 #endif  /* TES4PROCESSOR_H */

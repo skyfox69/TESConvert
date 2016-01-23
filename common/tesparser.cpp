@@ -20,7 +20,6 @@ TesParser::TesParser()
 		_fileType      (TesFileType::UNKNOWN)
 {
 	_verbose        = TESOptions::getInstance()->_verbose;
-	_worldspace     = TESOptions::getInstance()->_worldspace;
 	_dumpCompressed = TESOptions::getInstance()->_dumpCompressed;
 }
 
@@ -112,13 +111,6 @@ bool TesParser::parse(string const fileName)
 	if (!_message.empty()) {
 		printf("%s\n", _message.c_str());
 	}
-	
-	//  print fund worldspaces if wanted
-	if (!_worldspaces.empty()) {
-		for (auto worldspace : _worldspaces) {
-			printf("Worldspace: %s\n", worldspace.c_str());
-		}
-	}
 
 	return retVal;
 }
@@ -152,20 +144,6 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			return nullptr;
 		}
 
-		if ((tokenAct == "WRLD") && (token == "EDID") && !_worldspace.empty()) {
-			Tes4SubRecordSingleString*	pSubStr(dynamic_cast<Tes4SubRecordSingleString*>(pRecordNew));
-
-			if (pSubStr != nullptr) {
-				if (_worldspace == "l") {
-					_worldspaces.push_back(pSubStr->_text);
-				} else if ((strcmp(pSubStr->_text.c_str(), _worldspace.c_str()) != 0)) {
-					delete pRecordNew;
-					breakReason = TesParserBreakReason::WRONG_WORLDSPACE;
-					return nullptr;
-				}
-			}
-		}
-
 		switch (pRecordNew->recordType()) {
 			case TesRecordType::RECORDGROUP: {
 				unsigned char* pStartGrp(pStart);
@@ -180,21 +158,16 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 									  (TesRecordGroup*) pRecordNew,
 									  pRecordNew, breakReason);
 
-				if (breakReason == TesParserBreakReason::WRONG_WORLDSPACE) {
-					pStart = pStartGrp + pRecordNew->sizeTotal();
-					delete pRecordNew;
-				} else {
-					if (pCollection != nullptr) {
-						pCollection->push_back(pRecordNew);
-					}
+				if (pCollection != nullptr) {
+					pCollection->push_back(pRecordNew);
+				}
 
-					if (pStart == nullptr) {
-						if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
-							breakReason = TesParserBreakReason::WAS_DUMPED;
-							pRecordNew->dump(0);
-						}
-						return nullptr;
+				if (pStart == nullptr) {
+					if (breakReason == TesParserBreakReason::UNKNOWN_RECORD) {
+						breakReason = TesParserBreakReason::WAS_DUMPED;
+						pRecordNew->dump(0);
 					}
+					return nullptr;
 				}
 				continue;
 			}

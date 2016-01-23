@@ -20,9 +20,6 @@ class TesProcessor
 		//  dump parsed data
 		virtual	void						dumpTokensByName();
 		virtual	void						dumpTokensBySequence();
-		virtual	bool						dumpVclrMap(string const fileName);
-		virtual	bool						dumpVhgtMap(string const fileName);
-		virtual	bool						dumpVtexMap(string const fileName);
 		
 		//  convert to TES files
 		virtual	bool						convertToTES4(string const fileName);

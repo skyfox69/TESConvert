@@ -1,4 +1,5 @@
 #include "common/tesprocessor.h"
+#include "common/itesprocessor.h"
 #include "common/util/tesoptions.h"
 #include "record/tesrecordbase.h"
 #include "tes3/tes3processor.h"
@@ -39,31 +40,45 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 	}
 	
 	if (isParsed) {
+		ITesProcessor*	pSubProcessor(nullptr);
+
+		switch (_parser.fileType()) {
+			case TesFileType::TES3:
+				pSubProcessor = new Tes3Processor(_mapRecords);
+				break;
+			case TesFileType::TES4:
+				pSubProcessor = new Tes4Processor(_mapRecords, _parser);
+				break;
+		}
+
 		//  dump token structure by token name
 		if (pOptions->_dumpFinalT) {
 			dumpTokensByName();
 		}
-		//  dump token structure by file occurancy
+		//  dump token structure by file appearance
 		if (pOptions->_dumpFinalS) {
 			dumpTokensBySequence();
 		}
-		//  dump vertex color map
-		if (!pOptions->_fileNameC.empty()) {
-			dumpVclrMap(pOptions->_fileNameC);
+
+		//  specific processor needed
+		if (pSubProcessor != nullptr) {
+			//  dump vertex color map
+			if (!pOptions->_fileNameC.empty()) {
+				pSubProcessor->dumpVclrMap(pOptions->_fileNameC);
+			}
+			//  dump height map
+			if (!pOptions->_fileNameH.empty()) {
+				pSubProcessor->dumpVhgtMap(pOptions->_fileNameH);
+			}
+			//  dump texture map
+			if (!pOptions->_fileNameL.empty()) {
+				pSubProcessor->dumpVtexMap(pOptions->_fileNameL);
+			}
+			//  convert to TES4
+			if (!pOptions->_fileNameT.empty() && (pOptions->_targetVersion == 4)) {
+				convertToTES4(pOptions->_fileNameT);
+			}
 		}
-		//  dump height map
-		if (!pOptions->_fileNameH.empty()) {
-			dumpVhgtMap(pOptions->_fileNameH);
-		}
-		//  dump texture map
-		if (!pOptions->_fileNameL.empty()) {
-			dumpVtexMap(pOptions->_fileNameL);
-		}
-		//  convert to TES4
-		if (!pOptions->_fileNameT.empty() && (pOptions->_targetVersion == 4)) {
-			convertToTES4(pOptions->_fileNameT);
-		}
-		
 	}
 
 	return isParsed;
@@ -122,60 +137,6 @@ void TesProcessor::dumpTokensBySequence()
 	for (auto& pRecord : _parser) {
 		pRecord->dump(0);
 	}
-}
-
-//-----------------------------------------------------------------------------
-bool TesProcessor::dumpVclrMap(string const fileName)
-{
-	switch (_parser.fileType()) {
-		case TesFileType::TES3:
-		{
-			Tes3Processor	subProcessor(_mapRecords);
-			return subProcessor.dumpVclrMap(fileName);
-		}
-		case TesFileType::TES4:
-		{
-			Tes4Processor	subProcessor(_mapRecords, _parser);
-			return subProcessor.dumpVclrMap(fileName);
-		}
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-bool TesProcessor::dumpVhgtMap(string const fileName)
-{
-	switch (_parser.fileType()) {
-		case TesFileType::TES3:
-		{
-			Tes3Processor	subProcessor(_mapRecords);
-			return subProcessor.dumpVhgtMap(fileName);
-		}
-		case TesFileType::TES4:
-		{
-			Tes4Processor	subProcessor(_mapRecords, _parser);
-			return subProcessor.dumpVhgtMap(fileName);
-		}
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-bool TesProcessor::dumpVtexMap(string const fileName)
-{
-	switch (_parser.fileType()) {
-		case TesFileType::TES3:
-		{
-			Tes3Processor	subProcessor(_mapRecords);
-			return subProcessor.dumpVtexMap(fileName);
-		}
-		case TesFileType::TES4:
-		{
-			Tes4Processor	subProcessor(_mapRecords, _parser);
-			return subProcessor.dumpVtexMap(fileName);
-		}
-	}
-	return false;
 }
 
 //-----------------------------------------------------------------------------
