@@ -59,6 +59,10 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 		if (pOptions->_dumpFinalS) {
 			dumpTokensBySequence();
 		}
+		//  dump token structure by file appearance as XML
+		if (pOptions->_dumpFinalX) {
+			dumpTokensBySequenceAsXml();
+		}
 
 		//  specific processor needed
 		if (pSubProcessor != nullptr) {
@@ -141,6 +145,16 @@ void TesProcessor::dumpTokensBySequence()
 	for (auto& pRecord : _parser) {
 		pRecord->dump(0);
 	}
+}
+
+//-----------------------------------------------------------------------------
+void TesProcessor::dumpTokensBySequenceAsXml()
+{
+	printf("<NodeStructure>\n");
+	for (auto& pRecord : _parser) {
+		pRecord->dumpXml();
+	}
+	printf("</NodeStructure>\n");
 }
 
 //-----------------------------------------------------------------------------

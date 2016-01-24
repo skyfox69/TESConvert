@@ -20,6 +20,7 @@ class TesProcessor
 		//  dump parsed data
 		virtual	void						dumpTokensByName();
 		virtual	void						dumpTokensBySequence();
+		virtual	void						dumpTokensBySequenceAsXml();
 		
 		//  convert to TES files
 		virtual	bool						convertToTES4(string const fileName);

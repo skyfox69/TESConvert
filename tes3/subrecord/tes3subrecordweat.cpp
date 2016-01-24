@@ -38,6 +38,23 @@ void Tes3SubRecordWEAT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordWEAT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" clear=\"%d\"", _clear);
+	printf(" cloudy=\"%d\"", _cloudy);
+	printf(" foggy=\"%d\"", _foggy);
+	printf(" overcast=\"%d\"", _overcast);
+	printf(" rain=\"%d\"", _rain);
+	printf(" thunder=\"%d\"", _thunder);
+	printf(" ash=\"%d\"", _ash);
+	printf(" blight=\"%d\"", _blight);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordWEAT::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordWEAT(pBuffer);

@@ -43,6 +43,23 @@ void Tes3RecordGroup::dump(const short depth)
 			 }
 			);
 }
+
+//-----------------------------------------------------------------------------
+void Tes3RecordGroup::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes objIndex=\"%d\"", _objIndex);
+	printf("/>\n");
+	for_each(begin(),
+			 end(),
+			 [](TesRecordBase* pRecord) {
+				 pRecord->dumpXml();
+				 return true;
+			 }
+			);
+	printf("</%s>\n", _name.c_str());
+}
+
 //-----------------------------------------------------------------------------
 TesRecordBase* Tes3RecordGroup::create(unsigned char* pBuffer)
 {

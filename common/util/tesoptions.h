@@ -23,6 +23,7 @@ class TESOptions
 		bool								_verbose;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
+		bool								_dumpFinalX;
 		bool								_drawGrid;
 		unsigned char						_dumpCompressed;
 		unsigned char						_targetVersion;

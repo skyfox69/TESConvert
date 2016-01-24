@@ -27,6 +27,15 @@ void Tes4SubRecordXXXX::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordXXXX::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes size=\"%d - 0x08X\"", _size, _size);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordXXXX::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordXXXX(pBuffer);

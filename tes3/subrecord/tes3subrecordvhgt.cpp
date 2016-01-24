@@ -40,6 +40,16 @@ void Tes3SubRecordVHGT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordVHGT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" offset=\"%f\"", _offset);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordVHGT::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordVHGT(pBuffer);

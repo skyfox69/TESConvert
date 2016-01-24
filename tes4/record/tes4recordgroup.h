@@ -16,9 +16,10 @@ class Tes4RecordGroup : public TesRecordGroup
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
 
 		//  override TesRecordGroup
-		virtual	size_t						sizeRecord();
-		virtual	size_t						sizeTotal();
-		virtual	void						dump(const short depth);
+		virtual	size_t						sizeRecord() override;
+		virtual	size_t						sizeTotal() override;
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
 };
 
 #endif	/* TES4RECORDGROUP_H */

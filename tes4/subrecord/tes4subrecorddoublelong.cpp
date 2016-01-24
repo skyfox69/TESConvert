@@ -27,6 +27,15 @@ void Tes4SubRecordDoubleLong::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordDoubleLong::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes value1=\"%d\" value2=\"%d\"", _value[0], _value[1]);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordDoubleLong::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordDoubleLong(pBuffer);

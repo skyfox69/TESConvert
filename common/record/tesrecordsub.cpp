@@ -24,3 +24,7 @@ size_t TesRecordSub::sizeTotal()
 //-----------------------------------------------------------------------------
 void TesRecordSub::dump(const short depth)
 {}
+
+//-----------------------------------------------------------------------------
+void TesRecordSub::dumpXml()
+{}

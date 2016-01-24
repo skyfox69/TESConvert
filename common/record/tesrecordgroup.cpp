@@ -30,3 +30,10 @@ size_t TesRecordGroup::sizeTotal()
 //-----------------------------------------------------------------------------
 void TesRecordGroup::dump(const short depth)
 {}
+
+//-----------------------------------------------------------------------------
+void TesRecordGroup::dumpXml()
+{
+	printf("<TesRecordGroup></TesRecordGroup>\n");
+}
+

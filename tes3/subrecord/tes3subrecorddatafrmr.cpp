@@ -35,6 +35,21 @@ void Tes3SubRecordDATAFRMR::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordDATAFRMR::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" posX=\"%f\"", _posX);
+	printf(" posY=\"%f\"", _posY);
+	printf(" posZ=\"%f\"", _posZ);
+	printf(" rotX=\"%f\"", _rotX);
+	printf(" rotY=\"%f\"", _rotY);
+	printf(" rotZ=\"%f\"", _rotZ);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordDATAFRMR::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordDATAFRMR(pBuffer);

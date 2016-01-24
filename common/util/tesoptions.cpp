@@ -49,6 +49,9 @@ bool TESOptions::parse(int argc, char** argv)
 				else if (*optarg == 's') {
 					_dumpFinalS = true;
 				}
+				else if (*optarg == 'x') {
+					_dumpFinalX = true;
+				}
 				else {
 					return usage();
 				}
@@ -138,6 +141,7 @@ bool TESOptions::usage()
 			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"
 			"  -ds\t\t\tdump final token structure sort by file sequence\n"
 			"  -dt\t\t\tdump final token structure sort by token\n"
+			"  -dx\t\t\tdump final token structure sort by file appearance as XML\n"
 			"  -g\t\t\tdraw square cell sized grids on all image exports\n"
 			"  -L FILE\t\twrite texture occurance to <FILE>.bmp\n"
 			"  -m x,y\t\tdraw mark on cell at x,y\n"

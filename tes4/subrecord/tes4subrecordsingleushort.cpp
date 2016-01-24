@@ -33,6 +33,15 @@ void Tes4SubRecordSingleUShort::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordSingleUShort::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes value=\"0x%04X\"", _value);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordSingleUShort::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordSingleUShort(pBuffer);

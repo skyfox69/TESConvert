@@ -16,7 +16,8 @@ class Tes3SubRecordColorRef : public Tes3SubRecordSingleULong
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
 
 		//  override TesRecordSub
-		virtual	void						dump(const short depth);
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
 };
 
 #endif	/* TES3SUBRECORDCOLORREF_H */

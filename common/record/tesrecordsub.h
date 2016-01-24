@@ -12,9 +12,10 @@ class TesRecordSub : public TesRecordBase, public Endian
 		virtual								~TesRecordSub();
 		
 		//  override TesRecordBase
-		virtual	size_t						sizeRecord();
-		virtual	size_t						sizeTotal();
-		virtual	void						dump(const short depth);
+		virtual	size_t						sizeRecord() override;
+		virtual	size_t						sizeTotal() override;
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
 		virtual	TesRecordBase*				findSubRecord(string const token) { return nullptr; }
 };
 

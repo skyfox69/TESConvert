@@ -42,6 +42,15 @@ void Tes4SubRecordVHGT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordVHGT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes offset=\"%f\"", _offset);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordVHGT::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordVHGT(pBuffer);

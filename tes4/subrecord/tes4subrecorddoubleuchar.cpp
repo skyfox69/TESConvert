@@ -27,6 +27,15 @@ void Tes4SubRecordDoubleUChar::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordDoubleUChar::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes value1=\"0x%02X\" value2=\"0x%02X\"", _value1, _value2);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordDoubleUChar::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordDoubleUChar(pBuffer);

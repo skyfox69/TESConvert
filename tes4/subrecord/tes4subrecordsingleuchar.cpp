@@ -25,6 +25,15 @@ void Tes4SubRecordSingleUChar::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordSingleUChar::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes value=\"0x%02X\"", _value);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordSingleUChar::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordSingleUChar(pBuffer);

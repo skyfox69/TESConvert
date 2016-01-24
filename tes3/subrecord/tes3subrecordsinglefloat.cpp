@@ -25,6 +25,16 @@ void Tes3SubRecordSingleFloat::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordSingleFloat::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" value=\"%f\"", _value);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordSingleFloat::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordSingleFloat(pBuffer);

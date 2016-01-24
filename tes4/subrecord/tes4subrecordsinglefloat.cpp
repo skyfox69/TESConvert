@@ -36,6 +36,20 @@ void Tes4SubRecordSingleFloat::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordSingleFloat::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes ");
+	if (_valueLong != 0) {
+		printf(" value=\"0x%08X\"", _valueLong);
+	} else {
+		printf(" value=\"%f\"", _value);
+	}
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordSingleFloat::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordSingleFloat(pBuffer);

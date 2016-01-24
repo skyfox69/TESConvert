@@ -31,6 +31,19 @@ void Tes4SubRecordONAM::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordONAM::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" scale=\"%f\"", _scale);
+	printf(" offsetX=\"%f\"", _offsetX);
+	printf(" offsetY=\"%f\"", _offsetY);
+	printf(" offsetZ=\"%f\"", _offsetZ);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordONAM::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordONAM(pBuffer);

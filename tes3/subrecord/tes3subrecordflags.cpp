@@ -19,6 +19,16 @@ void Tes3SubRecordFlags::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordFlags::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" value=\"0x%08X\"", _value);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordFlags::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordFlags(pBuffer);

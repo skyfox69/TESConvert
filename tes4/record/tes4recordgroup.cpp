@@ -81,6 +81,42 @@ void Tes4RecordGroup::dump(const short depth)
 			 }
 			);
 }
+
+//-----------------------------------------------------------------------------
+void Tes4RecordGroup::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes sizeTotal=\"%d\" sizeRecord=\"%d\" groupSize=\"0x%08X\"", sizeTotal(), sizeRecord(), _size);
+	switch (_groupType) {
+		case 0:
+			printf(" label=\"%s\"", _labelS.c_str());
+			break;
+		case 2:
+		case 3:
+			printf(" number=\"%d\"", _labelL);
+			break;
+		case 4:
+		case 5:
+			printf(" x=\"%d\"", (_labelL & 0x0000FFFF));
+			printf(" y=\"%d\"", (_labelL >> 32));
+			break;
+		default:
+			printf(" formid=\"%d\"", _labelL);
+	}
+	printf(" groupType=\"0x%08X [%s]\"", _groupType, groupNames[_groupType].c_str());
+	printf(" timestamp=\"%02d.%02d\"", (_timestamp & 0x00ff), (_timestamp >> 8));
+	printf(" version=\"%d\"", _version);
+	printf("/>\n");
+	for_each(begin(),
+			 end(),
+			 [](TesRecordBase* pRecord) {
+				 pRecord->dumpXml();
+				 return true;
+			 }
+			);
+	printf("</%s>\n", _name.c_str());
+}
+
 //-----------------------------------------------------------------------------
 TesRecordBase* Tes4RecordGroup::create(unsigned char* pBuffer)
 {

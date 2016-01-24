@@ -45,6 +45,26 @@ void Tes4SubRecordMNAM::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordMNAM::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" width=\"%d\"", _width);
+	printf(" height=\"%d\"", _height);
+	printf(" cellNwX=\"%5d\"", _cellNwX);
+	printf(" cellNwY=\"%5d\"", _cellNwY);
+	printf(" cellSeX=\"%5d\"", _cellSeX);
+	printf(" cellSeY=\"%5d\"", _cellSeY);
+	if (_size > 16) {
+		printf(" camHeightMin=\"%f\"", _camHeightMin);
+		printf(" camHeightMax=\"%f\"", _camHeightMax);
+		printf(" camInitPitch=\"%f\"", _camInitPitch);
+	}
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordMNAM::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordMNAM(pBuffer);

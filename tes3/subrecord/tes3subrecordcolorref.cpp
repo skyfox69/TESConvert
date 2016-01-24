@@ -21,6 +21,18 @@ void Tes3SubRecordColorRef::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordColorRef::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" red=\"0x%02X\"", ((_value)       & 0x000000FF));
+	printf(" green=\"0x%02X\"", ((_value >>  8) & 0x000000FF));
+	printf(" blue=\"0x%02X\"", ((_value >> 16) & 0x000000FF));
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordColorRef::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordColorRef(pBuffer);

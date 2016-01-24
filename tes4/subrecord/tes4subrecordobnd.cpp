@@ -25,6 +25,13 @@ void Tes4SubRecordOBND::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordOBND::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordOBND::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordOBND(pBuffer);

@@ -25,6 +25,16 @@ void Tes3SubRecordSingleULong::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordSingleULong::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" value=\"%d\"", _value);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordSingleULong::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordSingleULong(pBuffer);

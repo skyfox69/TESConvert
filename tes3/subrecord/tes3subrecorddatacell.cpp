@@ -29,6 +29,18 @@ void Tes3SubRecordDATACELL::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordDATACELL::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" flags=\"0x%08X\"", _flags);
+	printf(" gridX=\"%d\"", _gridX);
+	printf(" gridY=\"%d\"", _gridY);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordDATACELL::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordDATACELL(pBuffer);

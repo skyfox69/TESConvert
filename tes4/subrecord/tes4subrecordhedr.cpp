@@ -29,6 +29,15 @@ void Tes4SubRecordHEDR::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordHEDR::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes version=\".2f\" numRecords=\"%d\" nextObjectId=\"%d\"", _version, _numRecords, _nextObjectId);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordHEDR::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordHEDR(pBuffer);

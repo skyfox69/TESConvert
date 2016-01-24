@@ -21,10 +21,11 @@ class TesRecordGroup : public TesRecordBase, public Endian, public vector<TesRec
 		virtual								~TesRecordGroup();
 		
 		//  override TesRecordBase
-		virtual	size_t						sizeRecord();
-		virtual	size_t						sizeTotal();
-		virtual	void						dump(const short depth);
-		virtual	TesRecordBase*				findSubRecord(string const token) { return nullptr; }
+		virtual	size_t						sizeRecord() override;
+		virtual	size_t						sizeTotal() override;
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
+		virtual	TesRecordBase*				findSubRecord(string const token) override { return nullptr; }
 };
 
 #endif	/* TESRECORDGROUP_H */

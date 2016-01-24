@@ -20,11 +20,12 @@ class TesRecordMain : public TesRecordBase, public Endian, public vector<TesReco
 		virtual								~TesRecordMain();
 		
 		//  override TesRecordBase
-		virtual	size_t						sizeRecord();
-		virtual	size_t						sizeTotal();
-		virtual	void						dump(const short depth);
-		virtual	TesRecordBase*				findSubRecord(string const token);
-		virtual	bool						compressed();
+		virtual	size_t						sizeRecord() override;
+		virtual	size_t						sizeTotal() override;
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
+		virtual	TesRecordBase*				findSubRecord(string const token) override;
+		virtual	bool						compressed() override;
 };
 
 #endif	/* TESRECORDMAIN_H */

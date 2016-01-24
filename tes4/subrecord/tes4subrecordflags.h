@@ -15,7 +15,8 @@ class Tes4SubRecordFlags : public Tes4SubRecordSingleULong
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
 
 		//  override TesRecordSub
-		virtual	void						dump(const short depth);
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
 };
 
 #endif	/* TES4SUBRECORDFLAGS_H */

@@ -29,6 +29,15 @@ void Tes4SubRecordBTXT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordBTXT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes quadrant=\"%d\" formId=\"%d / 0x%08X\"", _quadrant, _textureId, _textureId);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordBTXT::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordBTXT(pBuffer);

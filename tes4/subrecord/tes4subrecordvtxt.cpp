@@ -43,6 +43,15 @@ void Tes4SubRecordVTXT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordVTXT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes count=\"%d\"", _count);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordVTXT::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordVTXT(pBuffer);

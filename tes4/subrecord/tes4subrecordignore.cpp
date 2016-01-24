@@ -15,14 +15,6 @@ Tes4SubRecordIgnore::~Tes4SubRecordIgnore()
 {}
 
 //-----------------------------------------------------------------------------
-void Tes4SubRecordIgnore::dump(const short depth)
-{
-	string		indent(depth, ' ');
-	
-	printf("%s%s\n", indent.c_str(), _name.c_str());
-}
-
-//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordIgnore::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordIgnore(pBuffer);

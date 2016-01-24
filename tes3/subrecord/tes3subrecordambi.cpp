@@ -31,6 +31,19 @@ void Tes3SubRecordAMBI::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordAMBI::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" ambient=\"0x%02X, 0x%02X, 0x%02X\"", (_ambient & 0x000000FF), ((_ambient >>  8) & 0x000000FF), ((_ambient >>  8) & 0x000000FF));
+	printf(" sunlight=\"0x%02X, 0x%02X, 0x%02X\"", (_sunlight & 0x000000FF), ((_sunlight >>  8) & 0x000000FF), ((_sunlight >>  8) & 0x000000FF));
+	printf(" fog=\"0x%02X, 0x%02X, 0x%02X\"", (_fog & 0x000000FF), ((_fog >>  8) & 0x000000FF), ((_fog >>  8) & 0x000000FF));
+	printf(" fogDensity=\"%f\"", _fogDensity);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordAMBI::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordAMBI(pBuffer);

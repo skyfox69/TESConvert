@@ -36,6 +36,13 @@ void Tes3SubRecordWNAM::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordWNAM::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordWNAM::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordWNAM(pBuffer);

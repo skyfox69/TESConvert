@@ -48,6 +48,27 @@ void Tes4SubRecordDODT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordDODT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" widthMin=\"%f\"", _widthMin);
+	printf(" widthMax=\"%f\"", _widthMax);
+	printf(" heihgtMin=\"%f\"", _heightMin);
+	printf(" heihgtMax=\"%f\"", _heightMax);
+	printf(" depth=\"%f\"", _depth);
+	printf(" shininess=\"%f\"", _shininess);
+	printf(" parallaxScale=\"%f\"", _parallaxScale);
+	printf(" parallaxPasses=\"%0x02d\"", _parallaxPasses);
+	printf(" flags=\"%0x02d\"", _flags);
+	printf(" red=\"0x%02X\"", ((_rgb) & 0x000000FF));
+	printf(" green=\"0x%02X\"", ((_rgb >> 8) & 0x000000FF));
+	printf(" blue=\"0x%02X\"", ((_rgb >> 16) & 0x000000FF));
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordDODT::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordDODT(pBuffer);

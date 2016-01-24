@@ -27,6 +27,17 @@ void Tes3SubRecordSNAM::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordSNAM::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" name=\"%s\"", _text.c_str());
+	printf(" chance=\"0x%02X\"", _chance);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordSNAM::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordSNAM(pBuffer);

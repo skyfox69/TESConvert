@@ -32,6 +32,13 @@ void Tes3SubRecordVNML::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordVNML::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordVNML::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordVNML(pBuffer);

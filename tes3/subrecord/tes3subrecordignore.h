@@ -16,7 +16,7 @@ class Tes3SubRecordIgnore : public TesRecordSub
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
 
 		//  override TesRecordSub
-		virtual	void						dump(const short depth);
+		virtual	void						dump(const short depth) override;
 };
 
 #endif	/* TES3SUBRECORDIGNORE_H */

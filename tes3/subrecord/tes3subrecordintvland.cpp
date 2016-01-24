@@ -27,6 +27,17 @@ void Tes3SubRecordINTVLAND::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordINTVLAND::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" cellX=\"%d\"", _cellX);
+	printf(" cellY=\"%d\"", _cellY);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordINTVLAND::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordINTVLAND(pBuffer);

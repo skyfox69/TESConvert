@@ -25,6 +25,16 @@ void Tes3SubRecordDATATES3::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordDATATES3::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes");
+	printf(" value=\"%d\"", _value);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordDATATES3::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordDATATES3(pBuffer);

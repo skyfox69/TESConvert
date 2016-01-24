@@ -56,6 +56,25 @@ void TesRecordMain::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void TesRecordMain::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes sizeTotal=\"%d\" sizeRecord=\"%d\" flags=\"0x%08X\"", sizeTotal(), sizeRecord(), _flags);
+	if (_id != 0) {
+		printf(" id=\"%d\"", _id);
+	}
+	printf("/>\n");
+	for_each(begin(),
+			 end(),
+			 [](TesRecordBase* pRecord) {
+				 pRecord->dumpXml();
+				 return true;
+			 }
+			);
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* TesRecordMain::findSubRecord(const string token)
 {
 	auto pSubRecord = find_if(begin(),

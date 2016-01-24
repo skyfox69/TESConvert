@@ -30,6 +30,15 @@ void Tes4SubRecordATXT::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordATXT::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes quadrant=\"%d\" layer=\"%d\" formId=\"%d / 0x%08X\"", _quadrant, _layer, _textureId, _textureId);
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordATXT::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordATXT(pBuffer);

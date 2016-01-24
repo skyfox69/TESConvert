@@ -56,6 +56,13 @@ void Tes3SubRecordVTEX::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes3SubRecordVTEX::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes3SubRecordVTEX::create(unsigned char* pBuffer)
 {
 	return new Tes3SubRecordVTEX(pBuffer);

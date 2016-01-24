@@ -20,7 +20,8 @@ class Tes4SubRecordBTXT : public TesRecordSub
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
 
 		//  override TesRecordSub
-		virtual	void						dump(const short depth);
+		virtual	void						dump(const short depth) override;
+		virtual	void						dumpXml() override;
 };
 
 #endif	/* TES4SUBRECORDBTXT_H */

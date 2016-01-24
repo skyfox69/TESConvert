@@ -33,6 +33,18 @@ void Tes4SubRecordXCLCCELL::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
+void Tes4SubRecordXCLCCELL::dumpXml()
+{
+	printf("<%s>", _name.c_str());
+	printf("<attributes x=\"%d\" y=\"%d\"", _x, _y);
+	if (_size > 8) {
+		printf(" flags=\"0x%08X\"", _flags);
+	}
+	printf("/>\n");
+	printf("</%s>\n", _name.c_str());
+}
+
+//-----------------------------------------------------------------------------
 TesRecordBase* Tes4SubRecordXCLCCELL::create(unsigned char* pBuffer)
 {
 	return new Tes4SubRecordXCLCCELL(pBuffer);

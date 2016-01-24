@@ -107,7 +107,8 @@ bool TesParser::parse(string const fileName)
 		printf("\nend parsing\n");
 
 	}  //  if (_pFileBuffer != nullptr)
-	
+
+	fprintf(stderr, "\n");
 	if (!_message.empty()) {
 		printf("%s\n", _message.c_str());
 	}
