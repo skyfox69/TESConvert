@@ -63,6 +63,10 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 		if (pOptions->_dumpFinalX) {
 			dumpTokensBySequenceAsXml();
 		}
+		//  dump all used tokens
+		if (pOptions->_dumpUsedTags) {
+			dumpUsedTokens();
+		}
 
 		//  specific processor needed
 		if (pSubProcessor != nullptr) {
@@ -155,6 +159,16 @@ void TesProcessor::dumpTokensBySequenceAsXml()
 		pRecord->dumpXml();
 	}
 	printf("</NodeStructure>\n");
+}
+
+//-----------------------------------------------------------------------------
+void TesProcessor::dumpUsedTokens()
+{
+	printf("\nUsed Tokens:\n");
+	for (auto& mapEntry : _mapRecords) {
+		printf(" - %s\t\t[%d]\n", mapEntry.first.c_str(), mapEntry.second.size());
+	}
+	printf("\n");
 }
 
 //-----------------------------------------------------------------------------

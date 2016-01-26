@@ -10,6 +10,7 @@ TESOptions::TESOptions()
 		_dumpFinalS    (false),
 		_dumpFinalT    (false),
 		_drawGrid      (false),
+		_dumpUsedTags  (false),
 		_dumpCompressed(0),
 		_targetVersion (0)
 {}
@@ -51,6 +52,9 @@ bool TESOptions::parse(int argc, char** argv)
 				}
 				else if (*optarg == 'x') {
 					_dumpFinalX = true;
+				}
+				else if (*optarg == 'u') {
+					_dumpUsedTags = true;
 				}
 				else {
 					return usage();
@@ -141,6 +145,7 @@ bool TESOptions::usage()
 			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"
 			"  -ds\t\t\tdump final token structure sort by file sequence\n"
 			"  -dt\t\t\tdump final token structure sort by token\n"
+			"  -du\t\t\tdump all used tokens\n"
 			"  -dx\t\t\tdump final token structure sort by file appearance as XML\n"
 			"  -g\t\t\tdraw square cell sized grids on all image exports\n"
 			"  -L FILE\t\twrite texture occurance to <FILE>.bmp\n"

@@ -24,6 +24,7 @@ class TESOptions
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
 		bool								_dumpFinalX;
+		bool								_dumpUsedTags;
 		bool								_drawGrid;
 		unsigned char						_dumpCompressed;
 		unsigned char						_targetVersion;
