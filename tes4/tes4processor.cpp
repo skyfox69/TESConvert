@@ -32,19 +32,33 @@ Tes4Processor::~Tes4Processor()
 //-----------------------------------------------------------------------------
 bool Tes4Processor::prepareData()
 {
-	map<unsigned long, Tes4RecordGeneric*>	mapRecordIds;
+	Tes4RecordGroup*	pGroup(nullptr);
 
+	//  pre-fetch CELL records
 	for (auto& pRecord : _mapRecords["CELL"]) {
-		mapRecordIds[((Tes4RecordGeneric*) pRecord)->_id] = (Tes4RecordGeneric*) pRecord;
+		_mapRecordsCell[((Tes4RecordGeneric*) pRecord)->_id] = (Tes4RecordGeneric*) pRecord;
 	}
 
-	prepareDataRecursive(_records, mapRecordIds);
+	//  pre-fetch WRLD and CELL Children groups
+	for (auto& pRecord : _mapRecords["GRUP"]) {
+		pGroup = dynamic_cast<Tes4RecordGroup*>(pRecord);
+		if (pGroup != nullptr) {
+			switch (pGroup->_groupType) {
+				case 1:		//  WRLD Children
+					_mapRecordsGrpWrld[pGroup->_labelL] = pGroup;
+					break;
+				case 9:		//  external CELL Children
+					_mapRecordsGrpCell[pGroup->_labelL] = pGroup;
+					break;
+			}
+		}
+	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, map<unsigned long, Tes4RecordGeneric*>& mapRecordIds, Tes4RecordGroup* pGroup)
+bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup)
 {
 	Tes4RecordGeneric*	pRecMain (nullptr);
 	Tes4RecordGroup*	pRecGroup(nullptr);
@@ -52,8 +66,8 @@ bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, map<un
 	for (auto& pRecord : records) {
 		pRecMain = dynamic_cast<Tes4RecordGeneric*>(pRecord);
 		if ((pRecMain != nullptr) && (pRecMain->_name == "LAND") && (pGroup != nullptr)) {
-			if (mapRecordIds.count(pGroup->_labelL) > 0) {
-				Tes4SubRecordXCLCCELL*	pRecXCLC(dynamic_cast<Tes4SubRecordXCLCCELL*>(mapRecordIds[pGroup->_labelL]->findSubRecord("XCLC")));
+			if (_mapRecordsCell.count(pGroup->_labelL) > 0) {
+				Tes4SubRecordXCLCCELL*	pRecXCLC(dynamic_cast<Tes4SubRecordXCLCCELL*>(_mapRecordsCell[pGroup->_labelL]->findSubRecord("XCLC")));
 
 				if (pRecXCLC != nullptr) {
 					stringstream	tStrm;
@@ -65,7 +79,7 @@ bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, map<un
 		} else {
 			pRecGroup = dynamic_cast<Tes4RecordGroup*>(pRecord);
 			if (pRecGroup != nullptr) {
-				prepareDataRecursive(*pRecGroup, mapRecordIds, (pRecGroup->_groupType == 9) ? pRecGroup : nullptr);
+				prepareDataRecursive(*pRecGroup, (pRecGroup->_groupType == 9) ? pRecGroup : nullptr);
 			}
 		}
 	}
@@ -100,20 +114,47 @@ bool Tes4Processor::dumpWorldspaces()
 //-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVclrMap(string const fileName)
 {
-	return dumpToMap(fileName + ".bmp", &Tes4Processor::dumpVclr, SIZE_CELL_32);
+	return prepareLandMap(fileName, &Tes4Processor::dumpVclr, SIZE_CELL_32);
 }
 
 //-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVhgtMap(string const fileName)
 {
-	return dumpToMap(fileName + ".bmp", &Tes4Processor::dumpVhgt, SIZE_CELL_32);
+	return prepareLandMap(fileName + ".bmp", &Tes4Processor::dumpVhgt, SIZE_CELL_32);
 }
 
 //-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVtexMap(string const fileName)
 {
-	return dumpToMap(fileName + ".bmp", &Tes4Processor::dumpVtex, SIZE_CELL_34);
+	return prepareLandMap(fileName + ".bmp", &Tes4Processor::dumpVtex, SIZE_CELL_34);
 }
+
+//-----------------------------------------------------------------------------
+bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize)
+{
+	Tes4SubRecordSingleString*	pString(nullptr);
+	string						worldspace(TESOptions::getInstance()->_worldspace);
+
+	for (auto& pRecWorld : _mapRecords["WRLD"]) {
+		pString = dynamic_cast<Tes4SubRecordSingleString*>(pRecWorld->findSubRecord("EDID"));
+		if (pString != nullptr) {
+			if (!worldspace.empty() && (worldspace != "l") && (strcmp(pString->_text.c_str(), worldspace.c_str()) != 0)) {
+				continue;
+			}
+
+			_mapRecordsLand.clear();
+			prepareDataRecursive(*_mapRecordsGrpWrld[((Tes4RecordGeneric*) pRecWorld)->_id]);
+			if (_mapRecordsLand.size() > 0) {
+				stringstream	strm;
+
+				strm << fileName << "_" << pString->_text.c_str() << ".bmp";
+				dumpToMap(strm.str(), pFillFunction, cellSize);
+
+			}
+		}  //  if (pString != nullptr)
+	}  //  for (auto& pRecWorld : _mapRecords["WRLD"])
+
+	return true;}
 
 //-----------------------------------------------------------------------------
 bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize)
