@@ -2,6 +2,7 @@
 #define	TESOPTIONS_H
 
 #include <string>
+#include "common/types/tesoutformattype.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ class TESOptions
 		bool								_dumpFinalX;
 		bool								_dumpUsedTags;
 		bool								_drawGrid;
+		TesOutFormatType					_outFormatType;
 		unsigned char						_dumpCompressed;
 		unsigned char						_targetVersion;
 

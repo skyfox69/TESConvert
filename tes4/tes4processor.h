@@ -36,9 +36,9 @@ class Tes4Processor : public ITesProcessor
 		virtual	bool							prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup = nullptr);
 		virtual	bool							prepareLandMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
 		virtual	bool							dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
-		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVtex(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVclr(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn);
 
 	public:
 												Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records);

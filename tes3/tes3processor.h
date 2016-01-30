@@ -26,9 +26,9 @@ class Tes3Processor : public ITesProcessor
 
 		virtual	bool							prepareData();
 		virtual	bool							dumpToMap  (const string fileName, Tes3FillFunction pFillFunction, unsigned short cellSize);
-		virtual	bool							dumpVhgt   (unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVclr   (unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVtex   (unsigned char* pBmBuffer, Tes3FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVhgt   (Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVclr   (Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVtex   (Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn);
 
 	public:
 												Tes3Processor(map<string, vector<TesRecordBase*>>& mapRecords);

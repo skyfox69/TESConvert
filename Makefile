@@ -11,12 +11,13 @@ CFLAGS = -g -O0 -std=c++11 -I. -pipe -Wp,-fexceptions -fstack-protector --param=
 
 LIBS =
 
-LDFLAGS = -g -lpthread -lz -lm -lrt -ldl
+LDFLAGS = -g -lpthread -lz -lm -lrt -ldl -lpng
 
 PRG = tesconvert
 SRC = main.cpp \
       common/util/endian.cpp \
       common/util/tesoptions.cpp \
+      common/util/bitmap.cpp \
       common/record/tesrecordbase.cpp \
       common/record/tesrecordmain.cpp \
       common/record/tesrecordsub.cpp \
@@ -88,3 +89,8 @@ clean:
 	rm -f ${OBJ}
 
 rebuild: clean tesconvert
+
+rmimg:
+	rm -f *.bmp
+	rm -f *.png
+
