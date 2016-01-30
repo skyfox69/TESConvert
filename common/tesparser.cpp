@@ -19,7 +19,7 @@ TesParser::TesParser()
 		_pFileBufferEnd(nullptr),
 		_fileType      (TesFileType::UNKNOWN)
 {
-	_verbose        = TESOptions::getInstance()->_verbose;
+	_verboseLevel   = TESOptions::getInstance()->_verboseLevel;
 	_dumpCompressed = TESOptions::getInstance()->_dumpCompressed;
 }
 
@@ -148,7 +148,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			case TesRecordType::RECORDGROUP: {
 				unsigned char* pStartGrp(pStart);
 
-				if (_verbose)	fprintf(stderr, "found \x1B[33m%s\033[0m [GROUP]\n", token.c_str());
+				if (_verboseLevel > 1)	fprintf(stderr, "found \x1B[33m%s\033[0m [GROUP]\n", token.c_str());
 				if (pRecordNew->_fileType == TesFileType::TES3) {
 					pRecordNew->_size = pBlockEnd - pStart;
 				}
@@ -173,7 +173,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			}
 				
 			case TesRecordType::RECORD: {
-				if (_verbose)	fprintf(stderr, "found \x1B[33m%s\033[0m [RECORD]\n", token.c_str());
+				if (_verboseLevel > 1)	fprintf(stderr, "found \x1B[33m%s\033[0m [RECORD]\n", token.c_str());
 				if (pRecordNew->compressed()) {
 					if (parseCompressed(pStart + pRecordNew->sizeRecord(),
 										pStart + pRecordNew->sizeTotal(),
@@ -209,7 +209,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			}
 				
 			case TesRecordType::SUBRECORD:
-				if (_verbose)	fprintf(stderr, "found \x1B[33m%s\033[0m [SUBRECORD]\n", token.c_str());
+				if (_verboseLevel > 1)	fprintf(stderr, "found \x1B[33m%s\033[0m [SUBRECORD]\n", token.c_str());
 				break;
 				
 			default:

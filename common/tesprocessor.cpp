@@ -99,9 +99,9 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 //-----------------------------------------------------------------------------
 bool TesProcessor::prepareRecordMap()
 {
-	printf("begin preparing\n");
+	fprintf(stderr, "begin preparing\n");
 	prepareRecordMapRecursive(_parser);
-	printf("end preparing\n");
+	fprintf(stderr, "end preparing\n");
 	return true;
 }
 

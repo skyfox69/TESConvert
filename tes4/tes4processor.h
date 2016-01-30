@@ -31,14 +31,15 @@ class Tes4Processor : public ITesProcessor
 		map<unsigned long, Tes4RecordGroup*>	_mapRecordsGrpWrld;	//  Groups WRLD Children
 		map<unsigned long, Tes4RecordGroup*>	_mapRecordsGrpCell;	//  Groups external CELL Children
 		vector<TesRecordBase*>&					_records;			//  all records by structure/appearance
+		unsigned char							_verboseLevel;
 
 		virtual	bool							prepareData();
 		virtual	bool							prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup = nullptr);
 		virtual	bool							prepareLandMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
 		virtual	bool							dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
-		virtual	bool							dumpVhgt(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVclr(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVtex(unsigned char* pBmBuffer, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVclr(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn);
 
 	public:
 												Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records);
