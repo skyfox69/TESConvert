@@ -201,10 +201,6 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 	}  //  if (filled)
 
 	verbose0("done");
-<<<<<<< HEAD
-=======
-
->>>>>>> 6796507... wip
 	return true;
 }
 
