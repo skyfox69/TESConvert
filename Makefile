@@ -18,6 +18,7 @@ SRC = main.cpp \
       common/util/endian.cpp \
       common/util/tesoptions.cpp \
       common/util/bitmap.cpp \
+      common/util/verbosity.cpp \
       common/record/tesrecordbase.cpp \
       common/record/tesrecordmain.cpp \
       common/record/tesrecordsub.cpp \

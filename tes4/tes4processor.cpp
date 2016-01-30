@@ -21,10 +21,10 @@
 
 //-----------------------------------------------------------------------------
 Tes4Processor::Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records)
-	:	_mapRecords(mapRecords),
+	:	Verbosity(),
+		_mapRecords(mapRecords),
 		_records   (records)
 {
-	_verboseLevel = TESOptions::getInstance()->_verboseLevel;
 	prepareData();
 }
 
@@ -57,10 +57,7 @@ bool Tes4Processor::prepareData()
 		}
 	}
 
-	if (_verboseLevel > 0) {
-		fprintf(stderr, "  found: %d CELLs, %d WRLD-Groups, %d externel CELL-Groups\n", _mapRecordsCell.size(), _mapRecordsGrpWrld.size(), _mapRecordsGrpCell.size());
-	}
-
+	verbose1("  found: %d CELLs, %d WRLD-Groups, %d externel CELL-Groups", _mapRecordsCell.size(), _mapRecordsGrpWrld.size(), _mapRecordsGrpCell.size());
 	return true;
 }
 
@@ -170,7 +167,7 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 	Tes4FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
 
 	//  get size of map
-	fprintf(stderr, "generating image file: %s\n  getting sizes: ", fileName.c_str());
+	verbose0("generating image file: %s\n  getting sizes: ", fileName.c_str());
 	for (auto pRecord : _mapRecords["CELL"]) {
 		pSubCellXclc = dynamic_cast<Tes4SubRecordXCLCCELL*>(pRecord->findSubRecord("XCLC"));
 		if (pSubCellXclc) {
@@ -181,7 +178,7 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 		}
 	}
 
-	fprintf(stderr, "  minX: %d, maxX: %d, minY: %d, maxY: %d\n", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
+	verbose0("  minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
 	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 1);
 	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 1);
 	if ((fillFuncIn._sizeMap = (fillFuncIn._sizeX * fillFuncIn._sizeY)) <= 1) {
@@ -190,20 +187,20 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 
 	//  build bitmap
 	fillFuncIn._sizeMap *= cellSize*cellSize;
-	fprintf(stderr, "  building internal bitmap\n");
+	verbose0("  building internal bitmap");
 
 	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
 
 	//  call bitmap fill function
 	if (pFillFunction(this, &bitmap, &fillFuncIn)) {
 		//  generate bitmap file
-		fprintf(stderr, "  writing image file\n");
+		verbose0("  writing image file");
 
 		bitmap.write(fileName);
 
 	}  //  if (filled)
 
-	fprintf(stderr, "done\n");
+	verbose0("done");
 
 	return true;
 }
@@ -223,7 +220,7 @@ bool Tes4Processor::dumpVclr(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
 
-	fprintf(stderr, "  parsing vertex colors\n");
+	verbose0("  parsing vertex colors");
 
 	//  pre-fill bitmap
 	pBitmap->clear(0xffff, 0xffff, 0xffff);
@@ -282,7 +279,7 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
 
-	fprintf(stderr, "  parsing vertex heights\n");
+	verbose0("  parsing vertex heights");
 
 	//  pre-fill bitmap
 	pBitmap->clear(0xffff, 0xffff, 0x0000);
@@ -342,10 +339,7 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 		}  //  if (pSubLandVhgt != nullptr)
 	}  //  for (auto pRecord : _mapRecords["LAND"])
 
-	if (_verboseLevel > 0) {
-		fprintf(stderr, "  min. height: %d, max. height: %d\n", heightMin, heightMax);
-	}
-
+	verbose1("  min. height: %d, max. height: %d", heightMin, heightMax);
 	return true;
 }
 
@@ -370,7 +364,7 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
 
-	fprintf(stderr, "  parsing textures\n");
+	verbose0("  parsing textures");
 
 	//  pre-fill bitmap
 	pBitmap->clear();
@@ -412,9 +406,6 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 		}  //  for (auto& pSubRecord : *entry.second)
 	}  //  for (auto entry : _mapRecordsLand)
 
-	if (_verboseLevel > 0) {
-		fprintf(stderr, "  found %d unique textures\n", mapTextIds.size());
-	}
-
+	verbose1("  found %d unique textures", mapTextIds.size());
 	return true;
 }
