@@ -25,15 +25,7 @@ Tes4RecordGroup::Tes4RecordGroup(unsigned char* pBuffer)
 
 //-----------------------------------------------------------------------------
 Tes4RecordGroup::~Tes4RecordGroup()
-{
-	remove_if(begin(),
-			  end(),
-			  [](TesRecordBase* pRecord) {
-				  delete pRecord;
-				  return true;
-			  }
-			 );
-}
+{}
 
 //-----------------------------------------------------------------------------
 size_t Tes4RecordGroup::sizeRecord()
