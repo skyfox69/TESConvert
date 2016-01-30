@@ -62,3 +62,8 @@ void Tes4SubRecordVTXT::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["LANDVTXT"] = Tes4SubRecordVTXT::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordVTXT::writeFile(FILE* pFile)
+{
+}

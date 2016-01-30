@@ -19,6 +19,7 @@ SRC = main.cpp \
       common/util/tesoptions.cpp \
       common/util/bitmap.cpp \
       common/util/verbosity.cpp \
+      common/util/compressor.cpp \
       common/record/tesrecordbase.cpp \
       common/record/tesrecordmain.cpp \
       common/record/tesrecordsub.cpp \
@@ -50,6 +51,7 @@ SRC = main.cpp \
       tes3/subrecord/tes3subrecorddatates3.cpp \
       tes4/tes4recordfactory.cpp \
       tes4/tes4processor.cpp \
+      tes4/tes4converter.cpp \
       tes4/record/tes4recordgeneric.cpp \
       tes4/record/tes4recordgroup.cpp \
       tes4/record/tes4recordignore.cpp \

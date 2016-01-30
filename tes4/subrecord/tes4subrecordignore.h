@@ -14,6 +14,9 @@ class Tes4SubRecordIgnore : public TesRecordSub
 		//  TesRecordFactory
 		static	TesRecordBase*				create(unsigned char* pBuffer);
 		static	void						registerClass(map<string, TesCreateFunction>& mapRecords);
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4SUBRECORDIGNORE_H */

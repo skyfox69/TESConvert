@@ -62,3 +62,8 @@ void Tes4SubRecordSingleFloat::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["WRLDNAM4"] = Tes4SubRecordSingleFloat::create;
 	mapRecords["WRLDNAMA"] = Tes4SubRecordSingleFloat::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordSingleFloat::writeFile(FILE* pFile)
+{
+}

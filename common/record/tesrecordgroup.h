@@ -26,6 +26,7 @@ class TesRecordGroup : public TesRecordBase, public Endian, public vector<TesRec
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
 		virtual	TesRecordBase*				findSubRecord(string const token) override { return nullptr; }
+		virtual	size_t						calcSizes();
 };
 
 #endif	/* TESRECORDGROUP_H */

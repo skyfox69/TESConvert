@@ -48,3 +48,7 @@ void Tes3SubRecordSNAM::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["REGNSNAM"] = Tes3SubRecordSNAM::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordSNAM::writeFile(FILE* pFile)
+{}

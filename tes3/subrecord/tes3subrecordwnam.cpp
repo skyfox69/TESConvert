@@ -53,3 +53,7 @@ void Tes3SubRecordWNAM::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["LANDWNAM"] = Tes3SubRecordWNAM::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordWNAM::writeFile(FILE* pFile)
+{}

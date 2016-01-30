@@ -49,3 +49,7 @@ void Tes3SubRecordSingleFloat::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["FRMRFLTV"] = Tes3SubRecordSingleFloat::create;
 	mapRecords["CELLWHGT"] = Tes3SubRecordSingleFloat::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordSingleFloat::writeFile(FILE* pFile)
+{}

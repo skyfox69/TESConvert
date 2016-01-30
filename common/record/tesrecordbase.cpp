@@ -28,3 +28,9 @@ bool TesRecordBase::compressed()
 {
 	return false;
 }
+
+//-----------------------------------------------------------------------------
+unsigned char* TesRecordBase::writeMem(unsigned char* pMemory)
+{
+	return pMemory;
+}

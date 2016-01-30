@@ -37,5 +37,7 @@ class Tes4Processor : protected Verbosity, public ITesProcessor
 		virtual	bool							dumpVhgtMap    (string const fileName) override;
 		virtual	bool							dumpVtexMap    (string const fileName) override;
 		virtual	bool							dumpWorldspaces() override;
+
+		virtual	Bitmap*							generateVHGTBitmap();
 };
 #endif  /* TES4PROCESSOR_H */

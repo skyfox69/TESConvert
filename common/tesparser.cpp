@@ -1,4 +1,5 @@
 #include "common/tesparser.h"
+#include "common/util/compressor.h"
 #include "common/types/tesrecordtype.h"
 #include "common/record/tesrecordmain.h"
 #include "common/record/tesrecordgroup.h"
@@ -7,7 +8,6 @@
 #include "util/tesoptions.h"
 #include "tes4/subrecord/tes4subrecordsinglestring.h"
 #include <algorithm>
-#include <zlib.h>
 #include <cstring>
 
 using namespace std;
@@ -87,11 +87,19 @@ bool TesParser::parse(string const fileName)
 		
 		toString4(token, _pFileBuffer);
 		if (token == "TES3") {
+			if (_fileType == TesFileType::TES4) {
+				verbose0("  \x1B[31mskipping file %s: type TES4 doesn't match\033[0m", fileName.c_str());
+				return true;
+			}
 			_fileType = TesFileType::TES3;
 			_pFactory = new Tes3RecordFactory();
 			verbose0("  found TES3 header => assuming \x1B[32mMorrowind\033[0m file");
 		}
 		else if (token == "TES4") {
+			if (_fileType == TesFileType::TES3) {
+				verbose0("  \x1B[31mskipping file %s: type TES3 doesn't match\033[0m", fileName.c_str());
+				return true;
+			}
 			_fileType = TesFileType::TES4;
 			_pFactory = new Tes4RecordFactory();
 			verbose0("  found TES4 header => assuming \x1B[32mSkyrim\033[0m file");
@@ -251,7 +259,7 @@ unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned c
 	unsigned char*		pBufEnd   (pBufIntern + sizeDecomp);
 	unsigned char*		pStart    (pBufIntern);
 
-	inflateBuffer(pBlockStart, sizeComp, pBufIntern, sizeDecomp);
+	Compressor::inflateBuffer(pBlockStart, sizeComp, pBufIntern, sizeDecomp);
 
 	if (_dumpCompressed > 0) {
 		char	fileName[100] = {0};
@@ -283,33 +291,3 @@ unsigned char* TesParser::parseCompressed(unsigned char* pBlockStart, unsigned c
 
 	return pBlockEnd;
 }
-
-//-----------------------------------------------------------------------------
-int TesParser::inflateBuffer(const void* pBufSrc, const int lenSrc, void* pBufDst, const int lenDst)
-{
-	z_stream	strm = {0};
-	int			retCode(-1);
-	
-	strm.total_in  = lenSrc;
-	strm.avail_in  = lenSrc;
-	strm.total_out = lenDst;
-	strm.avail_out = lenDst;
-	strm.next_in   = (Bytef*) pBufSrc;
-	strm.next_out  = (Bytef*) pBufDst;
-	strm.zalloc    = Z_NULL;
-	strm.zfree     = Z_NULL;
-	strm.opaque    = Z_NULL;
-
-	retCode = inflateInit2(&strm, (15 + 32));
-	if (retCode == Z_OK) {
-		retCode = inflate(&strm, Z_FINISH);
-		if (retCode == Z_STREAM_END) {
-			retCode = strm.total_out;
-		}
-	}
-
-	inflateEnd(&strm);
-
-	return retCode;
-}
-

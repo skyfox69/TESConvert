@@ -20,6 +20,9 @@ class Tes4RecordGroup : public TesRecordGroup
 		virtual	size_t						sizeTotal() override;
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4RECORDGROUP_H */

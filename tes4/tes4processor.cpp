@@ -115,6 +115,12 @@ bool Tes4Processor::dumpWorldspaces()
 }
 
 //-----------------------------------------------------------------------------
+Bitmap* Tes4Processor::generateVHGTBitmap()
+{
+	return nullptr;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVclrMap(string const fileName)
 {
 	return prepareLandMap(fileName, &Tes4Processor::dumpVclr, SIZE_CELL_32);

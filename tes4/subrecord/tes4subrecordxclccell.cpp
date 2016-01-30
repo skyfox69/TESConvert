@@ -1,8 +1,20 @@
 #include "tes4/subrecord/tes4subrecordxclccell.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordXCLCCELL::Tes4SubRecordXCLCCELL(string const name, long const x, long const y)
+	:	TesRecordSub(TesFileType::TES4),
+		_x    (x),
+		_y    (y),
+		_flags(0)
+{
+	_name = name;
+	_size = 8;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordXCLCCELL::Tes4SubRecordXCLCCELL(unsigned char* pBuffer)
-	:	TesRecordSub(TesFileType::TES4)
+	:	TesRecordSub(TesFileType::TES4),
+		_flags(0)
 {
 	if (pBuffer != nullptr) {
 		toString4(_name,  pBuffer);
@@ -54,4 +66,13 @@ TesRecordBase* Tes4SubRecordXCLCCELL::create(unsigned char* pBuffer)
 void Tes4SubRecordXCLCCELL::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["CELLXCLC"] = Tes4SubRecordXCLCCELL::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordXCLCCELL::writeFile(FILE* pFile)
+{
+	writeString4(_name, pFile);
+	writeUShort4(_size, pFile);
+	writeLong   (_x,    pFile);
+	writeLong   (_y,    pFile);
 }

@@ -45,3 +45,7 @@ void Tes3RecordGeneric::registerClass(map<string, TesCreateFunction>& mapRecords
 	mapRecords["CELL"] = Tes3RecordGeneric::create;
 	mapRecords["LAND"] = Tes3RecordGeneric::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3RecordGeneric::writeFile(FILE* pFile)
+{}

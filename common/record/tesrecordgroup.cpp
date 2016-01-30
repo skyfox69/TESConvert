@@ -46,3 +46,13 @@ void TesRecordGroup::dumpXml()
 	printf("<TesRecordGroup></TesRecordGroup>\n");
 }
 
+//-----------------------------------------------------------------------------
+size_t TesRecordGroup::calcSizes()
+{
+	_size = sizeRecord();
+	for (auto& pRecord : *this) {
+		_size += pRecord->calcSizes();
+	}
+
+	return sizeTotal();
+}

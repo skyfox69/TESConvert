@@ -18,6 +18,9 @@ class Tes4RecordIgnore : public TesRecordMain
 		//  override TesRecordMain
 		virtual	size_t						sizeRecord();
 		virtual	size_t						sizeTotal();
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4RECORDIGNORE_H */

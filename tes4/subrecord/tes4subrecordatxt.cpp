@@ -49,3 +49,8 @@ void Tes4SubRecordATXT::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["LANDATXT"] = Tes4SubRecordATXT::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordATXT::writeFile(FILE* pFile)
+{
+}

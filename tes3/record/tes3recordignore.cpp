@@ -82,3 +82,7 @@ void Tes3RecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 	mapRecords["INFO"] = Tes3RecordIgnore::create;
 	mapRecords["SSCR"] = Tes3RecordIgnore::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3RecordIgnore::writeFile(FILE* pFile)
+{}

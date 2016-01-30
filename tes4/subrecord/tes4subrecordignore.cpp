@@ -33,3 +33,8 @@ void Tes4SubRecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecor
 	mapRecords["WRLDMHDT"] = Tes4SubRecordIgnore::create;
 	mapRecords["TES4ONAM"] = Tes4SubRecordIgnore::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordIgnore::writeFile(FILE* pFile)
+{
+}

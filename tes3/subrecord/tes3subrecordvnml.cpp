@@ -50,3 +50,7 @@ void Tes3SubRecordVNML::registerClass(map<string, TesCreateFunction>& mapRecords
 	mapRecords["LANDVNML"] = Tes3SubRecordVNML::create;
 	mapRecords["LANDVCLR"] = Tes3SubRecordVNML::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordVNML::writeFile(FILE* pFile)
+{}

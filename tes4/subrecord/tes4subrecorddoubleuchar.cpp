@@ -46,3 +46,8 @@ void Tes4SubRecordDoubleUChar::registerClass(map<string, TesCreateFunction>& map
 {
 	mapRecords["LTEXHNAM"] = Tes4SubRecordDoubleUChar::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordDoubleUChar::writeFile(FILE* pFile)
+{
+}

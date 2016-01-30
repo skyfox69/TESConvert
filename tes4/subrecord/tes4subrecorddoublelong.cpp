@@ -1,6 +1,16 @@
 #include "tes4/subrecord/tes4subrecorddoublelong.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordDoubleLong::Tes4SubRecordDoubleLong(string const name, long const value1, long const value2)
+	:	TesRecordSub(TesFileType::TES4)
+{
+	_name     = name;
+	_size     = 8;
+	_value[0] = value1;
+	_value[1] = value2;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordDoubleLong::Tes4SubRecordDoubleLong(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
@@ -47,4 +57,13 @@ void Tes4SubRecordDoubleLong::registerClass(map<string, TesCreateFunction>& mapR
 	mapRecords["WRLDNAM0"] = Tes4SubRecordDoubleLong::create;
 	mapRecords["WRLDNAM9"] = Tes4SubRecordDoubleLong::create;
 	mapRecords["TES4DATA"] = Tes4SubRecordDoubleLong::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordDoubleLong::writeFile(FILE* pFile)
+{
+	writeString4(_name,     pFile);
+	writeUShort4(_size,     pFile);
+	writeLong   (_value[0], pFile);
+	writeLong   (_value[1], pFile);
 }

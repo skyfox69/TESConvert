@@ -8,6 +8,7 @@ class Tes4SubRecordFlags : public Tes4SubRecordSingleULong
 {
 	public:
 											Tes4SubRecordFlags(unsigned char* pBuffer);
+											Tes4SubRecordFlags(string const name, unsigned long const value);
 		virtual								~Tes4SubRecordFlags();
 		
 		//  TesRecordFactory

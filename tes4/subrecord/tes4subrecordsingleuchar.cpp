@@ -1,6 +1,15 @@
 #include "tes4/subrecord/tes4subrecordsingleuchar.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordSingleUChar::Tes4SubRecordSingleUChar(string const name, unsigned char const value)
+	:	TesRecordSub(TesFileType::TES4),
+		_value(value)
+{
+	_name = name;
+	_size = 1;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordSingleUChar::Tes4SubRecordSingleUChar(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
@@ -44,4 +53,12 @@ void Tes4SubRecordSingleUChar::registerClass(map<string, TesCreateFunction>& map
 {
 	mapRecords["WRLDDATA"] = Tes4SubRecordSingleUChar::create;
 	mapRecords["LTEXSNAM"] = Tes4SubRecordSingleUChar::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordSingleUChar::writeFile(FILE* pFile)
+{
+	writeString4(_name,  pFile);
+	writeUShort4(_size,  pFile);
+	writeChar   (_value, pFile);
 }

@@ -12,6 +12,15 @@ Tes4SubRecordSingleString::Tes4SubRecordSingleString(unsigned char* pBuffer)
 }
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordSingleString::Tes4SubRecordSingleString(string const name, string const text)
+	:	TesRecordSub(TesFileType::TES4),
+		_text(text)
+{
+	_name = name;
+	_size = _text.size() + 1;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordSingleString::~Tes4SubRecordSingleString()
 {}
 
@@ -59,4 +68,12 @@ void Tes4SubRecordSingleString::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["LTEXEDID"] = Tes4SubRecordSingleString::create;
 	mapRecords["CELLEDID"] = Tes4SubRecordSingleString::create;
 	mapRecords["CELLXWEM"] = Tes4SubRecordSingleString::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordSingleString::writeFile(FILE* pFile)
+{
+	writeString4(_name, pFile);
+	writeUShort4(_size, pFile);
+	writeStringN(_text, pFile);
 }

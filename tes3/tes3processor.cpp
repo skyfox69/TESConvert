@@ -37,6 +37,43 @@ bool Tes3Processor::dumpWorldspaces()
 }
 
 //-----------------------------------------------------------------------------
+Bitmap* Tes3Processor::generateVHGTBitmap()
+{
+	Bitmap*					pBitmap     (nullptr);
+	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
+	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
+
+	//  get size of map
+	verbose0("generating intermediate bitmap:\n  getting sizes: ");
+	for (auto pRecord : _mapRecords["LAND"]) {
+		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
+		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
+			if (pSubLandIntv->_cellX < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubLandIntv->_cellX;
+			if (pSubLandIntv->_cellX > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubLandIntv->_cellX;
+			if (pSubLandIntv->_cellY < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubLandIntv->_cellY;
+			if (pSubLandIntv->_cellY > fillFuncIn._sizeMaxY)		fillFuncIn._sizeMaxY = pSubLandIntv->_cellY;
+		}
+	}
+
+	verbose0("  minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
+	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
+	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
+	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
+		return nullptr;
+	}
+
+	pBitmap = new Bitmap(fillFuncIn._sizeX * SIZE_CELL_64, fillFuncIn._sizeY * SIZE_CELL_64);
+	if (!dumpVhgt(pBitmap, &fillFuncIn)) {
+		delete pBitmap;
+		return nullptr;
+	}
+	
+	verbose0("done");
+
+	return pBitmap;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes3Processor::dumpVclrMap(string const fileName)
 {
 	return dumpToMap(fileName, &Tes3Processor::dumpVclr, SIZE_CELL_64);

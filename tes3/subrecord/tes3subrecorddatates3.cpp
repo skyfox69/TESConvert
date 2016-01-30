@@ -45,3 +45,7 @@ void Tes3SubRecordDATATES3::registerClass(map<string, TesCreateFunction>& mapRec
 {
 	mapRecords["TES3DATA"] = Tes3SubRecordDATATES3::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordDATATES3::writeFile(FILE* pFile)
+{}

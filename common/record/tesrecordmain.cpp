@@ -40,8 +40,12 @@ size_t TesRecordMain::sizeTotal()
 void TesRecordMain::dump(const short depth)
 {
 	string		indent(depth, ' ');
-	
-	printf("----------------------------------\n%s%s [%d|%d]\n", indent.c_str(), _name.c_str(), sizeTotal(), sizeRecord());
+
+	if (_flags &= 0x00040000) {
+		printf("----------------------------------\n%s%s [%dp|%d]\n", indent.c_str(), _name.c_str(), sizeTotal(), sizeRecord());
+	} else {
+		printf("----------------------------------\n%s%s [%d|%d]\n", indent.c_str(), _name.c_str(), sizeTotal(), sizeRecord());
+	}
 	printf("%s  flags:: 0x%08X\n", indent.c_str(), _flags);
 	if (_id != 0) {
 		printf("%s  id::    %d\n", indent.c_str(), _id);
@@ -91,4 +95,15 @@ TesRecordBase* TesRecordMain::findSubRecord(const string token)
 bool TesRecordMain::compressed()
 {
 	return (_flags & 0x00040000) != 0;
+}
+
+//-----------------------------------------------------------------------------
+size_t TesRecordMain::calcSizes()
+{
+	_size = 0;
+	for (auto& pRecord : *this) {
+		_size += pRecord->calcSizes();
+	}
+
+	return sizeTotal();
 }

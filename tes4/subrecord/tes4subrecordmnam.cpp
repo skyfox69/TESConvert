@@ -1,6 +1,23 @@
 #include "tes4/subrecord/tes4subrecordmnam.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordMNAM::Tes4SubRecordMNAM()
+	:	TesRecordSub(TesFileType::TES4),
+		_width       (0),
+		_height      (0),
+		_cellNwX     (0),
+		_cellNwY     (0),
+		_cellSeX     (0),
+		_cellSeY     (0),
+		_camHeightMin(0.0),
+		_camHeightMax(0.0),
+		_camInitPitch(0.0)
+{
+	_name = "MNAM";
+	_size = 16;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordMNAM::Tes4SubRecordMNAM(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
@@ -74,4 +91,17 @@ TesRecordBase* Tes4SubRecordMNAM::create(unsigned char* pBuffer)
 void Tes4SubRecordMNAM::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["WRLDMNAM"] = Tes4SubRecordMNAM::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordMNAM::writeFile(FILE* pFile)
+{
+	writeString4(_name,    pFile);
+	writeUShort4(_size,    pFile);
+	writeULong  (_width,   pFile);
+	writeULong  (_height,  pFile);
+	writeShort  (_cellNwX, pFile);
+	writeShort  (_cellNwY, pFile);
+	writeShort  (_cellSeX, pFile);
+	writeShort  (_cellSeY, pFile);
 }

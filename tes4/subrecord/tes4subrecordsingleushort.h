@@ -11,6 +11,7 @@ class Tes4SubRecordSingleUShort : public TesRecordSub
 		unsigned short						_value;
 
 											Tes4SubRecordSingleUShort(unsigned char* pBuffer);
+											Tes4SubRecordSingleUShort(string const name, unsigned short const value);
 		virtual								~Tes4SubRecordSingleUShort();
 		
 		//  TesRecordFactory
@@ -20,6 +21,9 @@ class Tes4SubRecordSingleUShort : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4SUBRECORDSINGLEUSHORT_H */

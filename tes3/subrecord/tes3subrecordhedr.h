@@ -23,6 +23,8 @@ class Tes3SubRecordHEDR : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES3SUBRECORDHEDR_H */

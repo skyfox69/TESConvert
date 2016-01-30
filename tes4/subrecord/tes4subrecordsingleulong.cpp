@@ -12,6 +12,15 @@ Tes4SubRecordSingleULong::Tes4SubRecordSingleULong(unsigned char* pBuffer)
 }
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordSingleULong::Tes4SubRecordSingleULong(string const name, unsigned long const value)
+	:	TesRecordSub(TesFileType::TES4),
+		_value(value)
+{
+	_name = name;
+	_size = 4;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordSingleULong::~Tes4SubRecordSingleULong()
 {}
 
@@ -70,4 +79,21 @@ void Tes4SubRecordSingleULong::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["CELLLNAM"] = Tes4SubRecordSingleULong::create;
 	mapRecords["CELLXWCN"] = Tes4SubRecordSingleULong::create;
 	mapRecords["CELLXWCS"] = Tes4SubRecordSingleULong::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordSingleULong::writeFile(FILE* pFile)
+{
+	writeString4(_name,  pFile);
+	writeUShort4(_size,  pFile);
+	writeULong  (_value, pFile);
+}
+
+//-----------------------------------------------------------------------------
+unsigned char* Tes4SubRecordSingleULong::writeMem(unsigned char* pMemory)
+{
+	pMemory += writeString4(_name,  pMemory);
+	pMemory += writeUShort4(_size,  pMemory);
+	pMemory += writeULong  (_value, pMemory);
+	return pMemory;
 }

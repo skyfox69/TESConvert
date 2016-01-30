@@ -50,3 +50,7 @@ void Tes3SubRecordINTVLAND::registerClass(map<string, TesCreateFunction>& mapRec
 	mapRecords["CELLCNDT"] = Tes3SubRecordINTVLAND::create;
 	mapRecords["FRMRCNDT"] = Tes3SubRecordINTVLAND::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordINTVLAND::writeFile(FILE* pFile)
+{}

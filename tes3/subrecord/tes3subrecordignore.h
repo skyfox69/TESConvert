@@ -17,6 +17,9 @@ class Tes3SubRecordIgnore : public TesRecordSub
 
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES3SUBRECORDIGNORE_H */

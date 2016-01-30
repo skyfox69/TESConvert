@@ -5,6 +5,8 @@
 
 using namespace std;
 
+class Bitmap;
+
 //-----------------------------------------------------------------------------
 class ITesProcessor
 {
@@ -16,5 +18,7 @@ class ITesProcessor
 		virtual	bool							dumpVhgtMap    (string const fileName) = 0;
 		virtual	bool							dumpVtexMap    (string const fileName) = 0;
 		virtual	bool							dumpWorldspaces() = 0;
+
+		virtual	Bitmap*							generateVHGTBitmap() = 0;
 };
 #endif  /* ITESPROCESSOR_H */

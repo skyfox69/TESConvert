@@ -12,6 +12,7 @@ TESOptions::TESOptions()
 		_dumpFinalX    (false),
 		_drawGrid      (false),
 		_dumpUsedTags  (false),
+		_doCompress    (false),
 		_outFormatType (TesOutFormatType::BMP_24),
 		_dumpCompressed(0),
 		_targetVersion (0),
@@ -38,8 +39,11 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "C:d:D:f:gL:m:o:t:v:V:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "cC:d:D:f:gL:m:o:t:v:V:w:")) != -1) {
 		switch (opt) {
+			case 'c':
+				_doCompress = true;
+				break;
 			case 'C':
 				_fileNameC = optarg;
 				if (_fileNameC.empty() || (_fileNameC[0] == '-')) {
@@ -166,6 +170,7 @@ bool TESOptions::usage()
 {
 	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
 			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
+			"  -c\t\t\tcompress TES4 data where possible (e.g. LAND)\n"
 			"  -C FILE\t\twrite vertex colors to <FILE>.<ext-by-format>\n"
 			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"
 			"  -ds\t\t\tdump final token structure sort by file sequence\n"

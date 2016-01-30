@@ -154,3 +154,8 @@ void Tes4RecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 	mapRecords["CLFM"] = Tes4RecordIgnore::create;
 	mapRecords["REVB"] = Tes4RecordIgnore::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4RecordIgnore::writeFile(FILE* pFile)
+{
+}
