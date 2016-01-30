@@ -25,6 +25,7 @@ Tes4Processor::Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, ve
 		_mapRecords(mapRecords),
 		_records   (records)
 {
+	_verboseLevel = TESOptions::getInstance()->_verboseLevel;
 	prepareData();
 }
 
@@ -201,7 +202,6 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 	}  //  if (filled)
 
 	verbose0("done");
-
 	return true;
 }
 

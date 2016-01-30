@@ -21,6 +21,7 @@ class TesParser : public Endian, protected Verbosity, public vector<TesRecordBas
 		string								_message;
 		TesFileType							_fileType;
 		unsigned char						_dumpCompressed;
+		unsigned char						_verboseLevel;
 
 		virtual	bool						readFile(string const fileName);
 		virtual	unsigned char*				parsePartial(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent, TesParserBreakReason& breakReason);
