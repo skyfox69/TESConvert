@@ -2,10 +2,11 @@
 #define	TESPROCESSOR_H
 
 #include "common/tesparser.h"
+#include "common/util/verbosity.h"
 #include <map>
 
 //-----------------------------------------------------------------------------
-class TesProcessor
+class TesProcessor : protected Verbosity
 {
 	private:
 		static	TesProcessor*				_pInstance;

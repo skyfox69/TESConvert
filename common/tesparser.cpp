@@ -14,12 +14,12 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 TesParser::TesParser()
-	:	_pFactory      (nullptr),
+	:	Verbosity(),
+		_pFactory      (nullptr),
 		_pFileBuffer   (nullptr),
 		_pFileBufferEnd(nullptr),
 		_fileType      (TesFileType::UNKNOWN)
 {
-	_verbose        = TESOptions::getInstance()->_verbose;
 	_dumpCompressed = TESOptions::getInstance()->_dumpCompressed;
 }
 
@@ -72,7 +72,7 @@ bool TesParser::parse(string const fileName)
 	bool	retVal(false);
 
 	//  read file
-	fprintf(stderr, "reading file '%s'\n", fileName.c_str());
+	verbose0("reading file '%s'", fileName.c_str());
 	readFile(fileName);
 	
 	//  parse file
@@ -89,27 +89,27 @@ bool TesParser::parse(string const fileName)
 		if (token == "TES3") {
 			_fileType = TesFileType::TES3;
 			_pFactory = new Tes3RecordFactory();
-			fprintf(stderr, "  found TES3 header => assuming \x1B[32mMorrowind\033[0m file\n");
+			verbose0("  found TES3 header => assuming \x1B[32mMorrowind\033[0m file");
 		}
 		else if (token == "TES4") {
 			_fileType = TesFileType::TES4;
 			_pFactory = new Tes4RecordFactory();
-			fprintf(stderr, "  found TES4 header => assuming \x1B[32mSkyrim\033[0m file\n");
+			verbose0("  found TES4 header => assuming \x1B[32mSkyrim\033[0m file");
 		}
 		else {
-			fprintf(stderr, "  \x1B[31munknown header type => skipping file\033[0m\n");
+			verbose0("  \x1B[31munknown header type => skipping file\033[0m");
 			return false;
 		}
 		
 		//  parse buffer
-		fprintf(stderr, "begin parsing\n");
+		verbose0("begin parsing");
 		retVal = (parsePartial(_pFileBuffer, _pFileBufferEnd, this, nullptr, breakReason) != nullptr);
-		fprintf(stderr, "\nend parsing\n");
+		verbose0("\nend parsing");
 
 	}  //  if (_pFileBuffer != nullptr)
 
 	if (!_message.empty()) {
-		fprintf(stderr, "%s\n", _message.c_str());
+		verbose0("%s", _message.c_str());
 	}
 
 	return retVal;
@@ -148,7 +148,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			case TesRecordType::RECORDGROUP: {
 				unsigned char* pStartGrp(pStart);
 
-				if (_verbose)	fprintf(stderr, "found \x1B[33m%s\033[0m [GROUP]\n", token.c_str());
+				verbose2("found \x1B[33m%s\033[0m [GROUP]", token.c_str());
 				if (pRecordNew->_fileType == TesFileType::TES3) {
 					pRecordNew->_size = pBlockEnd - pStart;
 				}
@@ -173,7 +173,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			}
 				
 			case TesRecordType::RECORD: {
-				if (_verbose)	fprintf(stderr, "found \x1B[33m%s\033[0m [RECORD]\n", token.c_str());
+				verbose2("found \x1B[33m%s\033[0m [RECORD]", token.c_str());
 				if (pRecordNew->compressed()) {
 					if (parseCompressed(pStart + pRecordNew->sizeRecord(),
 										pStart + pRecordNew->sizeTotal(),
@@ -209,7 +209,7 @@ unsigned char* TesParser::parsePartial(unsigned char* pBlockStart, unsigned char
 			}
 				
 			case TesRecordType::SUBRECORD:
-				if (_verbose)	fprintf(stderr, "found \x1B[33m%s\033[0m [SUBRECORD]\n", token.c_str());
+				verbose2("found \x1B[33m%s\033[0m [SUBRECORD]", token.c_str());
 				break;
 				
 			default:

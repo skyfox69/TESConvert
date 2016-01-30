@@ -11,6 +11,7 @@
 #include "subrecord/tes4subrecordsinglestring.h"
 #include <cstring>
 #include <sstream>
+#include <climits>
 
 #define	SIZE_MAP_MAX	100
 #define	SIZE_CELL_64	 64
@@ -20,7 +21,8 @@
 
 //-----------------------------------------------------------------------------
 Tes4Processor::Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records)
-	:	_mapRecords(mapRecords),
+	:	Verbosity(),
+		_mapRecords(mapRecords),
 		_records   (records)
 {
 	prepareData();
@@ -55,6 +57,7 @@ bool Tes4Processor::prepareData()
 		}
 	}
 
+	verbose1("  found: %d CELLs, %d WRLD-Groups, %d externel CELL-Groups", _mapRecordsCell.size(), _mapRecordsGrpWrld.size(), _mapRecordsGrpCell.size());
 	return true;
 }
 
@@ -94,7 +97,7 @@ bool Tes4Processor::dumpWorldspaces()
 	Tes4RecordGeneric*			pRecMain(nullptr);
 	Tes4SubRecordSingleString*	pRecSub (nullptr);
 
-	printf("\nKnown Worldspaces:\n");
+	fprintf(stderr, "\nKnown Worldspaces:\n");
 	for (auto& pRecord : _mapRecords["WRLD"]) {
 		pRecMain = dynamic_cast<Tes4RecordGeneric*>(pRecord);
 		if (pRecMain != nullptr) {
@@ -102,7 +105,7 @@ bool Tes4Processor::dumpWorldspaces()
 				if (pSubRecord->_name == "EDID") {
 					pRecSub = dynamic_cast<Tes4SubRecordSingleString*>(pSubRecord);
 					if (pRecSub != nullptr) {
-						printf(" - %s\n", pRecSub->_text.c_str());
+						fprintf(stderr, " - %s\n", pRecSub->_text.c_str());
 					}
 				}
 			}
@@ -164,7 +167,7 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 	Tes4FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
 
 	//  get size of map
-	printf("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
+	verbose0("generating image file: %s\n  getting sizes: ", fileName.c_str());
 	for (auto pRecord : _mapRecords["CELL"]) {
 		pSubCellXclc = dynamic_cast<Tes4SubRecordXCLCCELL*>(pRecord->findSubRecord("XCLC"));
 		if (pSubCellXclc) {
@@ -175,30 +178,29 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 		}
 	}
 
-	printf("minX: %d, maxX: %d, minY: %d, maxY: %d\n", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
-	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 1);
-	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 1);
+	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
+	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
+	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
 	if ((fillFuncIn._sizeMap = (fillFuncIn._sizeX * fillFuncIn._sizeY)) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
 	fillFuncIn._sizeMap *= cellSize*cellSize;
-	printf("  building internal bitmap\n");
+	verbose0("  building internal bitmap");
 
 	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
 
 	//  call bitmap fill function
 	if (pFillFunction(this, &bitmap, &fillFuncIn)) {
 		//  generate bitmap file
-		printf("  writing bitmap file\n");
+		verbose0("  writing image file");
 
 		bitmap.write(fileName);
 
 	}  //  if (filled)
 
-	printf("done\n");
-
+	verbose0("done");
 	return true;
 }
 
@@ -214,9 +216,10 @@ bool Tes4Processor::dumpVclr(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 	long					bitMapX     (0);
 	long					bitMapY     (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
-	bool					verbose     (TESOptions::getInstance()->_verbose);
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
+
+	verbose0("  parsing vertex colors");
 
 	//  pre-fill bitmap
 	pBitmap->clear(0xffff, 0xffff, 0xffff);
@@ -269,10 +272,13 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 	long					posMapY     (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	int						heightMin   (INT_MAX);
+	int						heightMax   (INT_MIN);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
-	bool					verbose     (TESOptions::getInstance()->_verbose);
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
+
+	verbose0("  parsing vertex heights");
 
 	//  pre-fill bitmap
 	pBitmap->clear(0xffff, 0xffff, 0x0000);
@@ -314,6 +320,8 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 					}
 
 					realHeight = (int) offsetRow;
+					if (realHeight > heightMax)		heightMax = realHeight;
+					if (realHeight < heightMin)		heightMin = realHeight;
 
 					bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_32 + pixX;
 					bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_32 + pixY;
@@ -330,6 +338,7 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 		}  //  if (pSubLandVhgt != nullptr)
 	}  //  for (auto pRecord : _mapRecords["LAND"])
 
+	verbose1("  min. height: %d, max. height: %d", heightMin, heightMax);
 	return true;
 }
 
@@ -337,6 +346,7 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 {
 	char*					pChar       (nullptr);
+	map<unsigned long, int>	mapTextIds;
 	string					markPos     (TESOptions::getInstance()->_markPos);
 	long					posMapX     (0);
 	long					posMapY     (0);
@@ -349,9 +359,11 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 	unsigned long			pixX        (0);
 	unsigned long			pixY        (0);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
-	unsigned char	quadrant            (0);
+	unsigned char			quadrant    (0);
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
+
+	verbose0("  parsing textures");
 
 	//  pre-fill bitmap
 	pBitmap->clear();
@@ -370,6 +382,7 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 				textureId = ((Tes4SubRecordATXT*) pSubRecord)->_textureId;
 				offPosX   = (quadrant % 2) * 17 + posMapX * SIZE_CELL_34;
 				offPosY   = (quadrant / 2) * 17 + posMapY * SIZE_CELL_34;
+				mapTextIds[textureId] += 1;
 			} else if (pSubRecord->_name == "VTXT") {
 				Tes4SubRecordVTXT*	pVtxt((Tes4SubRecordVTXT*) pSubRecord);
 
@@ -392,5 +405,6 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 		}  //  for (auto& pSubRecord : *entry.second)
 	}  //  for (auto entry : _mapRecordsLand)
 
+	verbose1("  found %d unique textures", mapTextIds.size());
 	return true;
 }

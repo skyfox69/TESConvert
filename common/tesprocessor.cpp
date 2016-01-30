@@ -90,6 +90,8 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 			if (!pOptions->_fileNameT.empty() && (pOptions->_targetVersion == 4)) {
 				convertToTES4(pOptions->_fileNameT);
 			}
+
+			delete pSubProcessor;
 		}
 	}
 
@@ -99,9 +101,9 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 //-----------------------------------------------------------------------------
 bool TesProcessor::prepareRecordMap()
 {
-	printf("begin preparing\n");
+	verbose0("begin preparing");
 	prepareRecordMapRecursive(_parser);
-	printf("end preparing\n");
+	verbose0("end preparing");
 	return true;
 }
 

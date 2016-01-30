@@ -14,7 +14,8 @@
 
 //-----------------------------------------------------------------------------
 Tes3Processor::Tes3Processor(map<string, vector<TesRecordBase*>>& mapRecords)
-	:	_mapRecords(mapRecords)
+	:	Verbosity(),
+		_mapRecords(mapRecords)
 {
 	prepareData();
 }
@@ -61,7 +62,7 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 	Tes3FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
 
 	//  get size of map
-	printf("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
+	verbose0("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
 	for (auto pRecord : _mapRecords["LAND"]) {
 		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
 		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
@@ -72,29 +73,29 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 		}
 	}
 
-	printf("minX: %d, maxX: %d, minY: %d, maxY: %d\n", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
-	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 1);
-	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 1);
+	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
+	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
+	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
 	if ((fillFuncIn._sizeMap = (fillFuncIn._sizeX * fillFuncIn._sizeY)) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
 	fillFuncIn._sizeMap *= cellSize*cellSize;
-	printf("  building internal bitmap\n");
+	verbose0("  building internal bitmap (%d x %d | %d x %d)", fillFuncIn._sizeX, fillFuncIn._sizeY, fillFuncIn._sizeX*cellSize, fillFuncIn._sizeY*cellSize);
 
 	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
 
 	//  call bitmap fill function
 	if (pFillFunction(this, &bitmap, &fillFuncIn)) {
 		//  generate bitmap file
-		printf("  writing bitmap file\n");
+		verbose0("  writing bitmap file");
 
 		bitmap.write(fileName);
 		
 	}  //  if (filled)
 
-	printf("done\n");
+	verbose0("done");
 	
 	return true;
 }
@@ -110,7 +111,6 @@ bool Tes3Processor::dumpVclr(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
 	long					bitMapY     (0);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
-	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	//  pre-fill bitmap
 	pBitmap->clear(0xffff, 0xffff, 0xffff);
@@ -164,7 +164,6 @@ bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
 	long					bitMapY     (0);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
-	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	//  pre-fill bitmap
 	pBitmap->clear(0xffff, 0xffff, 0x0000);
@@ -236,7 +235,6 @@ bool Tes3Processor::dumpVtex(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
 	long					bitMapY     (0);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
-	bool					verbose     (TESOptions::getInstance()->_verbose);
 
 	//  pre-fill bitmap
 	pBitmap->clear();

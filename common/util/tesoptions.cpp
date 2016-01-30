@@ -7,14 +7,15 @@ TESOptions*	TESOptions::_pInstance = nullptr;
 
 //-----------------------------------------------------------------------------
 TESOptions::TESOptions()
-	:	_verbose       (false),
-		_dumpFinalS    (false),
+	:	_dumpFinalS    (false),
 		_dumpFinalT    (false),
+		_dumpFinalX    (false),
 		_drawGrid      (false),
 		_dumpUsedTags  (false),
 		_outFormatType (TesOutFormatType::BMP_24),
 		_dumpCompressed(0),
-		_targetVersion (0)
+		_targetVersion (0),
+		_verboseLevel  (0)
 {}
 
 //-----------------------------------------------------------------------------
@@ -37,7 +38,7 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "C:d:D:f:gL:m:o:t:vV:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "C:d:D:f:gL:m:o:t:v:V:w:")) != -1) {
 		switch (opt) {
 			case 'C':
 				_fileNameC = optarg;
@@ -132,7 +133,7 @@ bool TESOptions::parse(int argc, char** argv)
 				}
 				break;
 			case 'v':
-				_verbose = true;
+				_verboseLevel = atoi(optarg);
 				break;
 			case 'w':
 				_worldspace = optarg;
@@ -178,7 +179,7 @@ bool TESOptions::usage()
 			"  -o FILE\t\tname of outfile for conversion target\n"
 			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
 			"  -V FILE\t\twrite vertex heights to <FILE>.<ext-by-format>\n"
-			"  -v\t\t\tverbose - more output\n"
+			"  -v LEVEL\t\tverbose - more output\n"
 			"  -w [l|WORLDSPACE]\tname of worldspace to export/import, -wl to list all worldspaces (TES4 only)\n"
 			"\n"
 		);

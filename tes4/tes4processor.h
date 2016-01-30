@@ -4,6 +4,7 @@
 #include "common/itesprocessor.h"
 #include "common/tesparser.h"
 #include "common/types/tesfunctiontypes.h"
+#include "common/util/verbosity.h"
 #include <map>
 
 class Tes4RecordGeneric;
@@ -22,7 +23,7 @@ struct Tes4FillFuncIn
 };
 
 //-----------------------------------------------------------------------------
-class Tes4Processor : public ITesProcessor
+class Tes4Processor : protected Verbosity, public ITesProcessor
 {
 	private:
 		map<string, vector<TesRecordBase*>>&	_mapRecords;		//  all records by name
@@ -31,7 +32,7 @@ class Tes4Processor : public ITesProcessor
 		map<unsigned long, Tes4RecordGroup*>	_mapRecordsGrpWrld;	//  Groups WRLD Children
 		map<unsigned long, Tes4RecordGroup*>	_mapRecordsGrpCell;	//  Groups external CELL Children
 		vector<TesRecordBase*>&					_records;			//  all records by structure/appearance
-
+		
 		virtual	bool							prepareData();
 		virtual	bool							prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup = nullptr);
 		virtual	bool							prepareLandMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);

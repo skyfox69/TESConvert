@@ -3,6 +3,7 @@
 
 #include "common/itesprocessor.h"
 #include "common/tesparser.h"
+#include "common/util/verbosity.h"
 #include "common/types/tesfunctiontypes.h"
 #include <map>
 
@@ -19,7 +20,7 @@ struct Tes3FillFuncIn
 };
 
 //-----------------------------------------------------------------------------
-class Tes3Processor : public ITesProcessor
+class Tes3Processor : protected Verbosity, public ITesProcessor
 {
 	private:
 		map<string, vector<TesRecordBase*>>&	_mapRecords;

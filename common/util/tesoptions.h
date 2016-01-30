@@ -21,7 +21,6 @@ class TESOptions
 		string								_fileNameT;
 		string								_markPos;
 		string								_worldspace;
-		bool								_verbose;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
 		bool								_dumpFinalX;
@@ -30,6 +29,7 @@ class TESOptions
 		TesOutFormatType					_outFormatType;
 		unsigned char						_dumpCompressed;
 		unsigned char						_targetVersion;
+		unsigned char						_verboseLevel;
 
 		virtual								~TESOptions();
 		static	TESOptions*					getInstance();

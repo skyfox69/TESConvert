@@ -1,4 +1,5 @@
 #include "common/record/tesrecordgroup.h"
+#include <algorithm>
 
 //-----------------------------------------------------------------------------
 TesRecordGroup::TesRecordGroup(TesFileType const fileType)
@@ -13,7 +14,15 @@ TesRecordGroup::TesRecordGroup(TesFileType const fileType)
 
 //-----------------------------------------------------------------------------
 TesRecordGroup::~TesRecordGroup()
-{}
+{
+	remove_if(begin(),
+			  end(),
+			  [](TesRecordBase* pRecord) {
+				  delete pRecord;
+				  return true;
+			  }
+			 );
+}
 
 //-----------------------------------------------------------------------------
 size_t TesRecordGroup::sizeRecord()
