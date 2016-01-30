@@ -20,7 +20,6 @@ TesParser::TesParser()
 		_pFileBufferEnd(nullptr),
 		_fileType      (TesFileType::UNKNOWN)
 {
-	_verboseLevel   = TESOptions::getInstance()->_verboseLevel;
 	_dumpCompressed = TESOptions::getInstance()->_dumpCompressed;
 }
 

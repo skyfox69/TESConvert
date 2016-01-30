@@ -32,8 +32,7 @@ class Tes4Processor : protected Verbosity, public ITesProcessor
 		map<unsigned long, Tes4RecordGroup*>	_mapRecordsGrpWrld;	//  Groups WRLD Children
 		map<unsigned long, Tes4RecordGroup*>	_mapRecordsGrpCell;	//  Groups external CELL Children
 		vector<TesRecordBase*>&					_records;			//  all records by structure/appearance
-		unsigned char							_verboseLevel;
-
+		
 		virtual	bool							prepareData();
 		virtual	bool							prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup = nullptr);
 		virtual	bool							prepareLandMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize);
