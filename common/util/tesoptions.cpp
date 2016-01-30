@@ -9,6 +9,7 @@ TESOptions*	TESOptions::_pInstance = nullptr;
 TESOptions::TESOptions()
 	:	_dumpFinalS    (false),
 		_dumpFinalT    (false),
+		_dumpFinalX    (false),
 		_drawGrid      (false),
 		_dumpUsedTags  (false),
 		_outFormatType (TesOutFormatType::BMP_24),

@@ -90,6 +90,8 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 			if (!pOptions->_fileNameT.empty() && (pOptions->_targetVersion == 4)) {
 				convertToTES4(pOptions->_fileNameT);
 			}
+
+			delete pSubProcessor;
 		}
 	}
 
