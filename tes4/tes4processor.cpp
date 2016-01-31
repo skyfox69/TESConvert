@@ -13,7 +13,6 @@
 #include <sstream>
 #include <climits>
 
-#define	SIZE_MAP_MAX	100
 #define	SIZE_CELL_64	 64
 #define	SIZE_CELL_32	 32
 #define	SIZE_CELL_34	 34
@@ -164,7 +163,7 @@ bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFill
 bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize)
 {
 	Tes4SubRecordXCLCCELL*	pSubCellXclc(nullptr);
-	Tes4FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
+	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
 
 	//  get size of map
 	verbose0("generating image file: %s\n  getting sizes: ", fileName.c_str());
@@ -181,12 +180,11 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
 	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
 	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
-	if ((fillFuncIn._sizeMap = (fillFuncIn._sizeX * fillFuncIn._sizeY)) <= 1) {
+	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
-	fillFuncIn._sizeMap *= cellSize*cellSize;
 	verbose0("  building internal bitmap");
 
 	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
@@ -205,7 +203,7 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 }
 
 //-----------------------------------------------------------------------------
-bool Tes4Processor::dumpVclr(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
+bool Tes4Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 {
 	Tes4SubRecordVNML*		pSubLandVclr(nullptr);
 	char*					pChar       (nullptr);
@@ -262,7 +260,7 @@ bool Tes4Processor::dumpVclr(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 }
 
 //-----------------------------------------------------------------------------
-bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
+bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 {
 	Tes4SubRecordVHGT*		pSubLandVhgt(nullptr);
 	char*					pChar       (nullptr);
@@ -343,7 +341,7 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
 }
 
 //-----------------------------------------------------------------------------
-bool Tes4Processor::dumpVtex(Bitmap* pBitmap, Tes4FillFuncIn* pFillFuncIn)
+bool Tes4Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 {
 	char*					pChar       (nullptr);
 	map<unsigned long, int>	mapTextIds;

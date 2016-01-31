@@ -8,7 +8,6 @@
 #include "common/record/tesrecordmain.h"
 #include <cstring>
 
-#define	SIZE_MAP_MAX	100
 #define	SIZE_CELL_64	 64
 #define	SIZE_CELL_16	 16
 
@@ -59,7 +58,7 @@ bool Tes3Processor::dumpVtexMap(string const fileName)
 bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunction, unsigned short cellSize)
 {
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
-	Tes3FillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0, SIZE_MAP_MAX * SIZE_MAP_MAX};
+	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
 
 	//  get size of map
 	verbose0("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
@@ -76,12 +75,11 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
 	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
 	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
-	if ((fillFuncIn._sizeMap = (fillFuncIn._sizeX * fillFuncIn._sizeY)) <= 1) {
+	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
-	fillFuncIn._sizeMap *= cellSize*cellSize;
 	verbose0("  building internal bitmap (%d x %d | %d x %d)", fillFuncIn._sizeX, fillFuncIn._sizeY, fillFuncIn._sizeX*cellSize, fillFuncIn._sizeY*cellSize);
 
 	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
@@ -101,7 +99,7 @@ bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunct
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpVclr(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
+bool Tes3Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 {
 	Tes3SubRecordVNML*		pSubLandVclr(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
@@ -154,7 +152,7 @@ bool Tes3Processor::dumpVclr(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
+bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 {
 	Tes3SubRecordVHGT*		pSubLandVhgt(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
@@ -225,7 +223,7 @@ bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
 }
 
 //-----------------------------------------------------------------------------
-bool Tes3Processor::dumpVtex(Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn)
+bool Tes3Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 {
 	Tes3SubRecordVTEX*		pSubLandVtex(nullptr);
 	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);

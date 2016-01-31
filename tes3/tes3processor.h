@@ -8,18 +8,6 @@
 #include <map>
 
 //-----------------------------------------------------------------------------
-struct Tes3FillFuncIn
-{
-	long	_sizeMinX;
-	long	_sizeMaxX;
-	long	_sizeMinY;
-	long	_sizeMaxY;
-	size_t	_sizeX;
-	size_t	_sizeY;
-	size_t	_sizeMap;
-};
-
-//-----------------------------------------------------------------------------
 class Tes3Processor : protected Verbosity, public ITesProcessor
 {
 	private:
@@ -27,9 +15,9 @@ class Tes3Processor : protected Verbosity, public ITesProcessor
 
 		virtual	bool							prepareData();
 		virtual	bool							dumpToMap  (const string fileName, Tes3FillFunction pFillFunction, unsigned short cellSize);
-		virtual	bool							dumpVhgt   (Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVclr   (Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn);
-		virtual	bool							dumpVtex   (Bitmap* pBitmap, Tes3FillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVhgt   (Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVclr   (Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn);
+		virtual	bool							dumpVtex   (Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn);
 
 	public:
 												Tes3Processor(map<string, vector<TesRecordBase*>>& mapRecords);
