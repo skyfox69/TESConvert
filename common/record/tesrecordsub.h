@@ -17,6 +17,7 @@ class TesRecordSub : public TesRecordBase, public Endian
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
 		virtual	TesRecordBase*				findSubRecord(string const token) { return nullptr; }
+		virtual	size_t						calcSizes();
 };
 
 #endif	/* TESRECORDSUB_H */

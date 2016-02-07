@@ -1,6 +1,15 @@
 #include "tes4/subrecord/tes4subrecordsingleushort.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordSingleUShort::Tes4SubRecordSingleUShort(string const name, unsigned short const value)
+	:	TesRecordSub(TesFileType::TES4),
+		_value      (value)
+{
+	_name = name;
+	_size = 2;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordSingleUShort::Tes4SubRecordSingleUShort(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4),
 		_value      (0)
@@ -54,4 +63,12 @@ void Tes4SubRecordSingleUShort::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["TXSTDNAM"] = Tes4SubRecordSingleUShort::create;
 	mapRecords["CELLXNAM"] = Tes4SubRecordSingleUShort::create;
 	mapRecords["WRLDPNAM"] = Tes4SubRecordSingleUShort::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordSingleUShort::writeFile(FILE* pFile)
+{
+	writeString4(_name,  pFile);
+	writeUShort4(_size,  pFile);
+	writeUShort (_value, pFile);
 }

@@ -5,6 +5,8 @@
 #include "common/util/verbosity.h"
 #include <map>
 
+class ITesProcessor;
+
 //-----------------------------------------------------------------------------
 class TesProcessor : protected Verbosity
 {
@@ -25,7 +27,7 @@ class TesProcessor : protected Verbosity
 		virtual	void						dumpUsedTokens();
 		
 		//  convert to TES files
-		virtual	bool						convertToTES4(string const fileName);
+		virtual	bool						convert(string const fileName, unsigned char const targetType, string const worldspace, ITesProcessor* pSubProcessor);
 		
 	protected:
 											TesProcessor();

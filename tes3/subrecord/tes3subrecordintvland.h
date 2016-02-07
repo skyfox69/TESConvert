@@ -21,6 +21,9 @@ class Tes3SubRecordINTVLAND : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES3SUBRECORDINTVLAND_H */

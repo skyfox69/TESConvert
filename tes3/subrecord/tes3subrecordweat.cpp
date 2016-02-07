@@ -65,3 +65,7 @@ void Tes3SubRecordWEAT::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["REGNWEAT"] = Tes3SubRecordWEAT::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordWEAT::writeFile(FILE* pFile)
+{}

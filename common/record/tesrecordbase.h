@@ -29,6 +29,9 @@ class TesRecordBase
 		virtual	void						dumpXml() = 0;
 		virtual	TesRecordBase*				findSubRecord(string const token) = 0;
 		virtual	bool						compressed();
+		virtual	size_t						calcSizes() = 0;
+		virtual	void						writeFile(FILE* pFile) = 0;
+		virtual	unsigned char*				writeMem(unsigned char* pMemory);
 };
 
 #endif	/* TESRECORDBASE_H */

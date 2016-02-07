@@ -34,3 +34,7 @@ void Tes3SubRecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecor
 	mapRecords["FRMRUNAM"] = Tes3SubRecordIgnore::create;
 	mapRecords["DELE"] = Tes3SubRecordIgnore::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordIgnore::writeFile(FILE* pFile)
+{}

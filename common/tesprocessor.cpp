@@ -1,9 +1,11 @@
 #include "common/tesprocessor.h"
 #include "common/itesprocessor.h"
 #include "common/util/tesoptions.h"
+#include "common/util/bitmap.h"
 #include "record/tesrecordbase.h"
 #include "tes3/tes3processor.h"
 #include "tes4/tes4processor.h"
+#include "tes4/tes4converter.h"
 #include "record/tesrecordmain.h"
 #include "record/tesrecordgroup.h"
 #include <cstring>
@@ -86,9 +88,9 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 			if (!pOptions->_fileNameL.empty()) {
 				pSubProcessor->dumpVtexMap(pOptions->_fileNameL);
 			}
-			//  convert to TES4
-			if (!pOptions->_fileNameT.empty() && (pOptions->_targetVersion == 4)) {
-				convertToTES4(pOptions->_fileNameT);
+			//  convert model
+			if (!pOptions->_fileNameT.empty()) {
+				convert(pOptions->_fileNameT, pOptions->_targetVersion, pOptions->_worldspace, pSubProcessor);
 			}
 
 			delete pSubProcessor;
@@ -174,10 +176,43 @@ void TesProcessor::dumpUsedTokens()
 }
 
 //-----------------------------------------------------------------------------
-bool TesProcessor::convertToTES4(const string fileName)
+bool TesProcessor::convert(string const fileName, unsigned char const targetType, string const worldspace, ITesProcessor* pSubProcessor)
 {
-	
-	
-	
-	return true;
+	bool	retVal(false);
+
+	//  sanity check
+	if (((_parser.fileType() == TesFileType::TES3) && (targetType == 3)) ||
+		((_parser.fileType() == TesFileType::TES4) && (targetType == 4))) {
+		verbose0("\x1B[33mCan't see any reason to convert TES%d into same version\033[0m", targetType);
+		return false;
+	}
+
+	//  generate bitmap representing heights
+	Bitmap*		pBitmap(pSubProcessor->generateVHGTBitmap());
+
+	if (pBitmap == nullptr) {
+		verbose0("\x1B[33mCan't generate intermediate height-bitmap - operation cancelled!\033[0m");
+		return false;
+	}
+
+	//  delegate to converter
+	switch (targetType) {
+		case 3:	{		//  TES3
+			verbose0("SORRY - not yet implemented!");
+			break;
+		}
+		case 4: {		//  TES4
+			Tes4Converter	converter(_mapRecords, _parser, worldspace);
+
+			verbose0("begin converting");
+			converter.convert(fileName, pBitmap);
+			verbose0("end converting");
+			break;
+		}
+	}
+
+	//  clean up
+	delete pBitmap;
+
+	return retVal;
 }

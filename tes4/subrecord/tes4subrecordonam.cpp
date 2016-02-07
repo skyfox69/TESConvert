@@ -54,3 +54,8 @@ void Tes4SubRecordONAM::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["WRLDONAM"] = Tes4SubRecordONAM::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordONAM::writeFile(FILE* pFile)
+{
+}

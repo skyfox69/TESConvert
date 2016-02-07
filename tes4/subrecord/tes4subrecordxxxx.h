@@ -20,6 +20,9 @@ class Tes4SubRecordXXXX : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4SUBRECORDXXXX_H */

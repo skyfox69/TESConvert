@@ -13,6 +13,7 @@ class Tes4SubRecordXCLCCELL : public TesRecordSub
 		unsigned long						_flags;
 
 											Tes4SubRecordXCLCCELL(unsigned char* pBuffer);
+											Tes4SubRecordXCLCCELL(string const name, long const x, long const y);
 		virtual								~Tes4SubRecordXCLCCELL();
 		
 		//  TesRecordFactory
@@ -22,6 +23,9 @@ class Tes4SubRecordXCLCCELL : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4SUBRECORDXCLCCELL_H */

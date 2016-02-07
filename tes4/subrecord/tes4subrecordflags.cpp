@@ -1,6 +1,11 @@
 #include "tes4/subrecord/tes4subrecordflags.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordFlags::Tes4SubRecordFlags(string const name, unsigned long const value)
+	:	Tes4SubRecordSingleULong(name, value)
+{}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordFlags::Tes4SubRecordFlags(unsigned char* pBuffer)
 	:	Tes4SubRecordSingleULong(pBuffer)
 {}

@@ -71,3 +71,7 @@ void Tes3RecordGroup::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["CELLFRMR"] = Tes3RecordGroup::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3RecordGroup::writeFile(FILE* pFile)
+{}

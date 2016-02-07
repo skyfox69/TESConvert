@@ -1,5 +1,6 @@
 #include "tes4/record/tes4recordgroup.h"
 #include <algorithm>
+#include <unistd.h>
 
 static string	groupNames[] = {"Top", "World Children", "Interior Cell Block", "Interior Cell Sub-Block",
 								"Exterior Cell Block", "Exterior Cell Sub-Block", "Cell Children",
@@ -119,4 +120,25 @@ TesRecordBase* Tes4RecordGroup::create(unsigned char* pBuffer)
 void Tes4RecordGroup::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["GRUP"] = Tes4RecordGroup::create;
+}
+
+//-----------------------------------------------------------------------------
+void Tes4RecordGroup::writeFile(FILE* pFile)
+{
+	writeString4(_name, pFile);
+	writeSizeT  (_size, pFile);
+	if (_groupType == 0) {
+		writeString4(_labelS, pFile);
+	} else {
+		writeULong(_labelL, pFile);
+	}
+	writeULong (_groupType, pFile);
+	writeUShort(_timestamp, pFile);
+	writeUShort(_unknown1,  pFile);
+	writeUShort(_version,   pFile);
+	writeUShort(_unknown2,  pFile);
+
+	for (auto& pRecord : *this) {
+		pRecord->writeFile(pFile);
+	}
 }

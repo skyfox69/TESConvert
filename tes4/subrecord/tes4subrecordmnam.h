@@ -18,6 +18,7 @@ class Tes4SubRecordMNAM : public TesRecordSub
 		float								_camHeightMax;
 		float								_camInitPitch;
 
+											Tes4SubRecordMNAM();
 											Tes4SubRecordMNAM(unsigned char* pBuffer);
 		virtual								~Tes4SubRecordMNAM();
 		
@@ -28,6 +29,9 @@ class Tes4SubRecordMNAM : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4SUBRECORDMNAM_H */

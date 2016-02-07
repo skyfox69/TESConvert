@@ -25,7 +25,6 @@ class TesParser : public Endian, protected Verbosity, public vector<TesRecordBas
 		virtual	bool						readFile(string const fileName);
 		virtual	unsigned char*				parsePartial(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent, TesParserBreakReason& breakReason);
 		virtual	unsigned char*				parseCompressed(unsigned char* pBlockStart, unsigned char* pBlockEnd, vector<TesRecordBase*>* pCollection, TesRecordBase* pParent, TesParserBreakReason& breakReason);
-		virtual	int							inflateBuffer(const void* pBufSrc, const int lenSrc, void* pBufDst, const int lenDst);
 		
 	public:
 											TesParser();

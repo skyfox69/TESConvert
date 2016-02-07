@@ -42,3 +42,8 @@ void Tes4SubRecordOBND::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["TXSTOBND"] = Tes4SubRecordOBND::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordOBND::writeFile(FILE* pFile)
+{
+}

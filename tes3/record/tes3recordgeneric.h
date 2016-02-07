@@ -18,6 +18,9 @@ class Tes3RecordGeneric : public TesRecordMain
 		//  override TesRecordMain
 		virtual	size_t						sizeRecord();
 		virtual	size_t						sizeTotal();
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES3RECORDGENERIC_H */

@@ -46,3 +46,8 @@ void Tes4SubRecordXXXX::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["WRLDXXXX"] = Tes4SubRecordXXXX::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordXXXX::writeFile(FILE* pFile)
+{
+}

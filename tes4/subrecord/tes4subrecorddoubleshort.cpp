@@ -48,3 +48,8 @@ void Tes4SubRecordDoubleShort::registerClass(map<string, TesCreateFunction>& map
 {
 	mapRecords["WRLDWCTR"] = Tes4SubRecordDoubleShort::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordDoubleShort::writeFile(FILE* pFile)
+{
+}

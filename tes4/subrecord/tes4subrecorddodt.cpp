@@ -79,3 +79,8 @@ void Tes4SubRecordDODT::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["TXSTDODT"] = Tes4SubRecordDODT::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordDODT::writeFile(FILE* pFile)
+{
+}

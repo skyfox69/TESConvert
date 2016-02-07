@@ -19,6 +19,9 @@ class Tes3RecordIgnore : public TesRecordMain
 		virtual	size_t						sizeRecord();
 		virtual	size_t						sizeTotal();
 		virtual	void						dump(const short depth);
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES3RECORDIGNORE_H */

@@ -60,3 +60,7 @@ void Tes3SubRecordVHGT::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["LANDVHGT"] = Tes3SubRecordVHGT::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordVHGT::writeFile(FILE* pFile)
+{}

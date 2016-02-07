@@ -64,3 +64,7 @@ void Tes3SubRecordSingleString::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["FRMRBNAM"] = Tes3SubRecordSingleString::create;
 	mapRecords["TES3MAST"] = Tes3SubRecordSingleString::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordSingleString::writeFile(FILE* pFile)
+{}

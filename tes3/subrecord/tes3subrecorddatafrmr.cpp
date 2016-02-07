@@ -61,3 +61,7 @@ void Tes3SubRecordDATAFRMR::registerClass(map<string, TesCreateFunction>& mapRec
 	mapRecords["FRMRDATA"] = Tes3SubRecordDATAFRMR::create;
 	mapRecords["FRMRDODT"] = Tes3SubRecordDATAFRMR::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordDATAFRMR::writeFile(FILE* pFile)
+{}

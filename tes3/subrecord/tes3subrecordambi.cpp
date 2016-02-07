@@ -54,3 +54,7 @@ void Tes3SubRecordAMBI::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["CELLAMBI"] = Tes3SubRecordAMBI::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordAMBI::writeFile(FILE* pFile)
+{}

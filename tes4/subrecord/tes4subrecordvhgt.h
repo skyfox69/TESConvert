@@ -13,6 +13,7 @@ class Tes4SubRecordVHGT : public TesRecordSub
 		unsigned char						_unknown[4];
 
 											Tes4SubRecordVHGT(unsigned char* pBuffer);
+											Tes4SubRecordVHGT(float const offset);
 		virtual								~Tes4SubRecordVHGT();
 		
 		//  TesRecordFactory
@@ -22,6 +23,10 @@ class Tes4SubRecordVHGT : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
+		virtual	unsigned char*				writeMem(unsigned char* pMemory);
 };
 
 #endif	/* TES4SUBRECORDVHGT_H */

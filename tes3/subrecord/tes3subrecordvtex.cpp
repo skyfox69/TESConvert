@@ -73,3 +73,7 @@ void Tes3SubRecordVTEX::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["LANDVTEX"] = Tes3SubRecordVTEX::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordVTEX::writeFile(FILE* pFile)
+{}

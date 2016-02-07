@@ -12,6 +12,7 @@ class Tes4SubRecordHEDR : public TesRecordSub
 		unsigned long						_numRecords;
 		unsigned long						_nextObjectId;
 
+											Tes4SubRecordHEDR();
 											Tes4SubRecordHEDR(unsigned char* pBuffer);
 		virtual								~Tes4SubRecordHEDR();
 		
@@ -22,6 +23,9 @@ class Tes4SubRecordHEDR : public TesRecordSub
 		//  override TesRecordSub
 		virtual	void						dump(const short depth) override;
 		virtual	void						dumpXml() override;
+
+		//  override TesRecordBase
+		virtual	void						writeFile(FILE* pFile);
 };
 
 #endif	/* TES4SUBRECORDHEDR_H */

@@ -48,3 +48,8 @@ void Tes4SubRecordDoubleFloat::registerClass(map<string, TesCreateFunction>& map
 {
 	mapRecords["WRLDDNAM"] = Tes4SubRecordDoubleFloat::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordDoubleFloat::writeFile(FILE* pFile)
+{
+}

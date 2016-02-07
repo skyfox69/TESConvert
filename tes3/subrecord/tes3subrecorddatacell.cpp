@@ -51,3 +51,7 @@ void Tes3SubRecordDATACELL::registerClass(map<string, TesCreateFunction>& mapRec
 {
 	mapRecords["CELLDATA"] = Tes3SubRecordDATACELL::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordDATACELL::writeFile(FILE* pFile)
+{}

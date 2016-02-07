@@ -48,3 +48,8 @@ void Tes4SubRecordBTXT::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["LANDBTXT"] = Tes4SubRecordBTXT::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes4SubRecordBTXT::writeFile(FILE* pFile)
+{
+}

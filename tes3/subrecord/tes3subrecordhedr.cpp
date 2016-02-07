@@ -52,3 +52,7 @@ void Tes3SubRecordHEDR::registerClass(map<string, TesCreateFunction>& mapRecords
 {
 	mapRecords["TES3HEDR"] = Tes3SubRecordHEDR::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordHEDR::writeFile(FILE* pFile)
+{}

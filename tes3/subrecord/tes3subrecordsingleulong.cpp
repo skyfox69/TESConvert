@@ -52,3 +52,7 @@ void Tes3SubRecordSingleULong::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["FRMRINDX"] = Tes3SubRecordSingleULong::create;
 	mapRecords["CELLINTV"] = Tes3SubRecordSingleULong::create;
 }
+
+//-----------------------------------------------------------------------------
+void Tes3SubRecordSingleULong::writeFile(FILE* pFile)
+{}
