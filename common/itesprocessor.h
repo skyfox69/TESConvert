@@ -20,5 +20,6 @@ class ITesProcessor
 		virtual	bool							dumpWorldspaces() = 0;
 
 		virtual	Bitmap*							generateVHGTBitmap() = 0;
+		virtual	Bitmap*							generateVCLRBitmap() = 0;
 };
 #endif  /* ITESPROCESSOR_H */

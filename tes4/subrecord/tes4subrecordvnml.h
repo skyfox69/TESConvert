@@ -17,6 +17,7 @@ class Tes4SubRecordVNML : public TesRecordSub
 		BufferEntry							_buffer[33][33];
 
 											Tes4SubRecordVNML(unsigned char* pBuffer);
+											Tes4SubRecordVNML(unsigned char type=0);
 		virtual								~Tes4SubRecordVNML();
 		
 		//  TesRecordFactory
@@ -29,6 +30,7 @@ class Tes4SubRecordVNML : public TesRecordSub
 
 		//  override TesRecordBase
 		virtual	void						writeFile(FILE* pFile);
+		virtual	unsigned char*				writeMem(unsigned char* pMemory);
 };
 
 #endif	/* TES4SUBRECORDVNML_H */

@@ -11,5 +11,7 @@
 #include "tes4/subrecord/tes4subrecordxclccell.h"
 #include "tes4/subrecord/tes4subrecordflags.h"
 #include "tes4/subrecord/tes4subrecordvhgt.h"
+#include "tes3/subrecord/tes3subrecordintvland.h"
+#include "tes4/subrecord/tes4subrecordvnml.h"
 
 #endif	/* TES4SUBRECORDALL_H */

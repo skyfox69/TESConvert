@@ -14,18 +14,53 @@
 //-----------------------------------------------------------------------------
 Tes3Processor::Tes3Processor(map<string, vector<TesRecordBase*>>& mapRecords)
 	:	Verbosity(),
-		_mapRecords(mapRecords)
+		_pFillFuncIn(nullptr),
+		_mapRecords (mapRecords)
 {
 	prepareData();
 }
 
 //-----------------------------------------------------------------------------
 Tes3Processor::~Tes3Processor()
-{}
+{
+	if (_pFillFuncIn != nullptr)	delete _pFillFuncIn;
+}
 
 //-----------------------------------------------------------------------------
 bool Tes3Processor::prepareData()
 {
+	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
+
+	if (_pFillFuncIn != nullptr) {
+		delete _pFillFuncIn;
+		_pFillFuncIn = nullptr;
+	}
+	_pFillFuncIn = new TesFillFuncIn({999999, -999999, 999999, -999999, 0, 0});
+
+	//  get size of map
+	verbose0("preparing data:\n  getting sizes: ");
+	for (auto pRecord : _mapRecords["LAND"]) {
+		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
+		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
+			if (pSubLandIntv->_cellX < _pFillFuncIn->_sizeMinX)		_pFillFuncIn->_sizeMinX = pSubLandIntv->_cellX;
+			if (pSubLandIntv->_cellX > _pFillFuncIn->_sizeMaxX)		_pFillFuncIn->_sizeMaxX = pSubLandIntv->_cellX;
+			if (pSubLandIntv->_cellY < _pFillFuncIn->_sizeMinY)		_pFillFuncIn->_sizeMinY = pSubLandIntv->_cellY;
+			if (pSubLandIntv->_cellY > _pFillFuncIn->_sizeMaxY)		_pFillFuncIn->_sizeMaxY = pSubLandIntv->_cellY;
+		}
+	}
+
+	verbose0("  minX: %d, maxX: %d, minY: %d, maxY: %d", _pFillFuncIn->_sizeMinX, _pFillFuncIn->_sizeMaxX, _pFillFuncIn->_sizeMinY, _pFillFuncIn->_sizeMaxY);
+	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 2);
+	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 2);
+
+	//  get size of map
+	if ((_pFillFuncIn->_sizeX * _pFillFuncIn->_sizeY) <= 1) {
+		delete _pFillFuncIn;
+		_pFillFuncIn = nullptr;
+		return false;
+	}
+	verbose0("done");
+
 	return true;
 }
 
@@ -39,35 +74,34 @@ bool Tes3Processor::dumpWorldspaces()
 //-----------------------------------------------------------------------------
 Bitmap* Tes3Processor::generateVHGTBitmap()
 {
-	Bitmap*					pBitmap     (nullptr);
-	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
-	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
+	//  check internal data
+	if (_pFillFuncIn == nullptr)		return nullptr;
 
-	//  get size of map
-	verbose0("generating intermediate bitmap:\n  getting sizes: ");
-	for (auto pRecord : _mapRecords["LAND"]) {
-		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
-		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
-			if (pSubLandIntv->_cellX < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubLandIntv->_cellX;
-			if (pSubLandIntv->_cellX > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubLandIntv->_cellX;
-			if (pSubLandIntv->_cellY < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubLandIntv->_cellY;
-			if (pSubLandIntv->_cellY > fillFuncIn._sizeMaxY)		fillFuncIn._sizeMaxY = pSubLandIntv->_cellY;
-		}
-	}
+	verbose0("generating intermediate bitmap");
+	Bitmap*		pBitmap(new Bitmap(_pFillFuncIn->_sizeX * SIZE_CELL_64, _pFillFuncIn->_sizeY * SIZE_CELL_64));
 
-	verbose0("  minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
-	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
-	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
-	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
-		return nullptr;
-	}
-
-	pBitmap = new Bitmap(fillFuncIn._sizeX * SIZE_CELL_64, fillFuncIn._sizeY * SIZE_CELL_64);
-	if (!dumpVhgt(pBitmap, &fillFuncIn)) {
+	if (!dumpVhgt(pBitmap, _pFillFuncIn)) {
 		delete pBitmap;
 		return nullptr;
 	}
-	
+	verbose0("done");
+
+	return pBitmap;
+}
+
+//-----------------------------------------------------------------------------
+Bitmap* Tes3Processor::generateVCLRBitmap()
+{
+	//  check internal data
+	if (_pFillFuncIn == nullptr)		return nullptr;
+
+	verbose0("generating intermediate bitmap");
+	Bitmap*		pBitmap(new Bitmap(_pFillFuncIn->_sizeX * SIZE_CELL_64, _pFillFuncIn->_sizeY * SIZE_CELL_64));
+
+	if (!dumpVclr(pBitmap, _pFillFuncIn)) {
+		delete pBitmap;
+		return nullptr;
+	}
 	verbose0("done");
 
 	return pBitmap;
@@ -94,35 +128,17 @@ bool Tes3Processor::dumpVtexMap(string const fileName)
 //-----------------------------------------------------------------------------
 bool Tes3Processor::dumpToMap(const string fileName, Tes3FillFunction pFillFunction, unsigned short cellSize)
 {
-	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
-	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
-
-	//  get size of map
-	verbose0("generating bitmap file: %s\n  getting sizes: ", fileName.c_str());
-	for (auto pRecord : _mapRecords["LAND"]) {
-		pSubLandIntv = dynamic_cast<Tes3SubRecordINTVLAND*>(pRecord->findSubRecord("INTV"));
-		if ((pSubLandIntv != nullptr) && (pRecord->findSubRecord("VNML") != nullptr)) {
-			if (pSubLandIntv->_cellX < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubLandIntv->_cellX;
-			if (pSubLandIntv->_cellX > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubLandIntv->_cellX;
-			if (pSubLandIntv->_cellY < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubLandIntv->_cellY;
-			if (pSubLandIntv->_cellY > fillFuncIn._sizeMaxY)		fillFuncIn._sizeMaxY = pSubLandIntv->_cellY;
-		}
-	}
-
-	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
-	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
-	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
-	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
-		return false;
-	}
+	//  check internal data
+	if (_pFillFuncIn == nullptr)		return false;
 
 	//  build bitmap
-	verbose0("  building internal bitmap (%d x %d | %d x %d)", fillFuncIn._sizeX, fillFuncIn._sizeY, fillFuncIn._sizeX*cellSize, fillFuncIn._sizeY*cellSize);
+	verbose0("generating bitmap file: %s", fileName.c_str());
+	verbose0("  building internal bitmap (%d x %d | %d x %d)", _pFillFuncIn->_sizeX, _pFillFuncIn->_sizeY, _pFillFuncIn->_sizeX*cellSize, _pFillFuncIn->_sizeY*cellSize);
 
-	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
+	Bitmap		bitmap(_pFillFuncIn->_sizeX * cellSize, _pFillFuncIn->_sizeY * cellSize);
 
 	//  call bitmap fill function
-	if (pFillFunction(this, &bitmap, &fillFuncIn)) {
+	if (pFillFunction(this, &bitmap, _pFillFuncIn)) {
 		//  generate bitmap file
 		verbose0("  writing bitmap file");
 
