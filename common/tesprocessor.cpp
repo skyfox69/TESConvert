@@ -55,7 +55,7 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 
 		//  dump token structure by token name
 		if (pOptions->_dumpFinalT) {
-			dumpTokensByName();
+			dumpTokensByName(pOptions->_expToken);
 		}
 		//  dump token structure by file appearance
 		if (pOptions->_dumpFinalS) {
@@ -138,10 +138,16 @@ bool TesProcessor::parse(string const fileName)
 }
 
 //-----------------------------------------------------------------------------
-void TesProcessor::dumpTokensByName()
+void TesProcessor::dumpTokensByName(string const token)
 {
-	for (auto& mapEntry : _mapRecords) {
-		for (auto& pRecord : mapEntry.second) {
+	if (token.empty()) {
+		for (auto& mapEntry : _mapRecords) {
+			for (auto& pRecord : mapEntry.second) {
+				pRecord->dump(0);
+			}
+		}
+	} else if (_mapRecords.count(token) > 0) {
+		for (auto& pRecord : _mapRecords[token]) {
 			pRecord->dump(0);
 		}
 	}

@@ -39,8 +39,11 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "cC:d:D:f:gH:m:o:t:T:v:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "a:cC:d:D:f:gH:m:o:t:T:v:w:")) != -1) {
 		switch (opt) {
+			case 'a':
+				_expToken = optarg;
+				break;
 			case 'c':
 				_doCompress = true;
 				break;
@@ -170,6 +173,7 @@ bool TESOptions::usage()
 {
 	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
 			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
+			"  -a TOKEN\t\tdump TOKEN only\n"
 			"  -c\t\t\tcompress TES4 data where possible (e.g. LAND)\n"
 			"  -C FILE\t\twrite vertex colors to <FILE>.<ext-by-format>\n"
 			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"

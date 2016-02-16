@@ -21,6 +21,7 @@ class TESOptions
 		string								_fileNameT;
 		string								_markPos;
 		string								_worldspace;
+		string								_expToken;
 		bool								_dumpFinalT;
 		bool								_dumpFinalS;
 		bool								_dumpFinalX;
