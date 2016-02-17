@@ -7,6 +7,7 @@
 #include "common/util/tesoptions.h"
 #include "common/util/bitmap.h"
 #include "subrecord/tes4subrecordatxt.h"
+#include "subrecord/tes4subrecordbtxt.h"
 #include "subrecord/tes4subrecordvtxt.h"
 #include "subrecord/tes4subrecordsinglestring.h"
 #include <cstring>
@@ -162,7 +163,7 @@ bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFill
 			if (_mapRecordsLand.size() > 0) {
 				stringstream	strm;
 
-				strm << fileName << "_" << pString->_text.c_str() << ".bmp";
+				strm << fileName << "_" << pString->_text.c_str();
 				dumpToMap(strm.str(), pFillFunction, cellSize);
 
 			}
@@ -386,33 +387,63 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 
 		sprintf(coordBuf, "%d,%d", posMapX, posMapY);
 
+		unsigned long	textureIds[4][17][17] = {0};
+		float			opacities [4][17][17] = {0.0};
+
 		for (auto& pSubRecord : *entry.second) {
-			if (pSubRecord->_name == "ATXT") {
+			if (pSubRecord->_name == "BTXT") {
+				quadrant  = ((Tes4SubRecordBTXT*) pSubRecord)->_quadrant;
+				textureId = ((Tes4SubRecordBTXT*) pSubRecord)->_textureId;
+				mapTextIds[textureId] += 1;
+
+				for (unsigned short iy(0); iy < 17; ++iy) {
+					for (unsigned short ix(0); ix < 17; ++ix) {
+						textureIds[quadrant][iy][ix] = textureId;
+						opacities [quadrant][iy][ix] = 0.0;
+					}
+				}
+			} else if (pSubRecord->_name == "ATXT") {
 				quadrant  = ((Tes4SubRecordATXT*) pSubRecord)->_quadrant;
 				textureId = ((Tes4SubRecordATXT*) pSubRecord)->_textureId;
-				offPosX   = (quadrant % 2) * 17 + posMapX * SIZE_CELL_34;
-				offPosY   = (quadrant / 2) * 17 + posMapY * SIZE_CELL_34;
 				mapTextIds[textureId] += 1;
 			} else if (pSubRecord->_name == "VTXT") {
+
 				Tes4SubRecordVTXT*	pVtxt((Tes4SubRecordVTXT*) pSubRecord);
 
-				for (unsigned long i(0); i < pVtxt->_count; ++i) {
+				for (size_t i(0); i < pVtxt->_count; ++i) {
 					pixX = pVtxt->_pEntries[i]._position % 17;
 					pixY = pVtxt->_pEntries[i]._position / 17;
 
-					bitMapX = offPosX + pixX - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
-					bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
-
-					if (drawGrid && ((pixX == 1) || (pixY == 1))) {
-						(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
-					} else if (markPos == coordBuf) {
-						(*pBitmap)(bitMapX, bitMapY).assign(0xff, 0x00, 0xff);
-					} else {
-						(*pBitmap)(bitMapX, bitMapY).assign((unsigned char) (textureId >> 16), (unsigned char) (textureId >> 8), (unsigned char) (textureId >> 0));
+					if (opacities[quadrant][pixY][pixX] <= pVtxt->_pEntries[i]._opacity) {
+						opacities[quadrant][pixY][pixX] = pVtxt->_pEntries[i]._opacity;
+						textureIds[quadrant][pixY][pixX] = textureId;
 					}
 				}  //  for (unsigned long i(0); i < pVtxt->_count; ++i)
-			}  //  else if (pSubRecord->_name == "VTXT")
+			}  //  } else if (pSubRecord->_name == "VTXT")
 		}  //  for (auto& pSubRecord : *entry.second)
+
+		//  write data into bitmap
+		for (quadrant=0; quadrant < 4; ++quadrant) {
+			offPosX   = (quadrant % 2) * 17 + posMapX * SIZE_CELL_34;
+			offPosY   = (quadrant / 2) * 17 + posMapY * SIZE_CELL_34;
+
+			for (unsigned short position(0); position < 289; ++position) {
+				pixX = position % 17;
+				pixY = position / 17;
+
+				bitMapX = offPosX + pixX - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
+				bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
+
+				if (drawGrid && ((pixX == 1) || (pixY == 1))) {
+					(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
+				} else if (markPos == coordBuf) {
+					(*pBitmap)(bitMapX, bitMapY).assign(0xff, 0x00, 0xff);
+				} else {
+					textureId = textureIds[quadrant][pixY][pixX];
+					(*pBitmap)(bitMapX, bitMapY).assign((unsigned char) (textureId >> 16), (unsigned char) (textureId >> 8), (unsigned char) (textureId >> 0));
+				}
+			}  //  for (unsigned short position(0), position < 289; ++position)
+		}  //  for (quadrant=0; quadrant < 4; ++quadrant)
 	}  //  for (auto entry : _mapRecordsLand)
 
 	verbose1("  found %d unique textures", mapTextIds.size());
