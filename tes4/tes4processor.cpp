@@ -22,15 +22,18 @@
 //-----------------------------------------------------------------------------
 Tes4Processor::Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records)
 	:	Verbosity(),
-		_mapRecords(mapRecords),
-		_records   (records)
+		_pFillFuncIn(nullptr),
+		_mapRecords (mapRecords),
+		_records    (records)
 {
 	prepareData();
 }
 
 //-----------------------------------------------------------------------------
 Tes4Processor::~Tes4Processor()
-{}
+{
+	if (_pFillFuncIn != nullptr)		delete _pFillFuncIn;
+}
 
 //-----------------------------------------------------------------------------
 bool Tes4Processor::prepareData()
@@ -64,20 +67,27 @@ bool Tes4Processor::prepareData()
 //-----------------------------------------------------------------------------
 bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup)
 {
-	Tes4RecordGeneric*	pRecMain (nullptr);
-	Tes4RecordGroup*	pRecGroup(nullptr);
+	Tes4RecordGeneric*		pRecMain (nullptr);
+	Tes4RecordGroup*		pRecGroup(nullptr);
+	Tes4SubRecordXCLCCELL*	pRecXCLC (nullptr);
 
 	for (auto& pRecord : records) {
 		pRecMain = dynamic_cast<Tes4RecordGeneric*>(pRecord);
 		if ((pRecMain != nullptr) && (pRecMain->_name == "LAND") && (pGroup != nullptr)) {
 			if (_mapRecordsCell.count(pGroup->_labelL) > 0) {
-				Tes4SubRecordXCLCCELL*	pRecXCLC(dynamic_cast<Tes4SubRecordXCLCCELL*>(_mapRecordsCell[pGroup->_labelL]->findSubRecord("XCLC")));
+				pRecXCLC = dynamic_cast<Tes4SubRecordXCLCCELL*>(_mapRecordsCell[pGroup->_labelL]->findSubRecord("XCLC"));
 
 				if (pRecXCLC != nullptr) {
 					stringstream	tStrm;
 
 					tStrm << pRecXCLC->_x << ";" << pRecXCLC->_y;
 					_mapRecordsLand[tStrm.str()] = pRecMain;
+
+					//  get map limits
+					if (pRecXCLC->_x < _pFillFuncIn->_sizeMinX)		_pFillFuncIn->_sizeMinX = pRecXCLC->_x;
+					if (pRecXCLC->_x > _pFillFuncIn->_sizeMaxX)		_pFillFuncIn->_sizeMaxX = pRecXCLC->_x;
+					if (pRecXCLC->_y < _pFillFuncIn->_sizeMinY)		_pFillFuncIn->_sizeMinY = pRecXCLC->_y;
+					if (pRecXCLC->_y > _pFillFuncIn->_sizeMaxY)		_pFillFuncIn->_sizeMaxY = pRecXCLC->_y;
 				}
 			}
 		} else {
@@ -158,6 +168,11 @@ bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFill
 				continue;
 			}
 
+			if (_pFillFuncIn != nullptr) {
+				delete _pFillFuncIn;
+				_pFillFuncIn = nullptr;
+			}
+			_pFillFuncIn = new TesFillFuncIn({999999, -999999, 999999, -999999, 0, 0});
 			_mapRecordsLand.clear();
 			prepareDataRecursive(*_mapRecordsGrpWrld[((Tes4RecordGeneric*) pRecWorld)->_id]);
 			if (_mapRecordsLand.size() > 0) {
@@ -175,35 +190,22 @@ bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFill
 //-----------------------------------------------------------------------------
 bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize)
 {
-	Tes4SubRecordXCLCCELL*	pSubCellXclc(nullptr);
-	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
-
 	//  get size of map
 	verbose0("generating image file: %s\n  getting sizes: ", fileName.c_str());
-	for (auto pRecord : _mapRecords["CELL"]) {
-		pSubCellXclc = dynamic_cast<Tes4SubRecordXCLCCELL*>(pRecord->findSubRecord("XCLC"));
-		if (pSubCellXclc) {
-			if (pSubCellXclc->_x < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubCellXclc->_x;
-			if (pSubCellXclc->_x > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubCellXclc->_x;
-			if (pSubCellXclc->_y < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubCellXclc->_y;
-			if (pSubCellXclc->_y > fillFuncIn._sizeMaxY)		fillFuncIn._sizeMaxY = pSubCellXclc->_y;
-		}
-	}
-
-	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
-	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
-	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
-	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
+	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", _pFillFuncIn->_sizeMinX, _pFillFuncIn->_sizeMaxX, _pFillFuncIn->_sizeMinY, _pFillFuncIn->_sizeMaxY);
+	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 2);
+	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 2);
+	if ((_pFillFuncIn->_sizeX * _pFillFuncIn->_sizeY) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
 	verbose0("  building internal bitmap");
 
-	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
+	Bitmap		bitmap(_pFillFuncIn->_sizeX * cellSize, _pFillFuncIn->_sizeY * cellSize);
 
 	//  call bitmap fill function
-	if (pFillFunction(this, &bitmap, &fillFuncIn)) {
+	if (pFillFunction(this, &bitmap, _pFillFuncIn)) {
 		//  generate bitmap file
 		verbose0("  writing image file");
 
@@ -432,7 +434,7 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 				pixY = position / 17;
 
 				bitMapX = offPosX + pixX - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
-				bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
+				bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinY * SIZE_CELL_34);
 
 				if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 					(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
