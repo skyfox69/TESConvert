@@ -61,6 +61,7 @@ void Tes4SubRecordSingleFloat::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["CELLXCLW"] = Tes4SubRecordSingleFloat::create;
 	mapRecords["WRLDNAM4"] = Tes4SubRecordSingleFloat::create;
 	mapRecords["WRLDNAMA"] = Tes4SubRecordSingleFloat::create;
+	mapRecords["MATTBNAM"] = Tes4SubRecordSingleFloat::create;
 }
 
 //-----------------------------------------------------------------------------

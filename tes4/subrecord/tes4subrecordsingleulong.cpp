@@ -79,6 +79,8 @@ void Tes4SubRecordSingleULong::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["CELLLNAM"] = Tes4SubRecordSingleULong::create;
 	mapRecords["CELLXWCN"] = Tes4SubRecordSingleULong::create;
 	mapRecords["CELLXWCS"] = Tes4SubRecordSingleULong::create;
+	mapRecords["MATTHNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["MATTPNAM"] = Tes4SubRecordSingleULong::create;
 }
 
 //-----------------------------------------------------------------------------

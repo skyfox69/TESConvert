@@ -76,6 +76,7 @@ SRC = main.cpp \
       tes4/subrecord/tes4subrecorddoubleuchar.cpp \
       tes4/subrecord/tes4subrecorddoublefloat.cpp \
       tes4/subrecord/tes4subrecorddoubleshort.cpp \
+      tes4/subrecord/tes4subrecordtriplefloat.cpp \
       tes4/subrecord/tes4subrecordflags.cpp \
       tes4/subrecord/tes4subrecordignore.cpp \
 

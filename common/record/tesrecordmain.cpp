@@ -48,7 +48,7 @@ void TesRecordMain::dump(const short depth)
 	}
 	printf("%s  flags:: 0x%08X\n", indent.c_str(), _flags);
 	if (_id != 0) {
-		printf("%s  id::    %d - 0x%08x\n", indent.c_str(), _id, _id);
+		printf("%s  id::    %d - 0x%08X\n", indent.c_str(), _id, _id);
 	}
 	for_each(begin(),
 			 end(),

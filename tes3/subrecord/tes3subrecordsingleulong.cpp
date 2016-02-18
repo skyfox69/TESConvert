@@ -21,7 +21,7 @@ void Tes3SubRecordSingleULong::dump(const short depth)
 	string		indent(depth, ' ');
 	
 	printf("%s%s\n", indent.c_str(), _name.c_str());
-	printf("%s  %d\n", indent.c_str(), _value);
+	printf("%s  %d, 0x%08x\n", indent.c_str(), _value, _value);
 }
 
 //-----------------------------------------------------------------------------

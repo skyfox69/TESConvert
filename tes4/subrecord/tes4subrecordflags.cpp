@@ -42,4 +42,5 @@ TesRecordBase* Tes4SubRecordFlags::create(unsigned char* pBuffer)
 void Tes4SubRecordFlags::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["LANDDATA"] = Tes4SubRecordFlags::create;
+	mapRecords["MATTFNAM"] = Tes4SubRecordFlags::create;
 }
