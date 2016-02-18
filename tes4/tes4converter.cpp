@@ -4,9 +4,11 @@
 #include "tes4/subrecord/tes4subrecordall.h"
 #include "common/util/bitmap.h"
 #include "common/util/tesoptions.h"
+#include "common/util/tesmappingstorage.h"
 #include <ctime>
 #include <climits>
 
+#define	SIZE_CELL_17			17
 #define	SIZE_CELL_32			32
 #define	SIZE_CELL_64			64
 
@@ -82,7 +84,7 @@ void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
 }
 
 //-----------------------------------------------------------------------------
-bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* pBitmapVCLR)
+bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* pBitmapVCLR, Bitmap* pBitmapVTEX)
 {
 	Tes4RecordGeneric*		pWRLD    (new Tes4RecordGeneric("WRLD", _objectId++));
 	Tes4RecordGeneric*		pCELL    (nullptr);
@@ -98,6 +100,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 	Tes4SubRecordVHGT*		pSubVHGT (nullptr);
 	Tes4SubRecordVNML*		pSubVCLR (nullptr);
 	TESOptions*				pOptions (TESOptions::getInstance());
+	TESMappingStorage*		pMapStore(TESMappingStorage::getInstance());
 	unsigned int			bmpX     (0);
 	unsigned int			bmpY     (0);
 	unsigned int			cntCELL  (0);
@@ -197,12 +200,16 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 			pLAND->push_back(new Tes4SubRecordFlags("DATA", 0x0000001F));
 
 			//  prepare VGHT
-			pSubVHGT = new Tes4SubRecordVHGT(0.0);
-			pLAND->push_back(pSubVHGT);
+			if (pOptions->_convertTypes & TES_CONVERT_TYPE_HEIGHT_MAP) {
+				pSubVHGT = new Tes4SubRecordVHGT(0.0);
+				pLAND->push_back(pSubVHGT);
+			}
 
 			//  prepare VNML
-			pSubVCLR = new Tes4SubRecordVNML();
-			pLAND->push_back(pSubVCLR);
+			if (pOptions->_convertTypes & TES_CONVERT_TYPE_COLOR_MAP) {
+				pSubVCLR = new Tes4SubRecordVNML();
+				pLAND->push_back(pSubVCLR);
+			}
 
 			//  build height map
 			int		lastHeightX(0);
@@ -212,36 +219,76 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 				for (short pixX(0); pixX <= SIZE_CELL_32; ++pixX) {
 
 					//  write VHGT (map heights)
-					TesColor&	color     ((*pBitmapVHGT)(bmpX+pixX, bmpY+pixY));
-					int			realHeight((color._r << 16) + (color._g << 8) + color._b);
+					if (pSubVHGT != nullptr) {
+						TesColor&	color     ((*pBitmapVHGT)(bmpX+pixX, bmpY+pixY));
+						int			realHeight((color._r << 16) + (color._g << 8) + color._b);
 
-					if (color._r & 0x80) {
-						realHeight |= 0xff000000;
-					}
+						if (color._r & 0x80) {
+							realHeight |= 0xff000000;
+						}
 
-					//  calculate offset for first pixel of cell
-					if ((pixX == 0) && (pixY == 0)) {
-						pSubVHGT->_offset = (float) realHeight;
+						//  calculate offset for first pixel of cell
+						if ((pixX == 0) && (pixY == 0)) {
+							pSubVHGT->_offset = (float) realHeight;
+							lastHeightX = realHeight;
+							lastHeightY = realHeight;
+						} else if (pixX == 0) {
+							lastHeightX = lastHeightY;
+							lastHeightY = realHeight;
+						}
+
+						pSubVHGT->_height[pixY][pixX] = (unsigned char) (realHeight - lastHeightX);
 						lastHeightX = realHeight;
-						lastHeightY = realHeight;
-					} else if (pixY == 0) {
-						lastHeightX = lastHeightY;
-						lastHeightY = realHeight;
 					}
-
-					pSubVHGT->_height[pixY][pixX] = (unsigned char) (realHeight - lastHeightX);
-					lastHeightX = realHeight;
 
 					//  write VNML (vertex colors)
-					Tes4SubRecordVNML::BufferEntry&		pixel(pSubVCLR->_buffer[pixY][pixX]);
+					if (pSubVCLR != nullptr) {
+						Tes4SubRecordVNML::BufferEntry&		pixel(pSubVCLR->_buffer[pixY][pixX]);
+						TesColor&							color((*pBitmapVCLR)(bmpX+pixX, bmpY+pixY));
 
-					color = (*pBitmapVCLR)(bmpX+pixX, bmpY+pixY);
-					pixel._xr = color._r;
-					pixel._yg = color._g;
-					pixel._zb = color._b;
-
+						pixel._xr = color._r;
+						pixel._yg = color._g;
+						pixel._zb = color._b;
+					}
 				}  //  for (short pixX(0); pixX <= SIZE_CELL_32; ++pixX)
 			}  //  for (short pixY(0); pixY <= SIZE_CELL_32; ++pixY)
+
+			//  Land Textures
+			if (pOptions->_convertTypes & TES_CONVERT_TYPE_TEXTURES) {
+				for (short quadY(0); quadY < 2; ++quadY) {
+					for (short quadX(0); quadX < 2; ++quadX) {
+
+						map<unsigned int, vector<unsigned short>>	textPlaces;
+						short										quadrant(quadY*2+quadX);
+
+						for (short pixY(0); pixY < SIZE_CELL_17; ++pixY) {
+							for (short pixX(0); pixX < SIZE_CELL_17; ++pixX) {
+								unsigned int	bitmapX((bmpX + pixX + quadX*SIZE_CELL_17) / 4);
+								unsigned int	bitmapY((bmpY + pixY + quadY*SIZE_CELL_17) / 4);
+								TesColor&		color  ((*pBitmapVTEX)(((bmpX + pixX) / 4), ((bmpY + pixY) / 4)));
+								unsigned int	textId ((color._b >> 3) | (color._g << 2) | (color._r << 7));
+
+								textPlaces[textId].push_back(pixY * SIZE_CELL_17 + pixX);
+
+							}  //  for (short pixX(0); pixX <= SIZE_CELL_17; ++pixX)
+						}  //  for (short pixY(0); pixY <= SIZE_CELL_17; ++pixY)
+
+						unsigned short	idx(0);
+						for (auto& texture : textPlaces) {
+							//  map texture id...
+							unsigned long	textureId(pMapStore->mapTes3Id(texture.first));
+
+							if (idx == 0) {
+								pLAND->push_back(new Tes4SubRecordBTXT(quadrant, textureId));
+							} else {
+								pLAND->push_back(new Tes4SubRecordATXT(quadrant, textureId, idx-1));
+								pLAND->push_back(new Tes4SubRecordVTXT(1.0, texture.second));
+							}
+							++idx;
+						}  //  for (auto& texture : textPlaces)
+					}  //  for (short quadX(0); quadX < 2; ++quadX)
+				}  //  for (short quadY(0); quadY < 2; ++quadY)
+			}  //  if (pOptions->_convertTypes & TES_CONVERT_TYPE_TEXTURES)
 		}  //  for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32)
 	}  //  for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32)
 

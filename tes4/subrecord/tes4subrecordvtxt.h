@@ -20,6 +20,7 @@ class Tes4SubRecordVTXT : public TesRecordSub
 		size_t								_count;
 
 											Tes4SubRecordVTXT(unsigned char* pBuffer);
+											Tes4SubRecordVTXT(float opacity, vector<unsigned short>& points);
 		virtual								~Tes4SubRecordVTXT();
 		
 		//  TesRecordFactory

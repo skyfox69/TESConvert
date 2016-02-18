@@ -2,6 +2,17 @@
 #include <cstring>
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordBTXT::Tes4SubRecordBTXT(unsigned char quadrant, unsigned long textureId)
+	:	TesRecordSub(TesFileType::TES4),
+		_textureId  (textureId),
+		_quadrant   (quadrant)
+{
+	_name = "BTXT";
+	_size = 8;
+	memset(_unknown, 0, 3*sizeof(unsigned char));
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordBTXT::Tes4SubRecordBTXT(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
@@ -52,4 +63,9 @@ void Tes4SubRecordBTXT::registerClass(map<string, TesCreateFunction>& mapRecords
 //-----------------------------------------------------------------------------
 void Tes4SubRecordBTXT::writeFile(FILE* pFile)
 {
+	writeString4(_name,      pFile);
+	writeUShort4(_size,      pFile);
+	writeULong  (_textureId, pFile);
+	writeChar   (_quadrant,  pFile);
+	fwrite(_unknown, 1, 3, pFile);
 }

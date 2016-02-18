@@ -196,8 +196,9 @@ bool TesProcessor::convert(string const fileName, unsigned char const targetType
 	//  generate bitmap representing heights
 	Bitmap*		pBitmapVHGT(pSubProcessor->generateVHGTBitmap());
 	Bitmap*		pBitmapVCLR(pSubProcessor->generateVCLRBitmap());
+	Bitmap*		pBitmapVTEX(pSubProcessor->generateVTEXBitmap());
 
-	if (pBitmapVHGT == nullptr) {
+	if ((pBitmapVHGT == nullptr) || (pBitmapVCLR == nullptr) || (pBitmapVTEX == nullptr)) {
 		verbose0("\x1B[33mCan't generate intermediate height-bitmap - operation cancelled!\033[0m");
 		return false;
 	}
@@ -212,7 +213,7 @@ bool TesProcessor::convert(string const fileName, unsigned char const targetType
 			Tes4Converter	converter(_mapRecords, _parser, worldspace);
 
 			verbose0("begin converting");
-			converter.convert(fileName, pBitmapVHGT, pBitmapVCLR);
+			converter.convert(fileName, pBitmapVHGT, pBitmapVCLR, pBitmapVTEX);
 			verbose0("end converting");
 			break;
 		}

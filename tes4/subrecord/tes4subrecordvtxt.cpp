@@ -1,6 +1,28 @@
+#include <vector>
+
 #include "tes4/subrecord/tes4subrecordvtxt.h"
 
 static	size_t	szEntryVTXT = sizeof(Tes4SubRecordVTXT::EntryVTXT);
+
+//-----------------------------------------------------------------------------
+Tes4SubRecordVTXT::Tes4SubRecordVTXT(float opacity, vector<unsigned short>& points)
+	:	TesRecordSub(TesFileType::TES4),
+		_pEntries   (nullptr),
+		_count      (0)
+{
+	_name     = "VTXT";
+	_count    = 0;
+	_size     = points.size() * szEntryVTXT;
+	_pEntries = new EntryVTXT[points.size()];
+
+	for (auto& point : points) {
+		_pEntries[_count]._opacity  = opacity;
+		_pEntries[_count]._position = point;
+		_pEntries[_count]._unknown1 = 0;
+		_pEntries[_count]._unknown2 = 0;
+		++_count;
+	}
+}
 
 //-----------------------------------------------------------------------------
 Tes4SubRecordVTXT::Tes4SubRecordVTXT(unsigned char* pBuffer)
@@ -66,4 +88,12 @@ void Tes4SubRecordVTXT::registerClass(map<string, TesCreateFunction>& mapRecords
 //-----------------------------------------------------------------------------
 void Tes4SubRecordVTXT::writeFile(FILE* pFile)
 {
+	writeString4(_name, pFile);
+	writeUShort4(_size, pFile);
+	for (unsigned short idx(0); idx < _count; ++idx) {
+		writeUShort(_pEntries[idx]._position, pFile);
+		writeChar  (_pEntries[idx]._unknown1, pFile);
+		writeChar  (_pEntries[idx]._unknown2, pFile);
+		writeFloat4(_pEntries[idx]._opacity,  pFile);
+	}
 }

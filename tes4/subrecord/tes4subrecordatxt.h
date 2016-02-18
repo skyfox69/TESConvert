@@ -14,6 +14,7 @@ class Tes4SubRecordATXT : public TesRecordSub
 		unsigned char						_unknown;
 
 											Tes4SubRecordATXT(unsigned char* pBuffer);
+											Tes4SubRecordATXT(unsigned char quadrant, unsigned long textureId, unsigned short layer);
 		virtual								~Tes4SubRecordATXT();
 		
 		//  TesRecordFactory

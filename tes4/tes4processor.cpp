@@ -138,6 +138,12 @@ Bitmap* Tes4Processor::generateVCLRBitmap()
 }
 
 //-----------------------------------------------------------------------------
+Bitmap* Tes4Processor::generateVTEXBitmap()
+{
+	return nullptr;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVclrMap(string const fileName)
 {
 	return prepareLandMap(fileName, &Tes4Processor::dumpVclr, SIZE_CELL_32);

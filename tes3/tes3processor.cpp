@@ -108,6 +108,24 @@ Bitmap* Tes3Processor::generateVCLRBitmap()
 }
 
 //-----------------------------------------------------------------------------
+Bitmap* Tes3Processor::generateVTEXBitmap()
+{
+	//  check internal data
+	if (_pFillFuncIn == nullptr)		return nullptr;
+
+	verbose0("generating intermediate bitmap");
+	Bitmap*		pBitmap(new Bitmap(_pFillFuncIn->_sizeX * SIZE_CELL_16, _pFillFuncIn->_sizeY * SIZE_CELL_16));
+
+	if (!dumpVtex(pBitmap, _pFillFuncIn)) {
+		delete pBitmap;
+		return nullptr;
+	}
+	verbose0("done");
+
+	return pBitmap;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes3Processor::dumpVclrMap(string const fileName)
 {
 	return dumpToMap(fileName, &Tes3Processor::dumpVclr, SIZE_CELL_64);

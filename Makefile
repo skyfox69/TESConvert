@@ -20,6 +20,7 @@ SRC = main.cpp \
       common/util/bitmap.cpp \
       common/util/verbosity.cpp \
       common/util/compressor.cpp \
+      common/util/tesmappingstorage.cpp \
       common/record/tesrecordbase.cpp \
       common/record/tesrecordmain.cpp \
       common/record/tesrecordsub.cpp \

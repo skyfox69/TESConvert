@@ -13,6 +13,7 @@ class Tes4SubRecordBTXT : public TesRecordSub
 		unsigned char						_unknown[3];
 
 											Tes4SubRecordBTXT(unsigned char* pBuffer);
+											Tes4SubRecordBTXT(unsigned char quadrant, unsigned long textureId);
 		virtual								~Tes4SubRecordBTXT();
 		
 		//  TesRecordFactory

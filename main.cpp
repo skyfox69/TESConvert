@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <sysexits.h>
 #include "common/util/tesoptions.h"
+#include "common/util/tesmappingstorage.h"
 #include "common/tesprocessor.h"
 
 using namespace std;
@@ -15,11 +16,19 @@ int main(int argc, char** argv)
 		exit(EX_USAGE);
 	}
 	
+	//  initialize mappings
+	if (!TESMappingStorage::getInstance()->initialize()) {
+		delete TESMappingStorage::getInstance();
+		delete TESOptions::getInstance();
+		exit(EX_USAGE);
+	}
+
 	//  initialize worker and process
 	TesProcessor::getInstance()->process(argc, argv, optind);
 
 	//  clean up
 	delete TesProcessor::getInstance();
+	delete TESMappingStorage::getInstance();
 	delete TESOptions::getInstance();
 
 	return EX_OK;
