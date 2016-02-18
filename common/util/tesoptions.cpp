@@ -39,7 +39,7 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "a:cC:d:D:f:gH:m:o:t:T:v:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "a:cC:d:D:f:gH:m:n:o:t:T:v:w:")) != -1) {
 		switch (opt) {
 			case 'a':
 				_expToken = optarg;
@@ -103,6 +103,13 @@ bool TESOptions::parse(int argc, char** argv)
 				}
 				break;
 			case 'm':
+				if (*optarg == 0) {
+					printf("\x1B[31mPlease specify a master name!\033[0m\n");
+					return usage();
+				}
+				_masterNames.push_back(optarg);
+				break;
+			case 'n':
 				_markPos = optarg;
 				if (!_markPos.empty()) {
 					for (auto aChar : _markPos) {
@@ -123,6 +130,9 @@ bool TESOptions::parse(int argc, char** argv)
 				if (_fileNameT.empty() || (_fileNameT[0] == '-')) {
 					printf("\x1B[31mPlease specify a filename!\033[0m\n");
 					return usage();
+				}
+				if (_fileNameT.find(".esp") == string::npos) {
+					_fileNameT += ".esp";
 				}
 				break;
 			case 't':
@@ -184,7 +194,8 @@ bool TESOptions::usage()
 			"  -f FORMAT\t\tformat of image files (BMP24, BMP8, PNG24, PNG16), default: BMP24\n"
 			"  -g\t\t\tdraw square cell sized grids on all image exports\n"
 			"  -H FILE\t\twrite vertex heights to <FILE>.<ext-by-format>\n"
-			"  -m x,y\t\tdraw mark on cell at x,y\n"
+			"  -m NAME\t\tspecify master name, multiple occurance possible\n"
+			"  -n x,y\t\tdraw mark on cell at x,y\n"
 			"  -o FILE\t\tname of outfile for conversion target\n"
 			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
 			"  -T FILE\t\twrite texture occurance to <FILE>.<ext-by-format>\n"

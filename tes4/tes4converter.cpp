@@ -3,6 +3,7 @@
 #include "tes4/record/tes4recordgroup.h"
 #include "tes4/subrecord/tes4subrecordall.h"
 #include "common/util/bitmap.h"
+#include "common/util/tesoptions.h"
 #include <ctime>
 #include <climits>
 
@@ -96,6 +97,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 	Tes4SubRecordMNAM*		pSubMNAM (new Tes4SubRecordMNAM());
 	Tes4SubRecordVHGT*		pSubVHGT (nullptr);
 	Tes4SubRecordVNML*		pSubVCLR (nullptr);
+	TESOptions*				pOptions (TESOptions::getInstance());
 	unsigned int			bmpX     (0);
 	unsigned int			bmpY     (0);
 	unsigned int			cntCELL  (0);
@@ -109,6 +111,9 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 
 	tes4Header.push_back(pSubHEDR);
 	tes4Header.push_back(new Tes4SubRecordSingleString("CNAM", "TESConvert"));
+	for (auto& master : pOptions->_masterNames) {
+		tes4Header.push_back(new Tes4SubRecordSingleString("MAST", master));
+	}
 
 	//  prepare group WRLD
 	tes4Header.push_back(pGrpWRLD0);
@@ -242,11 +247,12 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 
 	//  calculate tree size recursively
 	verbose0("done.\n  calculating node sizes");
+	pSubHEDR->_nextObjectId = _objectId;
 	tes4Header.calcSizes();
 
 	//  write tree to file
 	verbose0("done.\n  writing esp file");
-	FILE*	pFile(fopen((fileName + ".esp").c_str(), "wb"));
+	FILE*	pFile(fopen((fileName).c_str(), "wb"));
 
 	if (pFile != nullptr) {
 		tes4Header.writeFile(pFile);
