@@ -24,6 +24,6 @@ class Tes4Converter : protected Verbosity
 												Tes4Converter(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records, string const worldspace);
 		virtual									~Tes4Converter();
 
-		virtual	bool							convert(string const fileName, Bitmap* pBitmap);
+		virtual	bool							convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* pBitmapVCLR);
 };
 #endif  /* TES4CONVERTER_H */

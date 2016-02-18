@@ -39,8 +39,11 @@ bool TESOptions::parse(int argc, char** argv)
 	int		opt(0);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "cC:d:D:f:gL:m:o:t:v:V:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "a:cC:d:D:f:gH:m:o:t:T:v:w:")) != -1) {
 		switch (opt) {
+			case 'a':
+				_expToken = optarg;
+				break;
 			case 'c':
 				_doCompress = true;
 				break;
@@ -92,9 +95,9 @@ bool TESOptions::parse(int argc, char** argv)
 			case 'g':
 				_drawGrid = true;
 				break;
-			case 'L':
-				_fileNameL = optarg;
-				if (_fileNameL.empty() || (_fileNameL[0] == '-')) {
+			case 'H':
+				_fileNameH = optarg;
+				if (_fileNameH.empty() || (_fileNameH[0] == '-')) {
 					printf("\x1B[31mPlease specify a filename!\033[0m\n");
 					return usage();
 				}
@@ -129,9 +132,9 @@ bool TESOptions::parse(int argc, char** argv)
 					return usage();
 				}
 				break;
-			case 'V':
-				_fileNameH = optarg;
-				if (_fileNameH.empty() || (_fileNameH[0] == '-')) {
+			case 'T':
+				_fileNameL = optarg;
+				if (_fileNameL.empty() || (_fileNameL[0] == '-')) {
 					printf("\x1B[31mPlease specify a filename!\033[0m\n");
 					return usage();
 				}
@@ -170,6 +173,7 @@ bool TESOptions::usage()
 {
 	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
 			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
+			"  -a TOKEN\t\tdump TOKEN only\n"
 			"  -c\t\t\tcompress TES4 data where possible (e.g. LAND)\n"
 			"  -C FILE\t\twrite vertex colors to <FILE>.<ext-by-format>\n"
 			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"
@@ -179,11 +183,11 @@ bool TESOptions::usage()
 			"  -dx\t\t\tdump final token structure sort by file appearance as XML\n"
 			"  -f FORMAT\t\tformat of image files (BMP24, BMP8, PNG24, PNG16), default: BMP24\n"
 			"  -g\t\t\tdraw square cell sized grids on all image exports\n"
-			"  -L FILE\t\twrite texture occurance to <FILE>.<ext-by-format>\n"
+			"  -H FILE\t\twrite vertex heights to <FILE>.<ext-by-format>\n"
 			"  -m x,y\t\tdraw mark on cell at x,y\n"
 			"  -o FILE\t\tname of outfile for conversion target\n"
 			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
-			"  -V FILE\t\twrite vertex heights to <FILE>.<ext-by-format>\n"
+			"  -T FILE\t\twrite texture occurance to <FILE>.<ext-by-format>\n"
 			"  -v LEVEL\t\tverbose - more output\n"
 			"  -w [l|WORLDSPACE]\tname of worldspace to export/import, -wl to list all worldspaces (TES4 only)\n"
 			"\n"

@@ -7,6 +7,7 @@
 #include "common/util/tesoptions.h"
 #include "common/util/bitmap.h"
 #include "subrecord/tes4subrecordatxt.h"
+#include "subrecord/tes4subrecordbtxt.h"
 #include "subrecord/tes4subrecordvtxt.h"
 #include "subrecord/tes4subrecordsinglestring.h"
 #include <cstring>
@@ -21,15 +22,18 @@
 //-----------------------------------------------------------------------------
 Tes4Processor::Tes4Processor(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records)
 	:	Verbosity(),
-		_mapRecords(mapRecords),
-		_records   (records)
+		_pFillFuncIn(nullptr),
+		_mapRecords (mapRecords),
+		_records    (records)
 {
 	prepareData();
 }
 
 //-----------------------------------------------------------------------------
 Tes4Processor::~Tes4Processor()
-{}
+{
+	if (_pFillFuncIn != nullptr)		delete _pFillFuncIn;
+}
 
 //-----------------------------------------------------------------------------
 bool Tes4Processor::prepareData()
@@ -63,20 +67,27 @@ bool Tes4Processor::prepareData()
 //-----------------------------------------------------------------------------
 bool Tes4Processor::prepareDataRecursive(vector<TesRecordBase*>& records, Tes4RecordGroup* pGroup)
 {
-	Tes4RecordGeneric*	pRecMain (nullptr);
-	Tes4RecordGroup*	pRecGroup(nullptr);
+	Tes4RecordGeneric*		pRecMain (nullptr);
+	Tes4RecordGroup*		pRecGroup(nullptr);
+	Tes4SubRecordXCLCCELL*	pRecXCLC (nullptr);
 
 	for (auto& pRecord : records) {
 		pRecMain = dynamic_cast<Tes4RecordGeneric*>(pRecord);
 		if ((pRecMain != nullptr) && (pRecMain->_name == "LAND") && (pGroup != nullptr)) {
 			if (_mapRecordsCell.count(pGroup->_labelL) > 0) {
-				Tes4SubRecordXCLCCELL*	pRecXCLC(dynamic_cast<Tes4SubRecordXCLCCELL*>(_mapRecordsCell[pGroup->_labelL]->findSubRecord("XCLC")));
+				pRecXCLC = dynamic_cast<Tes4SubRecordXCLCCELL*>(_mapRecordsCell[pGroup->_labelL]->findSubRecord("XCLC"));
 
 				if (pRecXCLC != nullptr) {
 					stringstream	tStrm;
 
 					tStrm << pRecXCLC->_x << ";" << pRecXCLC->_y;
 					_mapRecordsLand[tStrm.str()] = pRecMain;
+
+					//  get map limits
+					if (pRecXCLC->_x < _pFillFuncIn->_sizeMinX)		_pFillFuncIn->_sizeMinX = pRecXCLC->_x;
+					if (pRecXCLC->_x > _pFillFuncIn->_sizeMaxX)		_pFillFuncIn->_sizeMaxX = pRecXCLC->_x;
+					if (pRecXCLC->_y < _pFillFuncIn->_sizeMinY)		_pFillFuncIn->_sizeMinY = pRecXCLC->_y;
+					if (pRecXCLC->_y > _pFillFuncIn->_sizeMaxY)		_pFillFuncIn->_sizeMaxY = pRecXCLC->_y;
 				}
 			}
 		} else {
@@ -121,6 +132,12 @@ Bitmap* Tes4Processor::generateVHGTBitmap()
 }
 
 //-----------------------------------------------------------------------------
+Bitmap* Tes4Processor::generateVCLRBitmap()
+{
+	return nullptr;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVclrMap(string const fileName)
 {
 	return prepareLandMap(fileName, &Tes4Processor::dumpVclr, SIZE_CELL_32);
@@ -151,12 +168,17 @@ bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFill
 				continue;
 			}
 
+			if (_pFillFuncIn != nullptr) {
+				delete _pFillFuncIn;
+				_pFillFuncIn = nullptr;
+			}
+			_pFillFuncIn = new TesFillFuncIn({999999, -999999, 999999, -999999, 0, 0});
 			_mapRecordsLand.clear();
 			prepareDataRecursive(*_mapRecordsGrpWrld[((Tes4RecordGeneric*) pRecWorld)->_id]);
 			if (_mapRecordsLand.size() > 0) {
 				stringstream	strm;
 
-				strm << fileName << "_" << pString->_text.c_str() << ".bmp";
+				strm << fileName << "_" << pString->_text.c_str();
 				dumpToMap(strm.str(), pFillFunction, cellSize);
 
 			}
@@ -168,35 +190,22 @@ bool Tes4Processor::prepareLandMap(const string fileName, Tes4FillFunction pFill
 //-----------------------------------------------------------------------------
 bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunction, unsigned short cellSize)
 {
-	Tes4SubRecordXCLCCELL*	pSubCellXclc(nullptr);
-	TesFillFuncIn			fillFuncIn = {999999, -999999, 999999, -999999, 0, 0};
-
 	//  get size of map
 	verbose0("generating image file: %s\n  getting sizes: ", fileName.c_str());
-	for (auto pRecord : _mapRecords["CELL"]) {
-		pSubCellXclc = dynamic_cast<Tes4SubRecordXCLCCELL*>(pRecord->findSubRecord("XCLC"));
-		if (pSubCellXclc) {
-			if (pSubCellXclc->_x < fillFuncIn._sizeMinX)		fillFuncIn._sizeMinX = pSubCellXclc->_x;
-			if (pSubCellXclc->_x > fillFuncIn._sizeMaxX)		fillFuncIn._sizeMaxX = pSubCellXclc->_x;
-			if (pSubCellXclc->_y < fillFuncIn._sizeMinY)		fillFuncIn._sizeMinY = pSubCellXclc->_y;
-			if (pSubCellXclc->_y > fillFuncIn._sizeMaxY)		fillFuncIn._sizeMaxY = pSubCellXclc->_y;
-		}
-	}
-
-	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", fillFuncIn._sizeMinX, fillFuncIn._sizeMaxX, fillFuncIn._sizeMinY, fillFuncIn._sizeMaxY);
-	fillFuncIn._sizeX = (fillFuncIn._sizeMaxX - fillFuncIn._sizeMinX + 2);
-	fillFuncIn._sizeY = (fillFuncIn._sizeMaxY - fillFuncIn._sizeMinY + 2);
-	if ((fillFuncIn._sizeX * fillFuncIn._sizeY) <= 1) {
+	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", _pFillFuncIn->_sizeMinX, _pFillFuncIn->_sizeMaxX, _pFillFuncIn->_sizeMinY, _pFillFuncIn->_sizeMaxY);
+	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 2);
+	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 2);
+	if ((_pFillFuncIn->_sizeX * _pFillFuncIn->_sizeY) <= 1) {
 		return false;
 	}
 
 	//  build bitmap
 	verbose0("  building internal bitmap");
 
-	Bitmap		bitmap(fillFuncIn._sizeX * cellSize, fillFuncIn._sizeY * cellSize);
+	Bitmap		bitmap(_pFillFuncIn->_sizeX * cellSize, _pFillFuncIn->_sizeY * cellSize);
 
 	//  call bitmap fill function
-	if (pFillFunction(this, &bitmap, &fillFuncIn)) {
+	if (pFillFunction(this, &bitmap, _pFillFuncIn)) {
 		//  generate bitmap file
 		verbose0("  writing image file");
 
@@ -380,33 +389,63 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 
 		sprintf(coordBuf, "%d,%d", posMapX, posMapY);
 
+		unsigned long	textureIds[4][17][17] = {0};
+		float			opacities [4][17][17] = {0.0};
+
 		for (auto& pSubRecord : *entry.second) {
-			if (pSubRecord->_name == "ATXT") {
+			if (pSubRecord->_name == "BTXT") {
+				quadrant  = ((Tes4SubRecordBTXT*) pSubRecord)->_quadrant;
+				textureId = ((Tes4SubRecordBTXT*) pSubRecord)->_textureId;
+				mapTextIds[textureId] += 1;
+
+				for (unsigned short iy(0); iy < 17; ++iy) {
+					for (unsigned short ix(0); ix < 17; ++ix) {
+						textureIds[quadrant][iy][ix] = textureId;
+						opacities [quadrant][iy][ix] = 0.0;
+					}
+				}
+			} else if (pSubRecord->_name == "ATXT") {
 				quadrant  = ((Tes4SubRecordATXT*) pSubRecord)->_quadrant;
 				textureId = ((Tes4SubRecordATXT*) pSubRecord)->_textureId;
-				offPosX   = (quadrant % 2) * 17 + posMapX * SIZE_CELL_34;
-				offPosY   = (quadrant / 2) * 17 + posMapY * SIZE_CELL_34;
 				mapTextIds[textureId] += 1;
 			} else if (pSubRecord->_name == "VTXT") {
+
 				Tes4SubRecordVTXT*	pVtxt((Tes4SubRecordVTXT*) pSubRecord);
 
-				for (unsigned long i(0); i < pVtxt->_count; ++i) {
+				for (size_t i(0); i < pVtxt->_count; ++i) {
 					pixX = pVtxt->_pEntries[i]._position % 17;
 					pixY = pVtxt->_pEntries[i]._position / 17;
 
-					bitMapX = offPosX + pixX - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
-					bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
-
-					if (drawGrid && ((pixX == 1) || (pixY == 1))) {
-						(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
-					} else if (markPos == coordBuf) {
-						(*pBitmap)(bitMapX, bitMapY).assign(0xff, 0x00, 0xff);
-					} else {
-						(*pBitmap)(bitMapX, bitMapY).assign((unsigned char) (textureId >> 16), (unsigned char) (textureId >> 8), (unsigned char) (textureId >> 0));
+					if (opacities[quadrant][pixY][pixX] <= pVtxt->_pEntries[i]._opacity) {
+						opacities[quadrant][pixY][pixX] = pVtxt->_pEntries[i]._opacity;
+						textureIds[quadrant][pixY][pixX] = textureId;
 					}
 				}  //  for (unsigned long i(0); i < pVtxt->_count; ++i)
-			}  //  else if (pSubRecord->_name == "VTXT")
+			}  //  } else if (pSubRecord->_name == "VTXT")
 		}  //  for (auto& pSubRecord : *entry.second)
+
+		//  write data into bitmap
+		for (quadrant=0; quadrant < 4; ++quadrant) {
+			offPosX   = (quadrant % 2) * 17 + posMapX * SIZE_CELL_34;
+			offPosY   = (quadrant / 2) * 17 + posMapY * SIZE_CELL_34;
+
+			for (unsigned short position(0); position < 289; ++position) {
+				pixX = position % 17;
+				pixY = position / 17;
+
+				bitMapX = offPosX + pixX - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
+				bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinY * SIZE_CELL_34);
+
+				if (drawGrid && ((pixX == 1) || (pixY == 1))) {
+					(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
+				} else if (markPos == coordBuf) {
+					(*pBitmap)(bitMapX, bitMapY).assign(0xff, 0x00, 0xff);
+				} else {
+					textureId = textureIds[quadrant][pixY][pixX];
+					(*pBitmap)(bitMapX, bitMapY).assign((unsigned char) (textureId >> 16), (unsigned char) (textureId >> 8), (unsigned char) (textureId >> 0));
+				}
+			}  //  for (unsigned short position(0), position < 289; ++position)
+		}  //  for (quadrant=0; quadrant < 4; ++quadrant)
 	}  //  for (auto entry : _mapRecordsLand)
 
 	verbose1("  found %d unique textures", mapTextIds.size());

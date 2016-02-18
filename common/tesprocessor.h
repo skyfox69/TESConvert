@@ -21,7 +21,7 @@ class TesProcessor : protected Verbosity
 		virtual	bool						prepareRecordMapRecursive(vector<TesRecordBase*>& collection);
 
 		//  dump parsed data
-		virtual	void						dumpTokensByName();
+		virtual	void						dumpTokensByName(string const token);
 		virtual	void						dumpTokensBySequence();
 		virtual	void						dumpTokensBySequenceAsXml();
 		virtual	void						dumpUsedTokens();

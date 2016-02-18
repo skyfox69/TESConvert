@@ -55,7 +55,7 @@ bool TesProcessor::process(int argc, char** argv, int offset)
 
 		//  dump token structure by token name
 		if (pOptions->_dumpFinalT) {
-			dumpTokensByName();
+			dumpTokensByName(pOptions->_expToken);
 		}
 		//  dump token structure by file appearance
 		if (pOptions->_dumpFinalS) {
@@ -138,10 +138,16 @@ bool TesProcessor::parse(string const fileName)
 }
 
 //-----------------------------------------------------------------------------
-void TesProcessor::dumpTokensByName()
+void TesProcessor::dumpTokensByName(string const token)
 {
-	for (auto& mapEntry : _mapRecords) {
-		for (auto& pRecord : mapEntry.second) {
+	if (token.empty()) {
+		for (auto& mapEntry : _mapRecords) {
+			for (auto& pRecord : mapEntry.second) {
+				pRecord->dump(0);
+			}
+		}
+	} else if (_mapRecords.count(token) > 0) {
+		for (auto& pRecord : _mapRecords[token]) {
 			pRecord->dump(0);
 		}
 	}
@@ -188,9 +194,10 @@ bool TesProcessor::convert(string const fileName, unsigned char const targetType
 	}
 
 	//  generate bitmap representing heights
-	Bitmap*		pBitmap(pSubProcessor->generateVHGTBitmap());
+	Bitmap*		pBitmapVHGT(pSubProcessor->generateVHGTBitmap());
+	Bitmap*		pBitmapVCLR(pSubProcessor->generateVCLRBitmap());
 
-	if (pBitmap == nullptr) {
+	if (pBitmapVHGT == nullptr) {
 		verbose0("\x1B[33mCan't generate intermediate height-bitmap - operation cancelled!\033[0m");
 		return false;
 	}
@@ -205,14 +212,15 @@ bool TesProcessor::convert(string const fileName, unsigned char const targetType
 			Tes4Converter	converter(_mapRecords, _parser, worldspace);
 
 			verbose0("begin converting");
-			converter.convert(fileName, pBitmap);
+			converter.convert(fileName, pBitmapVHGT, pBitmapVCLR);
 			verbose0("end converting");
 			break;
 		}
 	}
 
 	//  clean up
-	delete pBitmap;
+	delete pBitmapVHGT;
+	delete pBitmapVCLR;
 
 	return retVal;
 }

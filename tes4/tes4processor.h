@@ -14,6 +14,7 @@ class Tes4RecordGroup;
 class Tes4Processor : protected Verbosity, public ITesProcessor
 {
 	private:
+		TesFillFuncIn*							_pFillFuncIn;
 		map<string, vector<TesRecordBase*>>&	_mapRecords;		//  all records by name
 		map<string, Tes4RecordGeneric*>			_mapRecordsLand;
 		map<unsigned long, Tes4RecordGeneric*>	_mapRecordsCell;	//  CELL records
@@ -39,5 +40,6 @@ class Tes4Processor : protected Verbosity, public ITesProcessor
 		virtual	bool							dumpWorldspaces() override;
 
 		virtual	Bitmap*							generateVHGTBitmap();
+		virtual	Bitmap*							generateVCLRBitmap();
 };
 #endif  /* TES4PROCESSOR_H */

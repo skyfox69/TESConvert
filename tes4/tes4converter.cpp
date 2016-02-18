@@ -1,9 +1,7 @@
 #include "tes4/tes4converter.h"
 #include "tes4/record/tes4recordgeneric.h"
 #include "tes4/record/tes4recordgroup.h"
-#include "tes4/record/tes4recordgroup.h"
 #include "tes4/subrecord/tes4subrecordall.h"
-#include "tes3/subrecord/tes3subrecordintvland.h"
 #include "common/util/bitmap.h"
 #include <ctime>
 #include <climits>
@@ -83,7 +81,7 @@ void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
 }
 
 //-----------------------------------------------------------------------------
-bool Tes4Converter::convert(string const fileName, Bitmap* pBitmap)
+bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* pBitmapVCLR)
 {
 	Tes4RecordGeneric*		pWRLD    (new Tes4RecordGeneric("WRLD", _objectId++));
 	Tes4RecordGeneric*		pCELL    (nullptr);
@@ -97,6 +95,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmap)
 	Tes4SubRecordHEDR*		pSubHEDR (new Tes4SubRecordHEDR());
 	Tes4SubRecordMNAM*		pSubMNAM (new Tes4SubRecordMNAM());
 	Tes4SubRecordVHGT*		pSubVHGT (nullptr);
+	Tes4SubRecordVNML*		pSubVCLR (nullptr);
 	unsigned int			bmpX     (0);
 	unsigned int			bmpY     (0);
 	unsigned int			cntCELL  (0);
@@ -134,13 +133,13 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmap)
 	pSubHEDR->_numRecords++;
 	pGrpWRLD1->_labelL = pWRLD->_id;
 
-	verbose0("  got heights by %d x %d sized bitmap\n  generating tree structure", pBitmap->_width, pBitmap->_height);
+	verbose0("  got heights by %d x %d sized bitmap\n  generating tree structure", pBitmapVHGT->_width, pBitmapVHGT->_height);
 
 	//  generate world cell structure
-	for (bmpY=0; bmpY < pBitmap->_height; bmpY += SIZE_CELL_32) {
+	for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32) {
 		posMapY = (long) (bmpY / SIZE_CELL_32);
 		
-		for (bmpX=0; bmpX < pBitmap->_width; bmpX += SIZE_CELL_32) {
+		for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32) {
 			posMapX = (long) (bmpX / SIZE_CELL_32);
 
 			//  check on existing LAND mappings
@@ -196,13 +195,19 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmap)
 			pSubVHGT = new Tes4SubRecordVHGT(0.0);
 			pLAND->push_back(pSubVHGT);
 
+			//  prepare VNML
+			pSubVCLR = new Tes4SubRecordVNML();
+			pLAND->push_back(pSubVCLR);
+
 			//  build height map
 			int		lastHeightX(0);
 			int		lastHeightY(0);
 
 			for (short pixY(0); pixY <= SIZE_CELL_32; ++pixY) {
 				for (short pixX(0); pixX <= SIZE_CELL_32; ++pixX) {
-					TesColor&	color     ((*pBitmap)(bmpX+pixX, bmpY+pixY));
+
+					//  write VHGT (map heights)
+					TesColor&	color     ((*pBitmapVHGT)(bmpX+pixX, bmpY+pixY));
 					int			realHeight((color._r << 16) + (color._g << 8) + color._b);
 
 					if (color._r & 0x80) {
@@ -222,10 +227,18 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmap)
 					pSubVHGT->_height[pixY][pixX] = (unsigned char) (realHeight - lastHeightX);
 					lastHeightX = realHeight;
 
+					//  write VNML (vertex colors)
+					Tes4SubRecordVNML::BufferEntry&		pixel(pSubVCLR->_buffer[pixY][pixX]);
+
+					color = (*pBitmapVCLR)(bmpX+pixX, bmpY+pixY);
+					pixel._xr = color._r;
+					pixel._yg = color._g;
+					pixel._zb = color._b;
+
 				}  //  for (short pixX(0); pixX <= SIZE_CELL_32; ++pixX)
 			}  //  for (short pixY(0); pixY <= SIZE_CELL_32; ++pixY)
-		}  //  for (bmpX=0; bmpX < pBitmap->_width; bmpX += SIZE_CELL_32)
-	}  //  for (bmpY=0; bmpY < pBitmap->_height; bmpY += SIZE_CELL_32)
+		}  //  for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32)
+	}  //  for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32)
 
 	//  calculate tree size recursively
 	verbose0("done.\n  calculating node sizes");

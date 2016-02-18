@@ -2,6 +2,15 @@
 #include <cstring>
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordVNML::Tes4SubRecordVNML(unsigned char type)
+	:	TesRecordSub(TesFileType::TES4)
+{
+	_name = (type == 0) ? "VCLR" : "VNML";
+	_size = 3267;
+	memset(_buffer, 0, 33*33*3*sizeof(unsigned char));
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordVNML::Tes4SubRecordVNML(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
@@ -56,4 +65,16 @@ void Tes4SubRecordVNML::registerClass(map<string, TesCreateFunction>& mapRecords
 //-----------------------------------------------------------------------------
 void Tes4SubRecordVNML::writeFile(FILE* pFile)
 {
+	writeString4(_name,  pFile);
+	writeUShort4(_size,  pFile);
+	fwrite(_buffer, 1, 33*33*3, pFile);
+}
+
+//-----------------------------------------------------------------------------
+unsigned char* Tes4SubRecordVNML::writeMem(unsigned char* pMemory)
+{
+	pMemory += writeString4(_name,   pMemory);
+	pMemory += writeUShort4(_size,   pMemory);
+	memcpy(pMemory, _buffer, 33*33*3*sizeof(unsigned char));
+	return (pMemory + 33*33*3);
 }
