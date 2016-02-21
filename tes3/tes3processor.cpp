@@ -160,6 +160,8 @@ bool Tes3Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	size_t					idx         (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_64);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_64);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
@@ -185,6 +187,9 @@ bool Tes3Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 					for (short pixX(1); pixX <= SIZE_CELL_64; ++pixX) {
 						bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX;
 						bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY;
+
+						if (bitMapX >= bitMapXMax)		continue;
+						if (bitMapY >= bitMapYMax)		continue;
 
 						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
@@ -213,6 +218,8 @@ bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	size_t					idx         (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_64);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_64);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
@@ -259,6 +266,9 @@ bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 						bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX;
 						bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY;
 
+						if (bitMapX >= bitMapXMax)		continue;
+						if (bitMapY >= bitMapYMax)		continue;
+
 						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
 						} else if (markPos == coordBuf) {
@@ -284,6 +294,8 @@ bool Tes3Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	size_t					idx         (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_16);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_16);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
@@ -311,6 +323,9 @@ bool Tes3Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 
 						bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_16 + pixX;
 						bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_16 + pixY;
+
+						if (bitMapX >= bitMapXMax)		continue;
+						if (bitMapY >= bitMapYMax)		continue;
 
 						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
