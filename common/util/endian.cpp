@@ -185,3 +185,11 @@ size_t Endian::writeSizeT(const size_t value, unsigned char* pMemory) {
 	pMemory[3] = (value & 0xFF000000) >> 24;
 	return 4;
 }
+
+//-----------------------------------------------------------------------------
+size_t Endian::writeUShort(const unsigned short value, unsigned char* pMemory) {
+	pMemory[0] = (value & 0x00FF);
+	pMemory[1] = (value & 0xFF00) >> 8;
+	return 2;
+}
+

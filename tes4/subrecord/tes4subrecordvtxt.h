@@ -3,6 +3,7 @@
 
 #include "common/record/tesrecordsub.h"
 #include "common/types/tesfunctiontypes.h"
+#include <vector>
 
 //-----------------------------------------------------------------------------
 class Tes4SubRecordVTXT : public TesRecordSub
@@ -33,6 +34,7 @@ class Tes4SubRecordVTXT : public TesRecordSub
 
 		//  override TesRecordBase
 		virtual	void						writeFile(FILE* pFile);
+		virtual	unsigned char*				writeMem(unsigned char* pMemory);
 };
 
 #endif	/* TES4SUBRECORDVTXT_H */

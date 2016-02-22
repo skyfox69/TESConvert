@@ -26,6 +26,7 @@ class Tes4SubRecordBTXT : public TesRecordSub
 
 		//  override TesRecordBase
 		virtual	void						writeFile(FILE* pFile);
+		virtual	unsigned char*				writeMem(unsigned char* pMemory);
 };
 
 #endif	/* TES4SUBRECORDBTXT_H */

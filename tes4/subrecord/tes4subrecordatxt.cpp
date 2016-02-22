@@ -72,3 +72,15 @@ void Tes4SubRecordATXT::writeFile(FILE* pFile)
 	writeChar   (_unknown,   pFile);
 	writeUShort (_layer,     pFile);
 }
+
+//-----------------------------------------------------------------------------
+unsigned char* Tes4SubRecordATXT::writeMem(unsigned char* pMemory)
+{
+	pMemory += writeString4(_name,      pMemory);
+	pMemory += writeUShort4(_size,      pMemory);
+	pMemory += writeULong  (_textureId, pMemory);
+	*pMemory++ = _quadrant;
+	*pMemory++ = _unknown;
+	pMemory += writeUShort(_layer, pMemory);
+	return pMemory;
+}

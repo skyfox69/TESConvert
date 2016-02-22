@@ -92,6 +92,6 @@ unsigned char* Tes4SubRecordVHGT::writeMem(unsigned char* pMemory)
 	pMemory += writeUShort4(_size,   pMemory);
 	pMemory += writeFloat4 (_offset, pMemory);
 	memcpy(pMemory, _height, 33*33*sizeof(unsigned char));
-	memcpy(pMemory, _height, 3*sizeof(unsigned char));
+	memcpy(pMemory, _unknown, 3*sizeof(unsigned char));
 	return (pMemory + 33*33+3);
 }

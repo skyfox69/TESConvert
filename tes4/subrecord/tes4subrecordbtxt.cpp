@@ -69,3 +69,14 @@ void Tes4SubRecordBTXT::writeFile(FILE* pFile)
 	writeChar   (_quadrant,  pFile);
 	fwrite(_unknown, 1, 3, pFile);
 }
+
+//-----------------------------------------------------------------------------
+unsigned char* Tes4SubRecordBTXT::writeMem(unsigned char* pMemory)
+{
+	pMemory += writeString4(_name,      pMemory);
+	pMemory += writeUShort4(_size,      pMemory);
+	pMemory += writeULong  (_textureId, pMemory);
+	*pMemory++ = _quadrant;
+	memcpy(pMemory, _unknown, 3*sizeof(unsigned char));
+	return (pMemory + 3);
+}

@@ -1,6 +1,5 @@
-#include <vector>
-
 #include "tes4/subrecord/tes4subrecordvtxt.h"
+#include <cstring>
 
 static	size_t	szEntryVTXT = sizeof(Tes4SubRecordVTXT::EntryVTXT);
 
@@ -96,4 +95,18 @@ void Tes4SubRecordVTXT::writeFile(FILE* pFile)
 		writeChar  (_pEntries[idx]._unknown2, pFile);
 		writeFloat4(_pEntries[idx]._opacity,  pFile);
 	}
+}
+
+//-----------------------------------------------------------------------------
+unsigned char* Tes4SubRecordVTXT::writeMem(unsigned char* pMemory)
+{
+	pMemory += writeString4(_name, pMemory);
+	pMemory += writeUShort4(_size, pMemory);
+	for (unsigned short idx(0); idx < _count; ++idx) {
+		pMemory += writeUShort(_pEntries[idx]._position, pMemory);
+		*pMemory++ = _pEntries[idx]._unknown1;
+		*pMemory++ = _pEntries[idx]._unknown2;
+		pMemory += writeFloat4(_pEntries[idx]._opacity,  pMemory);
+	}
+	return pMemory;
 }
