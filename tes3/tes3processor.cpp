@@ -50,8 +50,8 @@ bool Tes3Processor::prepareData()
 	}
 
 	verbose0("  minX: %d, maxX: %d, minY: %d, maxY: %d", _pFillFuncIn->_sizeMinX, _pFillFuncIn->_sizeMaxX, _pFillFuncIn->_sizeMinY, _pFillFuncIn->_sizeMaxY);
-	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 2);
-	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 2);
+	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 1);
+	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 1);
 
 	//  get size of map
 	if ((_pFillFuncIn->_sizeX * _pFillFuncIn->_sizeY) <= 1) {
