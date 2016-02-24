@@ -345,7 +345,7 @@ bool Tes3Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 						if (bitMapX >= bitMapXMax)		continue;
 						if (bitMapY >= bitMapYMax)		continue;
 
-						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
+						if (drawGrid && ((pixX == 0) || (pixY == 0))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
 						} else if (markPos == coordBuf) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0xff, 0x00, 0xff);

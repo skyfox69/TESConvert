@@ -8,7 +8,7 @@
 #include <ctime>
 #include <climits>
 
-#define	SIZE_CELL_17			17
+#define	SIZE_CELL_16			16
 #define	SIZE_CELL_32			32
 #define	SIZE_CELL_64			64
 
@@ -101,12 +101,14 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 	Tes4SubRecordVNML*		pSubVCLR (nullptr);
 	TESOptions*				pOptions (TESOptions::getInstance());
 	TESMappingStorage*		pMapStore(TESMappingStorage::getInstance());
+	long					posMapX32(0);
+	long					posMapY32(0);
+	long					posMapX64(0);
+	long					posMapY64(0);
 	unsigned int			bmpX     (0);
 	unsigned int			bmpY     (0);
 	unsigned int			cntCELL  (0);
 	unsigned int			cntGROUP5(0);
-	long					posMapX  (0);
-	long					posMapY  (0);
 	char					coordBuf[100] = {0};
 
 	//  prepare TES4 Header
@@ -145,13 +147,15 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 
 	//  generate world cell structure
 	for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32) {
-		posMapY = (long) (bmpY / SIZE_CELL_32);
+		posMapY32 = (long) (bmpY / SIZE_CELL_32);
+		posMapY64 = (long) (bmpY / SIZE_CELL_64);
 		
 		for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32) {
-			posMapX = (long) (bmpX / SIZE_CELL_32);
+			posMapX32 = (long) (bmpX / SIZE_CELL_32);
+			posMapX64 = (long) (bmpX / SIZE_CELL_64);
 
 			//  check on existing LAND mappings
-			sprintf(coordBuf, "%d;%d", (bmpX / SIZE_CELL_64), (bmpY / SIZE_CELL_64));
+			sprintf(coordBuf, "%d;%d", posMapX64, posMapY64);
 			if (_mapRecordsLands.count(coordBuf) <= 0) {
 				continue;
 			}
@@ -178,7 +182,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 			pSubHEDR->_numRecords++;
 			pGrpType5->push_back(pCELL);
 			pCELL->push_back(new Tes4SubRecordSingleUShort("DATA", 0x002));
-			pCELL->push_back(new Tes4SubRecordXCLCCELL("XCLC", posMapX, posMapY));
+			pCELL->push_back(new Tes4SubRecordXCLCCELL("XCLC", posMapX32, posMapY32));
 			++cntCELL;
 
 			//  prepare group type 6
@@ -255,39 +259,42 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 
 			//  Land Textures
 			if (pOptions->_convertTypes & TES_CONVERT_TYPE_TEXTURES) {
-				for (short quadY(0); quadY < 2; ++quadY) {
-					for (short quadX(0); quadX < 2; ++quadX) {
+				unsigned int	offMapX32(posMapX32 * SIZE_CELL_16/2);
+				unsigned int	offMapY32(posMapY32 * SIZE_CELL_16/2);
 
-						map<unsigned int, vector<unsigned short>>	textPlaces;
-						short										quadrant(quadY*2+quadX);
+				for (short quadrant(0); quadrant < 4; ++quadrant) {
+					map<unsigned int, vector<unsigned short>>	textPlaces;
 
-						for (short pixY(0); pixY < SIZE_CELL_17; ++pixY) {
-							for (short pixX(0); pixX < SIZE_CELL_17; ++pixX) {
-								unsigned int	bitmapX((bmpX + pixX + quadX*SIZE_CELL_17) / 4);
-								unsigned int	bitmapY((bmpY + pixY + quadY*SIZE_CELL_17) / 4);
-								TesColor&		color  ((*pBitmapVTEX)(((bmpX + pixX) / 4), ((bmpY + pixY) / 4)));
-								unsigned int	textId ((color._b >> 3) | (color._g << 2) | (color._r << 7));
+					for (short pixY(0); pixY <= SIZE_CELL_16; ++pixY) {
+						for (short pixX(0); pixX <= SIZE_CELL_16; ++pixX) {
+							unsigned int	bitmapX(offMapX32 + (quadrant % 2)*4 + pixX/4);
+							unsigned int	bitmapY(offMapY32 + (quadrant / 2)*4 + pixY/4);
 
-								textPlaces[textId].push_back(pixY * SIZE_CELL_17 + pixX);
+							if ((bitmapX < pBitmapVTEX->_width) && (bitmapY < pBitmapVTEX->_height)) {
+								TesColor&		color  ((*pBitmapVTEX)(bitmapX, bitmapY));
 
-							}  //  for (short pixX(0); pixX <= SIZE_CELL_17; ++pixX)
-						}  //  for (short pixY(0); pixY <= SIZE_CELL_17; ++pixY)
-
-						unsigned short	idx(0);
-						for (auto& texture : textPlaces) {
-							//  map texture id...
-							unsigned long	textureId(pMapStore->mapTes3Id(texture.first));
-
-							if (idx == 0) {
-								pLAND->push_back(new Tes4SubRecordBTXT(quadrant, textureId));
+								textPlaces[(color._b >> 3) | (color._g << 2) | (color._r << 7)].push_back(pixY * 17 + pixX);
 							} else {
-								pLAND->push_back(new Tes4SubRecordATXT(quadrant, textureId, idx-1));
-								pLAND->push_back(new Tes4SubRecordVTXT(1.0, texture.second));
+								textPlaces[0x00000000].push_back(pixY * 17 + pixX);
 							}
-							++idx;
-						}  //  for (auto& texture : textPlaces)
-					}  //  for (short quadX(0); quadX < 2; ++quadX)
-				}  //  for (short quadY(0); quadY < 2; ++quadY)
+						}
+					}
+
+					unsigned short	idx(0);
+					for (auto& texture : textPlaces) {
+						//  map texture id...
+						unsigned long	textureId(pMapStore->mapTes3Id(texture.first));
+
+						if (idx == 0) {
+							pLAND->push_back(new Tes4SubRecordBTXT(quadrant, textureId));
+						} else {
+							pLAND->push_back(new Tes4SubRecordATXT(quadrant, textureId, idx-1));
+							pLAND->push_back(new Tes4SubRecordVTXT(1.0, texture.second));
+						}
+
+						++idx;
+					}  //  for (auto& texture : textPlaces)
+				}  //  for (short quadrant(0); quadrant < 4; ++quadrant)
 			}  //  if (pOptions->_convertTypes & TES_CONVERT_TYPE_TEXTURES)
 		}  //  for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32)
 	}  //  for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32)
