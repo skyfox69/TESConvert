@@ -50,8 +50,8 @@ bool Tes3Processor::prepareData()
 	}
 
 	verbose0("  minX: %d, maxX: %d, minY: %d, maxY: %d", _pFillFuncIn->_sizeMinX, _pFillFuncIn->_sizeMaxX, _pFillFuncIn->_sizeMinY, _pFillFuncIn->_sizeMaxY);
-	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 2);
-	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 2);
+	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 1);
+	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 1);
 
 	//  get size of map
 	if ((_pFillFuncIn->_sizeX * _pFillFuncIn->_sizeY) <= 1) {
@@ -99,6 +99,24 @@ Bitmap* Tes3Processor::generateVCLRBitmap()
 	Bitmap*		pBitmap(new Bitmap(_pFillFuncIn->_sizeX * SIZE_CELL_64, _pFillFuncIn->_sizeY * SIZE_CELL_64));
 
 	if (!dumpVclr(pBitmap, _pFillFuncIn)) {
+		delete pBitmap;
+		return nullptr;
+	}
+	verbose0("done");
+
+	return pBitmap;
+}
+
+//-----------------------------------------------------------------------------
+Bitmap* Tes3Processor::generateVTEXBitmap()
+{
+	//  check internal data
+	if (_pFillFuncIn == nullptr)		return nullptr;
+
+	verbose0("generating intermediate bitmap");
+	Bitmap*		pBitmap(new Bitmap(_pFillFuncIn->_sizeX * SIZE_CELL_16, _pFillFuncIn->_sizeY * SIZE_CELL_16));
+
+	if (!dumpVtex(pBitmap, _pFillFuncIn)) {
 		delete pBitmap;
 		return nullptr;
 	}
@@ -160,6 +178,8 @@ bool Tes3Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	size_t					idx         (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_64);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_64);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
@@ -185,6 +205,9 @@ bool Tes3Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 					for (short pixX(1); pixX <= SIZE_CELL_64; ++pixX) {
 						bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX;
 						bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY;
+
+						if (bitMapX >= bitMapXMax)		continue;
+						if (bitMapY >= bitMapYMax)		continue;
 
 						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
@@ -213,6 +236,8 @@ bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	size_t					idx         (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_64);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_64);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
@@ -259,6 +284,9 @@ bool Tes3Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 						bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_64 + pixX;
 						bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_64 + pixY;
 
+						if (bitMapX >= bitMapXMax)		continue;
+						if (bitMapY >= bitMapYMax)		continue;
+
 						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
 						} else if (markPos == coordBuf) {
@@ -284,6 +312,8 @@ bool Tes3Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	size_t					idx         (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_16);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_16);
 	char					coordBuf[100] = {0};
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 
@@ -312,7 +342,10 @@ bool Tes3Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 						bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_16 + pixX;
 						bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_16 + pixY;
 
-						if (drawGrid && ((pixX == 1) || (pixY == 1))) {
+						if (bitMapX >= bitMapXMax)		continue;
+						if (bitMapY >= bitMapYMax)		continue;
+
+						if (drawGrid && ((pixX == 0) || (pixY == 0))) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
 						} else if (markPos == coordBuf) {
 							(*pBitmap)(bitMapX, bitMapY).assign(0xff, 0x00, 0xff);

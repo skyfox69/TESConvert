@@ -41,5 +41,6 @@ class Tes4Processor : protected Verbosity, public ITesProcessor
 
 		virtual	Bitmap*							generateVHGTBitmap();
 		virtual	Bitmap*							generateVCLRBitmap();
+		virtual	Bitmap*							generateVTEXBitmap();
 };
 #endif  /* TES4PROCESSOR_H */

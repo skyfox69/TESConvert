@@ -1,20 +1,19 @@
-#ifndef TES4SUBRECORDBTXT_H
-#define	TES4SUBRECORDBTXT_H
+#ifndef TES4SUBRECORDTRIPLEFLOAT_H
+#define	TES4SUBRECORDTRIPLEFLOAT_H
 
 #include "common/record/tesrecordsub.h"
 #include "common/types/tesfunctiontypes.h"
 
 //-----------------------------------------------------------------------------
-class Tes4SubRecordBTXT : public TesRecordSub
+class Tes4SubRecordTripleFloat : public TesRecordSub
 {
 	public:
-		unsigned long						_textureId;
-		unsigned char						_quadrant;
-		unsigned char						_unknown[3];
+		float								_value1;
+		float								_value2;
+		float								_value3;
 
-											Tes4SubRecordBTXT(unsigned char* pBuffer);
-											Tes4SubRecordBTXT(unsigned char quadrant, unsigned long textureId);
-		virtual								~Tes4SubRecordBTXT();
+											Tes4SubRecordTripleFloat(unsigned char* pBuffer);
+		virtual								~Tes4SubRecordTripleFloat();
 		
 		//  TesRecordFactory
 		static	TesRecordBase*				create(unsigned char* pBuffer);
@@ -26,7 +25,6 @@ class Tes4SubRecordBTXT : public TesRecordSub
 
 		//  override TesRecordBase
 		virtual	void						writeFile(FILE* pFile);
-		virtual	unsigned char*				writeMem(unsigned char* pMemory);
 };
 
-#endif	/* TES4SUBRECORDBTXT_H */
+#endif	/* TES4SUBRECORDTRIPLEFLOAT_H */

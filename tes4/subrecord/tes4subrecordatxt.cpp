@@ -1,6 +1,18 @@
 #include "tes4/subrecord/tes4subrecordatxt.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordATXT::Tes4SubRecordATXT(unsigned char quadrant, unsigned long textureId, unsigned short layer)
+	:	TesRecordSub(TesFileType::TES4),
+		_textureId  (textureId),
+		_layer      (layer),
+		_quadrant   (quadrant),
+		_unknown    (0)
+{
+	_name = "ATXT";
+	_size = 8;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordATXT::Tes4SubRecordATXT(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
@@ -53,4 +65,22 @@ void Tes4SubRecordATXT::registerClass(map<string, TesCreateFunction>& mapRecords
 //-----------------------------------------------------------------------------
 void Tes4SubRecordATXT::writeFile(FILE* pFile)
 {
+	writeString4(_name,      pFile);
+	writeUShort4(_size,      pFile);
+	writeULong  (_textureId, pFile);
+	writeChar   (_quadrant,  pFile);
+	writeChar   (_unknown,   pFile);
+	writeUShort (_layer,     pFile);
+}
+
+//-----------------------------------------------------------------------------
+unsigned char* Tes4SubRecordATXT::writeMem(unsigned char* pMemory)
+{
+	pMemory += writeString4(_name,      pMemory);
+	pMemory += writeUShort4(_size,      pMemory);
+	pMemory += writeULong  (_textureId, pMemory);
+	*pMemory++ = _quadrant;
+	*pMemory++ = _unknown;
+	pMemory += writeUShort(_layer, pMemory);
+	return pMemory;
 }

@@ -7,7 +7,9 @@ TESOptions*	TESOptions::_pInstance = nullptr;
 
 //-----------------------------------------------------------------------------
 TESOptions::TESOptions()
-	:	_dumpFinalS    (false),
+	:	_fileNameM     ("./textures.map"),
+		_convertTypes  (TES_CONVERT_TYPE_ALL),
+		_dumpFinalS    (false),
 		_dumpFinalT    (false),
 		_dumpFinalX    (false),
 		_drawGrid      (false),
@@ -36,16 +38,31 @@ TESOptions* TESOptions::getInstance()
 //-----------------------------------------------------------------------------
 bool TESOptions::parse(int argc, char** argv)
 {
-	int		opt(0);
+	int		opt           (0);
+	bool	wasConvertType(false);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "a:cC:d:D:f:gH:m:o:t:T:v:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "a:c:C:d:D:f:gH:m:M:n:o:pt:T:v:w:")) != -1) {
 		switch (opt) {
 			case 'a':
 				_expToken = optarg;
 				break;
 			case 'c':
-				_doCompress = true;
+				if (*optarg == 'a') {
+					_convertTypes = TES_CONVERT_TYPE_ALL;
+				} else {
+					if (!wasConvertType) {
+						_convertTypes  = 0x0000;
+						wasConvertType = true;
+					}
+					if (*optarg == 'c') {
+						_convertTypes |= TES_CONVERT_TYPE_COLOR_MAP;
+					} else if (*optarg == 'h') {
+						_convertTypes |= TES_CONVERT_TYPE_HEIGHT_MAP;
+					} else if (*optarg == 't') {
+						_convertTypes |= TES_CONVERT_TYPE_TEXTURES;
+					}
+				}
 				break;
 			case 'C':
 				_fileNameC = optarg;
@@ -103,6 +120,20 @@ bool TESOptions::parse(int argc, char** argv)
 				}
 				break;
 			case 'm':
+				if (*optarg == 0) {
+					printf("\x1B[31mPlease specify a master name!\033[0m\n");
+					return usage();
+				}
+				_masterNames.push_back(optarg);
+				break;
+			case 'M':
+				_fileNameM = optarg;
+				if (_fileNameM.empty() || (_fileNameM[0] == '-')) {
+					printf("\x1B[31mPlease specify a texture mapping filename!\033[0m\n");
+					return usage();
+				}
+				break;
+			case 'n':
 				_markPos = optarg;
 				if (!_markPos.empty()) {
 					for (auto aChar : _markPos) {
@@ -124,6 +155,12 @@ bool TESOptions::parse(int argc, char** argv)
 					printf("\x1B[31mPlease specify a filename!\033[0m\n");
 					return usage();
 				}
+				if (_fileNameT.find(".esp") == string::npos) {
+					_fileNameT += ".esp";
+				}
+				break;
+			case 'p':
+				_doCompress = true;
 				break;
 			case 't':
 				_targetVersion = atoi(optarg);
@@ -174,7 +211,8 @@ bool TESOptions::usage()
 	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
 			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
 			"  -a TOKEN\t\tdump TOKEN only\n"
-			"  -c\t\t\tcompress TES4 data where possible (e.g. LAND)\n"
+			"  -c TYPE\t\ttype of data to be converted (multiple occurances possible):\n"
+			"\t\t\t  a=all (default), c=color-map, h=height-map, t=textures\n"
 			"  -C FILE\t\twrite vertex colors to <FILE>.<ext-by-format>\n"
 			"  -D[l]\t\t\tdump compressed parts into files, Dl = last part only (export only)\n"
 			"  -ds\t\t\tdump final token structure sort by file sequence\n"
@@ -184,8 +222,11 @@ bool TESOptions::usage()
 			"  -f FORMAT\t\tformat of image files (BMP24, BMP8, PNG24, PNG16), default: BMP24\n"
 			"  -g\t\t\tdraw square cell sized grids on all image exports\n"
 			"  -H FILE\t\twrite vertex heights to <FILE>.<ext-by-format>\n"
-			"  -m x,y\t\tdraw mark on cell at x,y\n"
+			"  -m NAME\t\tspecify master name, multiple occurances possible\n"
+			"  -M FILE\t\tread texture mapping from FILE (default: textures.map)\n"
+			"  -n x,y\t\tdraw mark on cell at x,y\n"
 			"  -o FILE\t\tname of outfile for conversion target\n"
+			"  -p\t\t\tcompress TES4 data where possible (e.g. LAND)\n"
 			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
 			"  -T FILE\t\twrite texture occurance to <FILE>.<ext-by-format>\n"
 			"  -v LEVEL\t\tverbose - more output\n"

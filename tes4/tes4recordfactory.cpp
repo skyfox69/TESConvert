@@ -25,6 +25,7 @@
 #include "tes4/subrecord/tes4subrecorddoublefloat.h"
 #include "tes4/subrecord/tes4subrecordignore.h"
 #include "tes4/subrecord/tes4subrecordxxxx.h"
+#include "tes4/subrecord/tes4subrecordtriplefloat.h"
 
 //-----------------------------------------------------------------------------
 Tes4RecordFactory::Tes4RecordFactory()
@@ -64,6 +65,7 @@ void Tes4RecordFactory::registerClasses()
 	Tes4SubRecordDoubleUChar::registerClass(_mapKnownRecords);
 	Tes4SubRecordDoubleFloat::registerClass(_mapKnownRecords);
 	Tes4SubRecordDoubleShort::registerClass(_mapKnownRecords);
+	Tes4SubRecordTripleFloat::registerClass(_mapKnownRecords);
 	Tes4SubRecordFlags::registerClass(_mapKnownRecords);
 	Tes4SubRecordIgnore::registerClass(_mapKnownRecords);
 

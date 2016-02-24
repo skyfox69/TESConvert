@@ -138,6 +138,12 @@ Bitmap* Tes4Processor::generateVCLRBitmap()
 }
 
 //-----------------------------------------------------------------------------
+Bitmap* Tes4Processor::generateVTEXBitmap()
+{
+	return nullptr;
+}
+
+//-----------------------------------------------------------------------------
 bool Tes4Processor::dumpVclrMap(string const fileName)
 {
 	return prepareLandMap(fileName, &Tes4Processor::dumpVclr, SIZE_CELL_32);
@@ -193,8 +199,8 @@ bool Tes4Processor::dumpToMap(const string fileName, Tes4FillFunction pFillFunct
 	//  get size of map
 	verbose0("generating image file: %s\n  getting sizes: ", fileName.c_str());
 	verbose0("    minX: %d, maxX: %d, minY: %d, maxY: %d", _pFillFuncIn->_sizeMinX, _pFillFuncIn->_sizeMaxX, _pFillFuncIn->_sizeMinY, _pFillFuncIn->_sizeMaxY);
-	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 2);
-	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 2);
+	_pFillFuncIn->_sizeX = (_pFillFuncIn->_sizeMaxX - _pFillFuncIn->_sizeMinX + 1);
+	_pFillFuncIn->_sizeY = (_pFillFuncIn->_sizeMaxY - _pFillFuncIn->_sizeMinY + 1);
 	if ((_pFillFuncIn->_sizeX * _pFillFuncIn->_sizeY) <= 1) {
 		return false;
 	}
@@ -228,6 +234,8 @@ bool Tes4Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	long					posMapY     (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_32);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_32);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
 	char					cBuffer[1000] = {0};
 	char					coordBuf[100] = {0};
@@ -257,6 +265,9 @@ bool Tes4Processor::dumpVclr(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 					bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_32 + pixX;
 					bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_32 + pixY;
 
+					if (bitMapX >= bitMapXMax)		continue;
+					if (bitMapY >= bitMapYMax)		continue;
+
 					if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 						(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
 					} else if (markPos == coordBuf) {
@@ -285,6 +296,8 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	long					posMapY     (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_32);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_32);
 	int						heightMin   (INT_MAX);
 	int						heightMax   (INT_MIN);
 	bool					drawGrid    (TESOptions::getInstance()->_drawGrid);
@@ -339,6 +352,9 @@ bool Tes4Processor::dumpVhgt(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 					bitMapX = (posMapX - pFillFuncIn->_sizeMinX) * SIZE_CELL_32 + pixX;
 					bitMapY = (posMapY - pFillFuncIn->_sizeMinY) * SIZE_CELL_32 + pixY;
 
+					if (bitMapX >= bitMapXMax)		continue;
+					if (bitMapY >= bitMapYMax)		continue;
+
 					if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 						(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);
 					} else if (markPos == coordBuf) {
@@ -365,6 +381,8 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 	long					posMapY     (0);
 	long					bitMapX     (0);
 	long					bitMapY     (0);
+	long					bitMapXMax  (pFillFuncIn->_sizeX * SIZE_CELL_34);
+	long					bitMapYMax  (pFillFuncIn->_sizeY * SIZE_CELL_34);
 	unsigned long			textureId   (0);
 	unsigned long			idx         (0);
 	unsigned long			offPosX     (0);
@@ -435,6 +453,9 @@ bool Tes4Processor::dumpVtex(Bitmap* pBitmap, TesFillFuncIn* pFillFuncIn)
 
 				bitMapX = offPosX + pixX - (pFillFuncIn->_sizeMinX * SIZE_CELL_34);
 				bitMapY = offPosY + pixY - (pFillFuncIn->_sizeMinY * SIZE_CELL_34);
+
+				if (bitMapX >= bitMapXMax)		continue;
+				if (bitMapY >= bitMapYMax)		continue;
 
 				if (drawGrid && ((pixX == 1) || (pixY == 1))) {
 					(*pBitmap)(bitMapX, bitMapY).assign(0x00, 0x00, 0x00);

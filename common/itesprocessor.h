@@ -21,5 +21,6 @@ class ITesProcessor
 
 		virtual	Bitmap*							generateVHGTBitmap() = 0;
 		virtual	Bitmap*							generateVCLRBitmap() = 0;
+		virtual	Bitmap*							generateVTEXBitmap() = 0;
 };
 #endif  /* ITESPROCESSOR_H */

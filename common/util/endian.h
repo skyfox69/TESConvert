@@ -38,6 +38,7 @@ class Endian
 		//  attribute => memory
 		virtual	size_t	writeString4(const string text, unsigned char* pMemory);
 		virtual	size_t	writeUShort4(const unsigned long value, unsigned char* pMemory);
+		virtual	size_t	writeUShort (const unsigned short value, unsigned char* pMemory);
 		virtual	size_t	writeULong  (const unsigned long value, unsigned char* pMemory);
 		virtual	size_t	writeFloat4 (const float value, unsigned char* pMemory);
 		virtual	size_t	writeSizeT  (const size_t value, unsigned char* pMemory);

@@ -31,5 +31,6 @@ class Tes3Processor : protected Verbosity, public ITesProcessor
 
 		virtual	Bitmap*							generateVHGTBitmap();
 		virtual	Bitmap*							generateVCLRBitmap();
+		virtual	Bitmap*							generateVTEXBitmap();
 };
 #endif  /* TES3PROCESSOR_H */
