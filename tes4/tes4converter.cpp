@@ -116,9 +116,6 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 
 	tes4Header.push_back(pSubHEDR);
 	tes4Header.push_back(new Tes4SubRecordSingleString("CNAM", "TESConvert"));
-	for (auto& master : pOptions->_masterNames) {
-		tes4Header.push_back(new Tes4SubRecordSingleString("MAST", master));
-	}
 
 	//  prepare group WRLD
 	tes4Header.push_back(pGrpWRLD0);
@@ -283,12 +280,16 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 					unsigned short	idx(0);
 					for (auto& texture : textPlaces) {
 						//  map texture id...
-						unsigned long	textureId(pMapStore->mapTes3Id(texture.first));
+						TESMapTes3Ids&	idMapping(pMapStore->mapTes3Id(texture.first));
+
+						if (!idMapping._masterName.empty()) {
+							pOptions->_masterNames[idMapping._masterName] = idMapping._masterName;
+						}
 
 						if (idx == 0) {
-							pLAND->push_back(new Tes4SubRecordBTXT(quadrant, textureId));
+							pLAND->push_back(new Tes4SubRecordBTXT(quadrant, idMapping._idTes5));
 						} else {
-							pLAND->push_back(new Tes4SubRecordATXT(quadrant, textureId, idx-1));
+							pLAND->push_back(new Tes4SubRecordATXT(quadrant, idMapping._idTes5, idx-1));
 							pLAND->push_back(new Tes4SubRecordVTXT(1.0, texture.second));
 						}
 
@@ -298,6 +299,11 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 			}  //  if (pOptions->_convertTypes & TES_CONVERT_TYPE_TEXTURES)
 		}  //  for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32)
 	}  //  for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32)
+
+	//  add master plugins
+	for (auto& master : pOptions->_masterNames) {
+		tes4Header.insert(tes4Header.begin()+2, new Tes4SubRecordSingleString("MAST", master.second));
+	}
 
 	//  calculate tree size recursively
 	verbose0("done.\n  calculating node sizes");

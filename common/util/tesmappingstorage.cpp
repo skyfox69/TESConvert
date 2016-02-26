@@ -10,8 +10,7 @@ TESMappingStorage*	TESMappingStorage::_pInstance = nullptr;
 
 //-----------------------------------------------------------------------------
 TESMappingStorage::TESMappingStorage()
-	:	_pCursor      (nullptr),
-		_defaultTes5Id(0x00000000)
+	:	_pCursor      (nullptr)
 {}
 
 //-----------------------------------------------------------------------------
@@ -34,6 +33,13 @@ string TESMappingStorage::tokenString()
 	char*	pColon(strchr(_pCursor, ','));
 	string	text;
 
+	if (pColon == nullptr) {
+		pColon = strchr(_pCursor, '#');
+	}
+	if (pColon == nullptr) {
+		pColon = strchr(_pCursor, '\n');
+	}
+
 	if (pColon != nullptr) {
 		*pColon = 0;
 	}
@@ -45,7 +51,7 @@ string TESMappingStorage::tokenString()
 		_pCursor = pColon + 1;
 	}
 
-	return text;
+	return text.erase(text.find_last_not_of(" \n\r\t")+1);
 }
 
 //-----------------------------------------------------------------------------
@@ -104,10 +110,12 @@ bool TESMappingStorage::initialize()
 			//  decode entry
 			switch (section) {
 				case TESMappingSection::TES3TES5: {
-					unsigned long idTes3(tokenULong());
-					unsigned long idTes5(tokenULong());
+					unsigned long	idTes3(tokenULong());
+					unsigned long	idTes5(tokenULong());
+					string			master(tokenString());
 
-					_mapTes3Tes5Ids[idTes3] = idTes5;
+					_mapTes3Tes5Ids[idTes3]._masterName = master;
+					_mapTes3Tes5Ids[idTes3]._idTes5     = idTes5;
 					break;
 				}
 
@@ -127,7 +135,8 @@ bool TESMappingStorage::initialize()
 					string		token(tokenString());
 
 					if (token == "TES3TES5") {
-						_defaultTes5Id = tokenULong();
+						_defaultTes5Id._idTes5     = tokenULong();
+						_defaultTes5Id._masterName = tokenString();
 					}
 
 
@@ -140,12 +149,11 @@ bool TESMappingStorage::initialize()
 		retCode = true;
 
 
-		verbose2("DEFAULTS - TES3TES5:: 0x%08X\n", _defaultTes5Id);
+		verbose2("DEFAULTS - TES3TES5:: 0x%08X [%s]\n", _defaultTes5Id._idTes5, _defaultTes5Id._masterName.c_str());
 		for (auto& entry : _mapTes3Tes5Ids) {
-			verbose2("TES3TES5:: 0x%08X -> 0x%08X", entry.first, entry.second);
+			verbose2("TES3TES5:: 0x%08X -> 0x%08X [%s]", entry.first, entry.second._idTes5, entry.second._masterName.c_str());
 		}
 		verbose2("");
-
 
 	}  //  if (pFile != NULL)
 
@@ -153,10 +161,9 @@ bool TESMappingStorage::initialize()
 }
 
 //-----------------------------------------------------------------------------
-unsigned long TESMappingStorage::mapTes3Id(unsigned long const tes3Id)
+TESMapTes3Ids& TESMappingStorage::mapTes3Id(unsigned long const tes3Id)
 {
 	if (_mapTes3Tes5Ids.count(tes3Id) > 0)		return _mapTes3Tes5Ids[tes3Id];
-
 
 	return _defaultTes5Id;
 }

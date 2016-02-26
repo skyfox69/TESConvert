@@ -2,7 +2,7 @@
 #define	TESOPTIONS_H
 
 #include <string>
-#include <vector>
+#include <map>
 #include "common/types/tesoutformattype.h"
 
 using namespace std;
@@ -24,7 +24,7 @@ class TESOptions
 											TESOptions();
 
 	public:
-		vector<string>						_masterNames;
+		map<string, string>					_masterNames;
 		string								_fileNameC;
 		string								_fileNameH;
 		string								_fileNameL;

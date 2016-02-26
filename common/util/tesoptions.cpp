@@ -124,7 +124,7 @@ bool TESOptions::parse(int argc, char** argv)
 					printf("\x1B[31mPlease specify a master name!\033[0m\n");
 					return usage();
 				}
-				_masterNames.push_back(optarg);
+				_masterNames[optarg] = optarg;
 				break;
 			case 'M':
 				_fileNameM = optarg;
