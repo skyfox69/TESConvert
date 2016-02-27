@@ -5,7 +5,6 @@
 #include "common/util/bitmap.h"
 #include "common/util/tesoptions.h"
 #include "common/util/tesmappingstorage.h"
-#include <ctime>
 #include <climits>
 
 #define	SIZE_CELL_16			16
@@ -28,15 +27,8 @@ Tes4Converter::Tes4Converter(map<string, vector<TesRecordBase*>>& mapRecords, ve
 	:	Verbosity(),
 		_mapRecords(mapRecords),
 		_records   (records),
-		_worldspace("TESConvert"),
-		_objectId  (0)
+		_worldspace("TESConvert")
 {
-	//  initialize object id
-	time_t		timeAct   (time(NULL));
-	struct tm	*pTimeInfo(localtime(&timeAct));
-
-	_objectId = (pTimeInfo->tm_year << 16) + (pTimeInfo->tm_mon << 8) + pTimeInfo->tm_mday;
-
 	//  initialize worldspace
 	if (!worldspace.empty() && (worldspace != "l")) {
 		_worldspace = worldspace;
@@ -86,7 +78,9 @@ void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
 //-----------------------------------------------------------------------------
 bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* pBitmapVCLR, Bitmap* pBitmapVTEX)
 {
-	Tes4RecordGeneric*		pWRLD    (new Tes4RecordGeneric("WRLD", _objectId++));
+	TESOptions*				pOptions (TESOptions::getInstance());
+	TESMappingStorage*		pMapStore(TESMappingStorage::getInstance());
+	Tes4RecordGeneric*		pWRLD    (new Tes4RecordGeneric("WRLD", pOptions->nextObjectId()));
 	Tes4RecordGeneric*		pCELL    (nullptr);
 	Tes4RecordGeneric*		pLAND    (nullptr);
 	Tes4RecordGroup*		pGrpWRLD0(new Tes4RecordGroup(stGRUPWRLD0));
@@ -99,8 +93,6 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 	Tes4SubRecordMNAM*		pSubMNAM (new Tes4SubRecordMNAM());
 	Tes4SubRecordVHGT*		pSubVHGT (nullptr);
 	Tes4SubRecordVNML*		pSubVCLR (nullptr);
-	TESOptions*				pOptions (TESOptions::getInstance());
-	TESMappingStorage*		pMapStore(TESMappingStorage::getInstance());
 	long					posMapX32(0);
 	long					posMapY32(0);
 	long					posMapX64(0);
@@ -175,7 +167,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 			}  //  if ((cntCELL % MAX_CELLS_PER_GROUP5) == 0)
 
 			//  prepare CELL
-			pCELL = new Tes4RecordGeneric("CELL", _objectId++);
+			pCELL = new Tes4RecordGeneric("CELL", pOptions->nextObjectId());
 			pSubHEDR->_numRecords++;
 			pGrpType5->push_back(pCELL);
 			pCELL->push_back(new Tes4SubRecordSingleUShort("DATA", 0x002));
@@ -195,7 +187,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 			pGrpType9->_labelL = pCELL->_id;
 
 			//  prepare LAND
-			pLAND = new Tes4RecordGeneric("LAND", _objectId++);
+			pLAND = new Tes4RecordGeneric("LAND", pOptions->nextObjectId());
 			pSubHEDR->_numRecords++;
 			pGrpType9->push_back(pLAND);
 			pLAND->push_back(new Tes4SubRecordFlags("DATA", 0x0000001F));
@@ -307,7 +299,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 
 	//  calculate tree size recursively
 	verbose0("done.\n  calculating node sizes");
-	pSubHEDR->_nextObjectId = _objectId;
+	pSubHEDR->_nextObjectId = pOptions->nextObjectId();
 	tes4Header.calcSizes();
 
 	//  write tree to file

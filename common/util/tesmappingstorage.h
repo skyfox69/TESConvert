@@ -25,7 +25,6 @@ class TESMappingStorage : protected Verbosity
 		static	TESMappingStorage*					_pInstance;
 		char*										_pCursor;
 		map<string, unsigned long>					_mapPseudoIds;
-		unsigned long								_pseudoId;
 
 	protected:
 													TESMappingStorage();

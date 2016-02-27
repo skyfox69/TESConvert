@@ -19,6 +19,7 @@ class TESOptions
 {
 	private:
 		static	TESOptions*					_pInstance;
+		unsigned long						_objectId;			//  unique object id
 
 	protected:
 											TESOptions();
@@ -50,5 +51,7 @@ class TESOptions
 		
 		virtual bool						parse(int argc, char** argv);
 		virtual	bool						usage();
+
+		virtual	unsigned long				nextObjectId();
 };
 #endif  /* TESOPTIONS_H */

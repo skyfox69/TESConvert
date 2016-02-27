@@ -15,8 +15,7 @@ TESMappingStorage*	TESMappingStorage::_pInstance = nullptr;
 
 //-----------------------------------------------------------------------------
 TESMappingStorage::TESMappingStorage()
-	:	_pCursor (nullptr),
-		_pseudoId(0x7000000) 
+	:	_pCursor (nullptr)
 {}
 
 //-----------------------------------------------------------------------------
@@ -107,7 +106,7 @@ unsigned long TESMappingStorage::tokenFormId()
 	} else if (_mapPseudoIds.count(tokenKey) > 0) {
 		value = _mapPseudoIds[tokenKey];
 	} else {
-		value = _pseudoId++;
+		value = TESOptions::getInstance()->nextObjectId();
 		_mapPseudoIds[tokenKey] = value;
 	}
 
@@ -206,7 +205,7 @@ bool TESMappingStorage::initialize()
 
 	}  //  if (pFile != NULL)
 
-	exit(0);
+	//exit(0);
 	
 	return retCode;
 }

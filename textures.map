@@ -120,11 +120,12 @@ TES3TES5,0x00001234,Skyrim.esm
 
 
 #  Section 3: TES5 TXST
-#    form-id, edid, tx00, tx01, dnam
+#    form-id,edid,tx00,tx01[,dnam]
 [TES5TXST]
 $FORMID00,MyTestTxst,Landscape/map.dds,Landscape/map_n.dds,0x0000      # Test-TXST
 
 
 #  Section 4: TES5 LTEX
+#    form-id,edid,tnam,mnam,hnam,snam[,gnam,...]
 [TES5LTEX]
-
+$FORMID01,MyTestLtex,$FORMID00,0x00012F38,0x0200,01E					# Test-LTEX
