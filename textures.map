@@ -1,9 +1,11 @@
 #  Section 0: default values
+#    identifier, form-id, master name
 [DEFAULTS]
 TES3TES5,0x00001234,Skyrim.esm
 
 
 #  Section 1: TES3 id => TES5 id
+#    tes3-form-id, tes5-form-id, master name
 [TES3TES5]
 0x00000000,0x00000C1E,Skyrim.esm       # Tx_sand_01.tga
 0x00000001,0x00000C1E,Skyrim.esm       # Tx_coastal_rock_01.tga
@@ -118,7 +120,9 @@ TES3TES5,0x00001234,Skyrim.esm
 
 
 #  Section 3: TES5 TXST
+#    form-id, edid, tx00, tx01, dnam
 [TES5TXST]
+$FORMID00,MyTestTxst,Landscape/map.dds,Landscape/map_n.dds,0x0000      # Test-TXST
 
 
 #  Section 4: TES5 LTEX
