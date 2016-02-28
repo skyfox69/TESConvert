@@ -222,6 +222,7 @@ bool TesProcessor::convert(string const fileName, unsigned char const targetType
 	//  clean up
 	delete pBitmapVHGT;
 	delete pBitmapVCLR;
+	delete pBitmapVTEX;
 
 	return retVal;
 }

@@ -36,7 +36,7 @@ void Tes4SubRecordHEDR::dump(const short depth)
 	printf("%s%s\n", indent.c_str(), _name.c_str());
 	printf("%s  version::      %.2f\n", indent.c_str(), _version);
 	printf("%s  numRecords::   %d\n", indent.c_str(), _numRecords);
-	printf("%s  nextObjectId:: %d\n", indent.c_str(), _nextObjectId);
+	printf("%s  nextObjectId:: %d - 0x%08X\n", indent.c_str(), _nextObjectId, _nextObjectId);
 }
 
 //-----------------------------------------------------------------------------

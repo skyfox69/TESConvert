@@ -55,4 +55,7 @@ void Tes4SubRecordOBND::registerClass(map<string, TesCreateFunction>& mapRecords
 //-----------------------------------------------------------------------------
 void Tes4SubRecordOBND::writeFile(FILE* pFile)
 {
+	writeString4(_name, pFile);
+	writeUShort4(_size, pFile);
+	fwrite(_unknown, 1, 12*sizeof(unsigned char), pFile);
 }

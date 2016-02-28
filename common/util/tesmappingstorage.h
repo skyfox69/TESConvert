@@ -4,6 +4,7 @@
 #include "common/util/verbosity.h"
 #include <string>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -47,6 +48,6 @@ class TESMappingStorage : protected Verbosity
 		static	TESMappingStorage*					getInstance();
 
 		virtual	bool								initialize();
-		virtual	TESMapTes3Ids&						mapTes3Id(unsigned long const tes3Id);
+		virtual	TESMapTes3Ids&						mapTes3Id(unsigned long const tes3Id, vector<Tes4RecordGeneric*>& usedLTEXs, vector<Tes4RecordGeneric*>& usedTXSTs);
 };
 #endif  /* TESMAPPINGSTORAGE_H */
