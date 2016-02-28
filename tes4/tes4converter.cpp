@@ -21,6 +21,8 @@ static	unsigned char	stGRUPTYPE4[24] = {'G','R','U','P', 0,0,0,0, 0,0,0,0, 4,0,0
 static	unsigned char	stGRUPTYPE5[24] = {'G','R','U','P', 0,0,0,0, 0,0,0,0, 5,0,0,0, 4,20, 0,0, 0,0, 0,0};
 static	unsigned char	stGRUPTYPE6[24] = {'G','R','U','P', 0,0,0,0, 0,0,0,0, 6,0,0,0, 4,20, 0,0, 0,0, 0,0};
 static	unsigned char	stGRUPTYPE9[24] = {'G','R','U','P', 0,0,0,0, 0,0,0,0, 9,0,0,0, 4,20, 0,0, 0,0, 0,0};
+static	unsigned char	stGRUPLTEX [24] = {'G','R','U','P', 0,0,0,0, 'L','T','E','X', 0,0,0,0, 4,20, 0,0, 0,0, 0,0};
+static	unsigned char	stGRUPTXST [24] = {'G','R','U','P', 0,0,0,0, 'T','X','S','T', 0,0,0,0, 4,20, 0,0, 0,0, 0,0};
 
 //-----------------------------------------------------------------------------
 Tes4Converter::Tes4Converter(map<string, vector<TesRecordBase*>>& mapRecords, vector<TesRecordBase*>& records, string const worldspace)
@@ -78,30 +80,32 @@ void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
 //-----------------------------------------------------------------------------
 bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* pBitmapVCLR, Bitmap* pBitmapVTEX)
 {
-	TESOptions*				pOptions (TESOptions::getInstance());
-	TESMappingStorage*		pMapStore(TESMappingStorage::getInstance());
-	Tes4RecordGeneric*		pWRLD    (new Tes4RecordGeneric("WRLD", pOptions->nextObjectId()));
-	Tes4RecordGeneric*		pCELL    (nullptr);
-	Tes4RecordGeneric*		pLAND    (nullptr);
-	Tes4RecordGroup*		pGrpWRLD0(new Tes4RecordGroup(stGRUPWRLD0));
-	Tes4RecordGroup*		pGrpWRLD1(new Tes4RecordGroup(stGRUPWRLD1));
-	Tes4RecordGroup*		pGrpType4(nullptr);
-	Tes4RecordGroup*		pGrpType5(nullptr);
-	Tes4RecordGroup*		pGrpType6(nullptr);
-	Tes4RecordGroup*		pGrpType9(nullptr);
-	Tes4SubRecordHEDR*		pSubHEDR (new Tes4SubRecordHEDR());
-	Tes4SubRecordMNAM*		pSubMNAM (new Tes4SubRecordMNAM());
-	Tes4SubRecordVHGT*		pSubVHGT (nullptr);
-	Tes4SubRecordVNML*		pSubVCLR (nullptr);
-	long					posMapX32(0);
-	long					posMapY32(0);
-	long					posMapX64(0);
-	long					posMapY64(0);
-	unsigned int			bmpX     (0);
-	unsigned int			bmpY     (0);
-	unsigned int			cntCELL  (0);
-	unsigned int			cntGROUP5(0);
-	char					coordBuf[100] = {0};
+	TESOptions*					pOptions (TESOptions::getInstance());
+	TESMappingStorage*			pMapStore(TESMappingStorage::getInstance());
+	Tes4RecordGeneric*			pWRLD    (new Tes4RecordGeneric("WRLD", pOptions->nextObjectId()));
+	Tes4RecordGeneric*			pCELL    (nullptr);
+	Tes4RecordGeneric*			pLAND    (nullptr);
+	Tes4RecordGroup*			pGrpWRLD0(new Tes4RecordGroup(stGRUPWRLD0));
+	Tes4RecordGroup*			pGrpWRLD1(new Tes4RecordGroup(stGRUPWRLD1));
+	Tes4RecordGroup*			pGrpType4(nullptr);
+	Tes4RecordGroup*			pGrpType5(nullptr);
+	Tes4RecordGroup*			pGrpType6(nullptr);
+	Tes4RecordGroup*			pGrpType9(nullptr);
+	Tes4SubRecordHEDR*			pSubHEDR (new Tes4SubRecordHEDR());
+	Tes4SubRecordMNAM*			pSubMNAM (new Tes4SubRecordMNAM());
+	Tes4SubRecordVHGT*			pSubVHGT (nullptr);
+	Tes4SubRecordVNML*			pSubVCLR (nullptr);
+	vector<Tes4RecordGeneric*>	usedLTEXs;
+	vector<Tes4RecordGeneric*>	usedTXSTs;
+	long						posMapX32(0);
+	long						posMapY32(0);
+	long						posMapX64(0);
+	long						posMapY64(0);
+	unsigned int				bmpX     (0);
+	unsigned int				bmpY     (0);
+	unsigned int				cntCELL  (0);
+	unsigned int				cntGROUP5(0);
+	char						coordBuf[100] = {0};
 
 	//  prepare TES4 Header
 	Tes4RecordGeneric		tes4Header("TES4", 0);
@@ -272,7 +276,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 					unsigned short	idx(0);
 					for (auto& texture : textPlaces) {
 						//  map texture id...
-						TESMapTes3Ids&	idMapping(pMapStore->mapTes3Id(texture.first));
+						TESMapTes3Ids&	idMapping(pMapStore->mapTes3Id(texture.first, usedLTEXs, usedTXSTs));
 
 						if (!idMapping._masterName.empty()) {
 							pOptions->_masterNames[idMapping._masterName] = idMapping._masterName;
@@ -292,7 +296,31 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 		}  //  for (bmpX=0; bmpX < pBitmapVHGT->_width; bmpX += SIZE_CELL_32)
 	}  //  for (bmpY=0; bmpY < pBitmapVHGT->_height; bmpY += SIZE_CELL_32)
 
-	//  add master plugins
+	//  add LTEXs - if used
+	if (usedLTEXs.size() > 0) {
+		Tes4RecordGroup*	pGrpTmp(new Tes4RecordGroup(stGRUPLTEX));
+
+		tes4Header.insert(tes4Header.begin()+2, pGrpTmp);
+		for (auto& entry : usedLTEXs) {
+			pGrpTmp->push_back(entry);
+			pSubHEDR->_numRecords++;
+		}
+		usedLTEXs.clear();
+	}  //  if (usedLTEXs.size() > 0)
+
+	//  add TXSTs - if used
+	if (usedTXSTs.size() > 0) {
+		Tes4RecordGroup*	pGrpTmp(new Tes4RecordGroup(stGRUPTXST));
+
+		tes4Header.insert(tes4Header.begin()+2, pGrpTmp);
+		for (auto& entry : usedTXSTs) {
+			pGrpTmp->push_back(entry);
+			pSubHEDR->_numRecords++;
+		}
+		usedTXSTs.clear();
+	}  //  if (usedTXSTs.size() > 0)
+
+	//  add master plugins - if used
 	for (auto& master : pOptions->_masterNames) {
 		tes4Header.insert(tes4Header.begin()+2, new Tes4SubRecordSingleString("MAST", master.second));
 	}

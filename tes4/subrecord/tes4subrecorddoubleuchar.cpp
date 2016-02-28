@@ -60,4 +60,8 @@ void Tes4SubRecordDoubleUChar::registerClass(map<string, TesCreateFunction>& map
 //-----------------------------------------------------------------------------
 void Tes4SubRecordDoubleUChar::writeFile(FILE* pFile)
 {
+	writeString4(_name,   pFile);
+	writeUShort4(_size,   pFile);
+	writeChar   (_value1, pFile);
+	writeChar   (_value2, pFile);
 }

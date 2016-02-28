@@ -37,7 +37,7 @@ TES3TES5,0x00001234,Skyrim.esm
 0x0000001B,0x00000C1E,Skyrim.esm       # Tx_rock_WG_01.tga
 0x0000001C,0x00000C1E,Skyrim.esm       # Tx_RM_grayrock_01.tga
 0x0000001D,0x00000C1E,Skyrim.esm       # tx_Rocky_Mt.tga
-0x0000001E,0x00000C1E,Skyrim.esm       # Tx_WG_rockydirt_01.tga
+0x0000001E,$FORMID01,Frank.esp       # Tx_WG_rockydirt_01.tga
 0x0000001F,0x00000C1E,Skyrim.esm       # Tx_WG_dirtscrub_01.tga
 0x00000020,0x00000C1E,Skyrim.esm       # Tx_grass_01.tga
 0x00000021,0x00000C1E,Skyrim.esm       # Tx_WG_road_01.tga
