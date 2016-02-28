@@ -41,6 +41,7 @@ class TESOptions
 		bool								_dumpUsedTags;
 		bool								_drawGrid;
 		bool								_doCompress;
+		bool								_generateLtexTxst;
 		TesOutFormatType					_outFormatType;
 		unsigned char						_dumpCompressed;
 		unsigned char						_targetVersion;

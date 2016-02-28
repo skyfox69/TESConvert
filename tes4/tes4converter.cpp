@@ -2,6 +2,10 @@
 #include "tes4/record/tes4recordgeneric.h"
 #include "tes4/record/tes4recordgroup.h"
 #include "tes4/subrecord/tes4subrecordall.h"
+#include "tes3/record/tes3recordgeneric.h"
+#include "tes3/subrecord/tes3subrecordintvland.h"
+#include "tes3/subrecord/tes3subrecordsingleulong.h"
+#include "tes3/subrecord/tes3subrecordsinglestring.h"
 #include "common/util/bitmap.h"
 #include "common/util/tesoptions.h"
 #include "common/util/tesmappingstorage.h"
@@ -44,8 +48,9 @@ Tes4Converter::~Tes4Converter()
 //-----------------------------------------------------------------------------
 void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
 {
-	Tes3SubRecordINTVLAND*	pSubLandIntv(nullptr);
-	char					cBuffer[100] = {0};
+	Tes3SubRecordINTVLAND*		pSubLandIntv(nullptr);
+	Tes3SubRecordSingleULong*	pSubULong(nullptr);
+	char						cBuffer[100] = {0};
 
 	//  MNAM
 	pSubMNAM->_cellNwX = SHRT_MAX;
@@ -71,6 +76,14 @@ void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
 		if (pSubLandIntv != nullptr) {
 			sprintf(cBuffer, "%d;%d", (pSubLandIntv->_cellX - pSubMNAM->_cellNwX), (pSubLandIntv->_cellY - pSubMNAM->_cellSeY));
 			_mapRecordsLands[cBuffer] = pRecord;
+		}
+	}
+
+	//  LTEX by tes3 ids
+	for (auto& pRecord : _mapRecords["LTEX"]) {
+		pSubULong = dynamic_cast<Tes3SubRecordSingleULong*>(pRecord->findSubRecord("INTV"));
+		if (pSubULong != nullptr) {
+			_mapRecordsLtexs[pSubULong->_value] = pRecord;
 		}
 	}
 
@@ -278,6 +291,11 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 						//  map texture id...
 						TESMapTes3Ids&	idMapping(pMapStore->mapTes3Id(texture.first, usedLTEXs, usedTXSTs));
 
+						//  check on generating new LTEX (empty result from pMapStore)
+						if (idMapping._idTes5 == 0) {
+							idMapping = createLTEX(texture.first, usedLTEXs, usedTXSTs);
+						}
+
 						if (!idMapping._masterName.empty()) {
 							pOptions->_masterNames[idMapping._masterName] = idMapping._masterName;
 						}
@@ -346,4 +364,39 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 	//tes4Header.dump(0);
 
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+TESMapTes3Ids& Tes4Converter::createLTEX(const unsigned long tes3Id, vector<Tes4RecordGeneric*>& usedLTEXs, vector<Tes4RecordGeneric*>& usedTXSTs)
+{
+	TESOptions*				pOptions (TESOptions::getInstance());
+	TESMappingStorage*		pMapStore(TESMappingStorage::getInstance());
+	Tes4RecordGeneric*		pTXST    (new Tes4RecordGeneric("TXST", pOptions->nextObjectId()));
+	Tes4RecordGeneric*		pLTEX    (new Tes4RecordGeneric("LTEX", pOptions->nextObjectId()));
+	Tes3RecordGeneric*		pLTEX3   ((Tes3RecordGeneric*) _mapRecordsLtexs[tes3Id]);
+
+	//  generate new TXST including new TES5-id
+	pTXST->push_back(new Tes4SubRecordSingleString("EDID", ((Tes3SubRecordSingleString*) pLTEX3->findSubRecord("NAME"))->_text));
+	pTXST->push_back(new Tes4SubRecordOBND());
+	pTXST->push_back(new Tes4SubRecordSingleString("TX00", ((Tes3SubRecordSingleString*) pLTEX3->findSubRecord("DATA"))->_text));
+
+	//  generate new LTEX including new TES5-id
+	pLTEX->push_back(new Tes4SubRecordSingleString("EDID", "Tx" + ((Tes3SubRecordSingleString*) pLTEX3->findSubRecord("NAME"))->_text));
+	pLTEX->push_back(new Tes4SubRecordSingleULong("TNAM", pTXST->_id));
+	pLTEX->push_back(new Tes4SubRecordSingleULong("MNAM", pMapStore->_defaultMattId._idTes5));
+	if (!pMapStore->_defaultMattId._masterName.empty()) {
+		pOptions->_masterNames[pMapStore->_defaultMattId._masterName] = pMapStore->_defaultMattId._masterName;
+	}
+	pLTEX->push_back(new Tes4SubRecordDoubleUChar("HNAM", 0x02, 0x00));
+	pLTEX->push_back(new Tes4SubRecordSingleUChar("SNAM", 0x1E));
+
+	//  add TXST and LTEX to used lists
+	usedTXSTs.push_back(pTXST);
+	usedLTEXs.push_back(pLTEX);
+
+	//  add TES5-id to MappingStorage TES3=>TES5
+	pMapStore->_mapTes3Tes5Ids[tes3Id]._idTes5     = pLTEX->_id;
+	pMapStore->_mapTes3Tes5Ids[tes3Id]._masterName = "";
+
+	return pMapStore->_mapTes3Tes5Ids[tes3Id];
 }

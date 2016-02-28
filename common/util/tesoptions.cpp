@@ -8,18 +8,19 @@ TESOptions*	TESOptions::_pInstance = nullptr;
 
 //-----------------------------------------------------------------------------
 TESOptions::TESOptions()
-	:	_fileNameM     ("./textures.map"),
-		_convertTypes  (TES_CONVERT_TYPE_ALL),
-		_dumpFinalS    (false),
-		_dumpFinalT    (false),
-		_dumpFinalX    (false),
-		_drawGrid      (false),
-		_dumpUsedTags  (false),
-		_doCompress    (false),
-		_outFormatType (TesOutFormatType::BMP_24),
-		_dumpCompressed(0),
-		_targetVersion (0),
-		_verboseLevel  (0)
+	:	_fileNameM       ("./textures.map"),
+		_convertTypes    (TES_CONVERT_TYPE_ALL),
+		_dumpFinalS      (false),
+		_dumpFinalT      (false),
+		_dumpFinalX      (false),
+		_drawGrid        (false),
+		_dumpUsedTags    (false),
+		_doCompress      (false),
+		_generateLtexTxst(false),
+		_outFormatType   (TesOutFormatType::BMP_24),
+		_dumpCompressed  (0),
+		_targetVersion   (0),
+		_verboseLevel    (0)
 {
 	//  initialize object id
 	time_t		timeAct   (time(NULL));
@@ -55,10 +56,10 @@ bool TESOptions::parse(int argc, char** argv)
 	bool	wasConvertType(false);
 
 	//  decode options
-	while ((opt = getopt(argc, argv, "a:c:C:d:D:f:gH:m:M:n:o:pt:T:v:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "ac:C:d:D:f:gH:m:M:n:o:pq:t:T:v:w:")) != -1) {
 		switch (opt) {
 			case 'a':
-				_expToken = optarg;
+				_generateLtexTxst = true;
 				break;
 			case 'c':
 				if (*optarg == 'a') {
@@ -175,6 +176,9 @@ bool TESOptions::parse(int argc, char** argv)
 			case 'p':
 				_doCompress = true;
 				break;
+			case 'q':
+				_expToken = optarg;
+				break;
 			case 't':
 				_targetVersion = atoi(optarg);
 				if ((_targetVersion < 3) || (_targetVersion > 4)) {
@@ -223,7 +227,7 @@ bool TESOptions::usage()
 {
 	printf("\nUsage: tesconvert OPTION TES-filename ...\n"
 			"Parse TES file (ESM/ESP) and analyse structure.\n\n"
-			"  -a TOKEN\t\tdump TOKEN only\n"
+			"  -a\t\t\tauto-generate missing LTEX/TXST while converting\n"
 			"  -c TYPE\t\ttype of data to be converted (multiple occurances possible):\n"
 			"\t\t\t  a=all (default), c=color-map, h=height-map, t=textures\n"
 			"  -C FILE\t\twrite vertex colors to <FILE>.<ext-by-format>\n"
@@ -240,6 +244,7 @@ bool TESOptions::usage()
 			"  -n x,y\t\tdraw mark on cell at x,y\n"
 			"  -o FILE\t\tname of outfile for conversion target\n"
 			"  -p\t\t\tcompress TES4 data where possible (e.g. LAND)\n"
+			"  -q TOKEN\t\tdump TOKEN only\n"
 			"  -t[3|4]\t\tconvert to target version TES3 or TES4\n"
 			"  -T FILE\t\twrite texture occurance to <FILE>.<ext-by-format>\n"
 			"  -v LEVEL\t\tverbose - more output\n"

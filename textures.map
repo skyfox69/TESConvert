@@ -2,6 +2,7 @@
 #    identifier, form-id, master name
 [DEFAULTS]
 TES3TES5,0x00001234,Skyrim.esm
+TES5MATT,0x00012F38,Skyrim.esm
 
 
 #  Section 1: TES3 id => TES5 id

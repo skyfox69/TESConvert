@@ -176,7 +176,7 @@ void TesProcessor::dumpUsedTokens()
 {
 	printf("\nUsed Tokens:\n");
 	for (auto& mapEntry : _mapRecords) {
-		printf(" - %s\t\t[%d]\n", mapEntry.first.c_str(), mapEntry.second.size());
+		printf(" - %s\t\t[%ld]\n", mapEntry.first.c_str(), mapEntry.second.size());
 	}
 	printf("\n");
 }

@@ -283,6 +283,9 @@ bool TESMappingStorage::initialize()
 					if (token == "TES3TES5") {
 						_defaultTes5Id._idTes5     = tokenFormId();
 						_defaultTes5Id._masterName = tokenString();
+					} else if (token == "TES5MATT") {
+						_defaultMattId._idTes5     = tokenFormId();
+						_defaultMattId._masterName = tokenString();
 					}
 
 
@@ -295,28 +298,28 @@ bool TESMappingStorage::initialize()
 		retCode = true;
 		verbose0("done");
 
-
-		verbose2("DEFAULTS - TES3TES5:: 0x%08X [%s]\n", _defaultTes5Id._idTes5, _defaultTes5Id._masterName.c_str());
+		verbose1("DEFAULTS - TES3TES5:: 0x%08X [%s]", _defaultTes5Id._idTes5, _defaultTes5Id._masterName.c_str());
+		verbose1("DEFAULTS - TES5MATT:: 0x%08X [%s]\n", _defaultMattId._idTes5, _defaultMattId._masterName.c_str());
 		for (auto& entry : _mapTes3Tes5Ids) {
-			verbose2("TES3TES5:: 0x%08X -> 0x%08X [%s]", entry.first, entry.second._idTes5, entry.second._masterName.c_str());
+			verbose1("TES3TES5:: 0x%08X -> 0x%08X [%s]", entry.first, entry.second._idTes5, entry.second._masterName.c_str());
 		}
-		verbose2("");
+		verbose1("");
 		for (auto& entry : _mapPseudoIds) {
-			verbose2("PseudoId:: %s -> 0x%08X", entry.first.c_str(), entry.second);
+			verbose1("PseudoId:: %s -> 0x%08X", entry.first.c_str(), entry.second);
 		}
-		verbose2("");
+		verbose1("");
 		for (auto& entry : _mapTes5Txst) {
 			Tes4SubRecordSingleString*	pString((Tes4SubRecordSingleString*) entry.second->findSubRecord("EDID"));
 
-			verbose2("TES5TXST:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
+			verbose1("TES5TXST:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
 		}
-		verbose2("");
+		verbose1("");
 		for (auto& entry : _mapTes5Ltex) {
 			Tes4SubRecordSingleString*	pString((Tes4SubRecordSingleString*) entry.second->findSubRecord("EDID"));
 
-			verbose2("TES5LTEX:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
+			verbose1("TES5LTEX:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
 		}
-		verbose2("");
+		verbose1("");
 
 	}  //  if (pFile != NULL)
 
@@ -327,7 +330,9 @@ bool TESMappingStorage::initialize()
 TESMapTes3Ids& TESMappingStorage::mapTes3Id(unsigned long const tes3Id, vector<Tes4RecordGeneric*>& usedLTEXs, vector<Tes4RecordGeneric*>& usedTXSTs)
 {
 	//  return default id in case of unknown tes3 id
-	if (_mapTes3Tes5Ids.count(tes3Id) <= 0)		return _defaultTes5Id;
+	if (_mapTes3Tes5Ids.count(tes3Id) <= 0) {
+		return (TESOptions::getInstance()->_generateLtexTxst ? _defaultEmptyId : _defaultTes5Id);
+	}
 
 	//  check for new material/texture
 	unsigned long	tes5Id(_mapTes3Tes5Ids[tes3Id]._idTes5);

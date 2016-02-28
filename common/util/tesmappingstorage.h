@@ -42,7 +42,9 @@ class TESMappingStorage : protected Verbosity
 		map<unsigned long, TESMapTes3Ids>			_mapTes3Tes5Ids;
 		map<unsigned long, Tes4RecordGeneric*>		_mapTes5Txst;
 		map<unsigned long, Tes4RecordGeneric*>		_mapTes5Ltex;
+		TESMapTes3Ids								_defaultEmptyId;
 		TESMapTes3Ids								_defaultTes5Id;
+		TESMapTes3Ids								_defaultMattId;
 
 		virtual										~TESMappingStorage();
 		static	TESMappingStorage*					getInstance();
