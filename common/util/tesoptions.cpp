@@ -1,6 +1,7 @@
 #include "common/util/tesoptions.h"
 #include <unistd.h>
 #include <cstring>
+#include <ctime>
 
 //-----------------------------------------------------------------------------
 TESOptions*	TESOptions::_pInstance = nullptr;
@@ -19,7 +20,13 @@ TESOptions::TESOptions()
 		_dumpCompressed(0),
 		_targetVersion (0),
 		_verboseLevel  (0)
-{}
+{
+	//  initialize object id
+	time_t		timeAct   (time(NULL));
+	struct tm	*pTimeInfo(localtime(&timeAct));
+
+	_objectId = (pTimeInfo->tm_year << 16) + (pTimeInfo->tm_mon << 8) + pTimeInfo->tm_mday;
+}
 
 //-----------------------------------------------------------------------------
 TESOptions::~TESOptions()
@@ -33,6 +40,12 @@ TESOptions* TESOptions::getInstance()
 	}
 	
 	return _pInstance;
+}
+
+//-----------------------------------------------------------------------------
+unsigned long TESOptions::nextObjectId()
+{
+	return _objectId++;
 }
 
 //-----------------------------------------------------------------------------
@@ -124,7 +137,7 @@ bool TESOptions::parse(int argc, char** argv)
 					printf("\x1B[31mPlease specify a master name!\033[0m\n");
 					return usage();
 				}
-				_masterNames.push_back(optarg);
+				_masterNames[optarg] = optarg;
 				break;
 			case 'M':
 				_fileNameM = optarg;

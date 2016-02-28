@@ -2,7 +2,7 @@
 #define	TESOPTIONS_H
 
 #include <string>
-#include <vector>
+#include <map>
 #include "common/types/tesoutformattype.h"
 
 using namespace std;
@@ -19,12 +19,13 @@ class TESOptions
 {
 	private:
 		static	TESOptions*					_pInstance;
+		unsigned long						_objectId;			//  unique object id
 
 	protected:
 											TESOptions();
 
 	public:
-		vector<string>						_masterNames;
+		map<string, string>					_masterNames;
 		string								_fileNameC;
 		string								_fileNameH;
 		string								_fileNameL;
@@ -50,5 +51,7 @@ class TESOptions
 		
 		virtual bool						parse(int argc, char** argv);
 		virtual	bool						usage();
+
+		virtual	unsigned long				nextObjectId();
 };
 #endif  /* TESOPTIONS_H */

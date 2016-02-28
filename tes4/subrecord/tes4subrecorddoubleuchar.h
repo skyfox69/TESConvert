@@ -12,6 +12,7 @@ class Tes4SubRecordDoubleUChar : public TesRecordSub
 		unsigned char						_value2;
 
 											Tes4SubRecordDoubleUChar(unsigned char* pBuffer);
+											Tes4SubRecordDoubleUChar(string const name, unsigned char const value1, unsigned char const value2);
 		virtual								~Tes4SubRecordDoubleUChar();
 		
 		//  TesRecordFactory

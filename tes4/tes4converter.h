@@ -16,7 +16,6 @@ class Tes4Converter : protected Verbosity
 		map<string, TesRecordBase*>				_mapRecordsLands;	//  all land records by coordinates
 		vector<TesRecordBase*>&					_records;			//  all records by structure/appearance
 		string									_worldspace;
-		unsigned long							_objectId;			//  unique object id
 
 		virtual	void							prepareData(Tes4SubRecordMNAM* pSubMNAM);
 		

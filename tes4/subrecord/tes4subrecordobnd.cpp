@@ -2,6 +2,15 @@
 #include <cstring>
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordOBND::Tes4SubRecordOBND()
+	:	TesRecordSub(TesFileType::TES4)
+{
+	_name = "OBND";
+	_size = 12;
+	memset(_unknown, 0, 12*sizeof(unsigned char));
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordOBND::Tes4SubRecordOBND(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {

@@ -11,6 +11,7 @@ class Tes4SubRecordOBND : public TesRecordSub
 		unsigned char						_unknown[12];
 
 											Tes4SubRecordOBND(unsigned char* pBuffer);
+											Tes4SubRecordOBND();
 		virtual								~Tes4SubRecordOBND();
 		
 		//  TesRecordFactory
