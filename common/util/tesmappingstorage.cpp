@@ -3,6 +3,9 @@
 #include "tes4/record/tes4recordgeneric.h"
 #include "tes4/subrecord/tes4subrecordsinglestring.h"
 #include "tes4/subrecord/tes4subrecordsingleushort.h"
+#include "tes4/subrecord/tes4subrecordsingleulong.h"
+#include "tes4/subrecord/tes4subrecordsingleuchar.h"
+#include "tes4/subrecord/tes4subrecorddoubleuchar.h"
 #include "tes4/subrecord/tes4subrecordobnd.h"
 #include <unistd.h>
 #include <cstring>
@@ -24,6 +27,9 @@ TESMappingStorage::~TESMappingStorage()
 	for_each(_mapTes5Txst.begin(), _mapTes5Txst.end(), [](auto item) -> void {
 		delete item.second;
 	});
+	for_each(_mapTes5Ltex.begin(), _mapTes5Ltex.end(), [](auto item) -> void {
+		delete item.second;
+	});
 }
 
 //-----------------------------------------------------------------------------
@@ -39,8 +45,11 @@ TESMappingStorage* TESMappingStorage::getInstance()
 //-----------------------------------------------------------------------------
 string TESMappingStorage::tokenString()
 {
+	if (_pCursor == nullptr)	return "";
+
 	char*	pColon(strchr(_pCursor, ','));
 	string	text;
+	char	theChar(0);
 
 	if (pColon == nullptr) {
 		pColon = strchr(_pCursor, '#');
@@ -50,14 +59,17 @@ string TESMappingStorage::tokenString()
 	}
 
 	if (pColon != nullptr) {
+		theChar = *pColon;
 		*pColon = 0;
 	}
 
 	text = _pCursor;
 
-	if (pColon != nullptr) {
+	if ((pColon != nullptr) && (theChar == ',')) {
 		*pColon = ',';
 		_pCursor = pColon + 1;
+	} else {
+		_pCursor = nullptr;
 	}
 
 	return text.erase(text.find_last_not_of(" \n\r\t")+1);
@@ -90,7 +102,22 @@ unsigned short TESMappingStorage::tokenUShort()
 		value = atoi(token.c_str());
 	}
 
-	return (short) value;
+	return (unsigned short) value;
+}
+
+//-----------------------------------------------------------------------------
+unsigned char TESMappingStorage::tokenUChar()
+{
+	string			token(tokenString());
+	unsigned long	value(0);
+
+	if (strchr(token.c_str(), 'x') != NULL) {
+		sscanf(token.c_str(), "0x%X", &value);
+	} else {
+		value = atoi(token.c_str());
+	}
+
+	return (unsigned char) value;
 }
 
 //-----------------------------------------------------------------------------
@@ -150,8 +177,8 @@ bool TESMappingStorage::initialize()
 					unsigned long	idTes5(tokenFormId());
 					string			master(tokenString());
 
-					_mapTes3Tes5Ids[idTes3]._masterName = master;
 					_mapTes3Tes5Ids[idTes3]._idTes5     = idTes5;
+					_mapTes3Tes5Ids[idTes3]._masterName = master;
 					break;
 				}
 
@@ -165,6 +192,7 @@ bool TESMappingStorage::initialize()
 				}
 
 				case TESMappingSection::TES5LTEX: {
+					createLTEX();
 					break;
 				}
 
@@ -197,15 +225,23 @@ bool TESMappingStorage::initialize()
 		}
 		verbose2("");
 		for (auto& entry : _mapTes5Txst) {
-			Tes4SubRecordSingleString*	pString((Tes4SubRecordSingleString* )entry.second->findSubRecord("EDID"));
+			entry.second->dump(0);
+//			Tes4SubRecordSingleString*	pString((Tes4SubRecordSingleString*) entry.second->findSubRecord("EDID"));
 
-			verbose2("TES5TXST:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
+//			verbose2("TES5TXST:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
+		}
+		verbose2("");
+		for (auto& entry : _mapTes5Ltex) {
+			entry.second->dump(0);
+//			Tes4SubRecordSingleString*	pString((Tes4SubRecordSingleString*) entry.second->findSubRecord("EDID"));
+
+//			verbose2("TES5LTEX:: 0x%08X -> %s", entry.first, ((pString != nullptr) ? pString->_text.c_str() : ""));
 		}
 		verbose2("");
 
 	}  //  if (pFile != NULL)
 
-	//exit(0);
+	exit(0);
 	
 	return retCode;
 }
@@ -254,4 +290,45 @@ void TESMappingStorage::createTXST()
 
 	//  add new element
 	_mapTes5Txst[pTXST->_id] = pTXST;
+}
+
+//-----------------------------------------------------------------------------
+void TESMappingStorage::createLTEX()
+{
+	Tes4RecordGeneric*	pLTEX(new Tes4RecordGeneric("LTEX", tokenFormId()));
+	string				tmpStr;
+
+	//  EDID
+	tmpStr = tokenString();
+	if (!tmpStr.empty()) {
+		pLTEX->push_back(new Tes4SubRecordSingleString("EDID", tmpStr));
+	}
+
+	//  TNAM
+	pLTEX->push_back(new Tes4SubRecordSingleULong("TNAM", tokenFormId()));
+
+	//  MNAM
+	pLTEX->push_back(new Tes4SubRecordSingleULong("MNAM", tokenFormId()));
+
+	//  HNAM
+	unsigned short	hnam(tokenUShort());
+
+	pLTEX->push_back(new Tes4SubRecordDoubleUChar("HNAM", (hnam & 0xFF00) >> 8, (hnam & 0x00FF)));
+
+	//  SNAM
+	pLTEX->push_back(new Tes4SubRecordSingleUChar("SNAM", tokenUChar()));
+
+	//  GNAM (optional, multiple)
+	char*	pCursorSave(_pCursor);
+
+	tmpStr = tokenString();
+	while (!tmpStr.empty()) {
+		_pCursor = pCursorSave;
+		pLTEX->push_back(new Tes4SubRecordSingleULong("GNAM", tokenFormId()));
+		pCursorSave = _pCursor;
+		tmpStr = tokenString();
+	}
+
+	//  add new element
+	_mapTes5Ltex[pLTEX->_id] = pLTEX;
 }

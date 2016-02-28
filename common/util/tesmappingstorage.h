@@ -31,13 +31,16 @@ class TESMappingStorage : protected Verbosity
 		virtual	string								tokenString();
 		virtual	unsigned long						tokenULong ();
 		virtual	unsigned short						tokenUShort();
+		virtual	unsigned char						tokenUChar();
 		virtual	unsigned long						tokenFormId();
 
 		virtual	void								createTXST();
+		virtual	void								createLTEX();
 
 	public:
 		map<unsigned long, TESMapTes3Ids>			_mapTes3Tes5Ids;
 		map<unsigned long, Tes4RecordGeneric*>		_mapTes5Txst;
+		map<unsigned long, Tes4RecordGeneric*>		_mapTes5Ltex;
 		TESMapTes3Ids								_defaultTes5Id;
 
 		virtual										~TESMappingStorage();

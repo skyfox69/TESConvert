@@ -1,6 +1,16 @@
 #include "tes4/subrecord/tes4subrecorddoubleuchar.h"
 
 //-----------------------------------------------------------------------------
+Tes4SubRecordDoubleUChar::Tes4SubRecordDoubleUChar(string const name, unsigned char const value1, unsigned char const value2)
+	:	TesRecordSub(TesFileType::TES4),
+		_value1(value1),
+		_value2(value2)
+{
+	_name = name;
+	_size = 2;
+}
+
+//-----------------------------------------------------------------------------
 Tes4SubRecordDoubleUChar::Tes4SubRecordDoubleUChar(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
