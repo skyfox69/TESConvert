@@ -63,6 +63,8 @@ void Tes3SubRecordSingleString::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["FRMRXSOL"] = Tes3SubRecordSingleString::create;
 	mapRecords["FRMRBNAM"] = Tes3SubRecordSingleString::create;
 	mapRecords["TES3MAST"] = Tes3SubRecordSingleString::create;
+	mapRecords["STATNAME"] = Tes3SubRecordSingleString::create;
+	mapRecords["STATMODL"] = Tes3SubRecordSingleString::create;
 }
 
 //-----------------------------------------------------------------------------

@@ -53,7 +53,6 @@ void Tes3RecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 	mapRecords["MGEF"] = Tes3RecordIgnore::create;
 	mapRecords["SCPT"] = Tes3RecordIgnore::create;
 	mapRecords["BSGN"] = Tes3RecordIgnore::create;
-	mapRecords["STAT"] = Tes3RecordIgnore::create;
 	mapRecords["DOOR"] = Tes3RecordIgnore::create;
 	mapRecords["MISC"] = Tes3RecordIgnore::create;
 	mapRecords["WEAP"] = Tes3RecordIgnore::create;
