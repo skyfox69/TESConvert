@@ -1,23 +1,18 @@
-#ifndef TES4SUBRECORDOBND_H
-#define	TES4SUBRECORDOBND_H
+#ifndef TES4SUBRECORDDNAM_H
+#define	TES4SUBRECORDDNAM_H
 
 #include "common/record/tesrecordsub.h"
 #include "common/types/tesfunctiontypes.h"
 
 //-----------------------------------------------------------------------------
-class Tes4SubRecordOBND : public TesRecordSub
+class Tes4SubRecordDNAM : public TesRecordSub
 {
 	public:
-		short								_x1;
-		short								_y1;
-		short								_z1;
-		short								_x2;
-		short								_y2;
-		short								_z2;
+		float								_angle;
+		unsigned long						_formId;
 
-											Tes4SubRecordOBND(unsigned char* pBuffer);
-											Tes4SubRecordOBND();
-		virtual								~Tes4SubRecordOBND();
+											Tes4SubRecordDNAM(unsigned char* pBuffer);
+		virtual								~Tes4SubRecordDNAM();
 		
 		//  TesRecordFactory
 		static	TesRecordBase*				create(unsigned char* pBuffer);
@@ -31,4 +26,4 @@ class Tes4SubRecordOBND : public TesRecordSub
 		virtual	void						writeFile(FILE* pFile);
 };
 
-#endif	/* TES4SUBRECORDOBND_H */
+#endif	/* TES4SUBRECORDDNAM_H */

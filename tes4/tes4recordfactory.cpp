@@ -7,7 +7,7 @@
 #include "tes4/subrecord/tes4subrecordsingleulong.h"
 #include "tes4/subrecord/tes4subrecordsingleushort.h"
 #include "tes4/subrecord/tes4subrecordsinglefloat.h"
-#include "tes4/subrecord/tes4subrecordmnam.h"
+#include "tes4/subrecord/tes4subrecordwrldmnam.h"
 #include "tes4/subrecord/tes4subrecordsingleuchar.h"
 #include "tes4/subrecord/tes4subrecorddoublelong.h"
 #include "tes4/subrecord/tes4subrecorddoubleshort.h"
@@ -26,6 +26,8 @@
 #include "tes4/subrecord/tes4subrecordignore.h"
 #include "tes4/subrecord/tes4subrecordxxxx.h"
 #include "tes4/subrecord/tes4subrecordtriplefloat.h"
+#include "tes4/subrecord/tes4subrecorddnam.h"
+#include "tes4/subrecord/tes4subrecordstatmnam.h"
 
 //-----------------------------------------------------------------------------
 Tes4RecordFactory::Tes4RecordFactory()
@@ -45,7 +47,7 @@ void Tes4RecordFactory::registerClasses()
 	Tes4RecordIgnore::registerClass(_mapKnownRecords);
 	
 	Tes4SubRecordHEDR::registerClass(_mapKnownRecords);
-	Tes4SubRecordMNAM::registerClass(_mapKnownRecords);
+	Tes4SubRecordWRLDMNAM::registerClass(_mapKnownRecords);
 	Tes4SubRecordVNML::registerClass(_mapKnownRecords);
 	Tes4SubRecordVHGT::registerClass(_mapKnownRecords);
 	Tes4SubRecordATXT::registerClass(_mapKnownRecords);
@@ -54,7 +56,9 @@ void Tes4RecordFactory::registerClasses()
 	Tes4SubRecordOBND::registerClass(_mapKnownRecords);
 	Tes4SubRecordDODT::registerClass(_mapKnownRecords);
 	Tes4SubRecordONAM::registerClass(_mapKnownRecords);
+	Tes4SubRecordDNAM::registerClass(_mapKnownRecords);
 	Tes4SubRecordXXXX::registerClass(_mapKnownRecords);
+	Tes4SubRecordSTATMNAM::registerClass(_mapKnownRecords);
 	Tes4SubRecordXCLCCELL::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleFloat::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleString::registerClass(_mapKnownRecords);

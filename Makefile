@@ -57,7 +57,8 @@ SRC = main.cpp \
       tes4/record/tes4recordgroup.cpp \
       tes4/record/tes4recordignore.cpp \
       tes4/subrecord/tes4subrecordhedr.cpp \
-      tes4/subrecord/tes4subrecordmnam.cpp \
+      tes4/subrecord/tes4subrecordwrldmnam.cpp \
+      tes4/subrecord/tes4subrecordstatmnam.cpp \
       tes4/subrecord/tes4subrecordvnml.cpp \
       tes4/subrecord/tes4subrecordvhgt.cpp \
       tes4/subrecord/tes4subrecordatxt.cpp \
@@ -80,6 +81,7 @@ SRC = main.cpp \
       tes4/subrecord/tes4subrecordtriplefloat.cpp \
       tes4/subrecord/tes4subrecordflags.cpp \
       tes4/subrecord/tes4subrecordignore.cpp \
+      tes4/subrecord/tes4subrecorddnam.cpp \
 
 OBJ = ${SRC:%.cpp=%.o}
 

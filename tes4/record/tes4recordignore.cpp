@@ -66,7 +66,6 @@ void Tes4RecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 	mapRecords["LIGH"] = Tes4RecordIgnore::create;
 	mapRecords["MISC"] = Tes4RecordIgnore::create;
 	mapRecords["APPA"] = Tes4RecordIgnore::create;
-	mapRecords["STAT"] = Tes4RecordIgnore::create;
 	mapRecords["MSTT"] = Tes4RecordIgnore::create;
 	mapRecords["GRAS"] = Tes4RecordIgnore::create;
 	mapRecords["TREE"] = Tes4RecordIgnore::create;
@@ -152,7 +151,6 @@ void Tes4RecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 	mapRecords["COLL"] = Tes4RecordIgnore::create;
 	mapRecords["CLFM"] = Tes4RecordIgnore::create;
 	mapRecords["REVB"] = Tes4RecordIgnore::create;
-	mapRecords["MODT"] = Tes4RecordIgnore::create;
 }
 
 //-----------------------------------------------------------------------------

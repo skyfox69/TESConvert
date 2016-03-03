@@ -5,7 +5,7 @@
 #include "common/util/verbosity.h"
 #include <map>
 
-class	Tes4SubRecordMNAM;
+class	Tes4SubRecordWRLDMNAM;
 class	Tes4RecordGeneric;
 class	Bitmap;
 class	TESMapTes3Ids;
@@ -20,7 +20,7 @@ class Tes4Converter : protected Verbosity
 		vector<TesRecordBase*>&					_records;			//  all records by structure/appearance
 		string									_worldspace;
 
-		virtual	void							prepareData(Tes4SubRecordMNAM* pSubMNAM);
+		virtual	void							prepareData(Tes4SubRecordWRLDMNAM* pSubMNAM);
 		virtual	TESMapTes3Ids&					createLTEX(unsigned long const tes3Id, vector<Tes4RecordGeneric*>& usedLTEXs, vector<Tes4RecordGeneric*>& usedTXSTs);
 		
 	public:

@@ -2,7 +2,7 @@
 #define	TES4SUBRECORDALL_H
 
 #include "tes4/subrecord/tes4subrecordhedr.h"
-#include "tes4/subrecord/tes4subrecordmnam.h"
+#include "tes4/subrecord/tes4subrecordwrldmnam.h"
 #include "tes4/subrecord/tes4subrecordsingleuchar.h"
 #include "tes4/subrecord/tes4subrecordsingleushort.h"
 #include "tes4/subrecord/tes4subrecordsingleulong.h"

@@ -1,7 +1,7 @@
-#include "tes4/subrecord/tes4subrecordmnam.h"
+#include "tes4/subrecord/tes4subrecordwrldmnam.h"
 
 //-----------------------------------------------------------------------------
-Tes4SubRecordMNAM::Tes4SubRecordMNAM()
+Tes4SubRecordWRLDMNAM::Tes4SubRecordWRLDMNAM()
 	:	TesRecordSub(TesFileType::TES4),
 		_width       (0),
 		_height      (0),
@@ -18,7 +18,7 @@ Tes4SubRecordMNAM::Tes4SubRecordMNAM()
 }
 
 //-----------------------------------------------------------------------------
-Tes4SubRecordMNAM::Tes4SubRecordMNAM(unsigned char* pBuffer)
+Tes4SubRecordWRLDMNAM::Tes4SubRecordWRLDMNAM(unsigned char* pBuffer)
 	:	TesRecordSub(TesFileType::TES4)
 {
 	if (pBuffer != nullptr) {
@@ -39,11 +39,11 @@ Tes4SubRecordMNAM::Tes4SubRecordMNAM(unsigned char* pBuffer)
 }
 
 //-----------------------------------------------------------------------------
-Tes4SubRecordMNAM::~Tes4SubRecordMNAM()
+Tes4SubRecordWRLDMNAM::~Tes4SubRecordWRLDMNAM()
 {}
 
 //-----------------------------------------------------------------------------
-void Tes4SubRecordMNAM::dump(const short depth)
+void Tes4SubRecordWRLDMNAM::dump(const short depth)
 {
 	string		indent(depth, ' ');
 	
@@ -62,7 +62,7 @@ void Tes4SubRecordMNAM::dump(const short depth)
 }
 
 //-----------------------------------------------------------------------------
-void Tes4SubRecordMNAM::dumpXml()
+void Tes4SubRecordWRLDMNAM::dumpXml()
 {
 	printf("<%s>", _name.c_str());
 	printf("<attributes");
@@ -82,19 +82,19 @@ void Tes4SubRecordMNAM::dumpXml()
 }
 
 //-----------------------------------------------------------------------------
-TesRecordBase* Tes4SubRecordMNAM::create(unsigned char* pBuffer)
+TesRecordBase* Tes4SubRecordWRLDMNAM::create(unsigned char* pBuffer)
 {
-	return new Tes4SubRecordMNAM(pBuffer);
+	return new Tes4SubRecordWRLDMNAM(pBuffer);
 }
 
 //-----------------------------------------------------------------------------
-void Tes4SubRecordMNAM::registerClass(map<string, TesCreateFunction>& mapRecords)
+void Tes4SubRecordWRLDMNAM::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
-	mapRecords["WRLDMNAM"] = Tes4SubRecordMNAM::create;
+	mapRecords["WRLDMNAM"] = Tes4SubRecordWRLDMNAM::create;
 }
 
 //-----------------------------------------------------------------------------
-void Tes4SubRecordMNAM::writeFile(FILE* pFile)
+void Tes4SubRecordWRLDMNAM::writeFile(FILE* pFile)
 {
 	writeString4(_name,    pFile);
 	writeUShort4(_size,    pFile);

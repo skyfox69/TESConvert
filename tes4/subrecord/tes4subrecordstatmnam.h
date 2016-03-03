@@ -1,26 +1,18 @@
-#ifndef TES4SUBRECORDMNAM_H
-#define	TES4SUBRECORDMNAM_H
+#ifndef TES4SUBRECORDSTATMNAM_H
+#define	TES4SUBRECORDSTATMNAM_H
 
 #include "common/record/tesrecordsub.h"
 #include "common/types/tesfunctiontypes.h"
 
 //-----------------------------------------------------------------------------
-class Tes4SubRecordMNAM : public TesRecordSub
+class Tes4SubRecordSTATMNAM : public TesRecordSub
 {
 	public:
-		unsigned long						_width;
-		unsigned long						_height;
-		short								_cellNwX;
-		short								_cellNwY;
-		short								_cellSeX;
-		short								_cellSeY;
-		float								_camHeightMin;
-		float								_camHeightMax;
-		float								_camInitPitch;
+		string								_modelLOD[4];
 
-											Tes4SubRecordMNAM();
-											Tes4SubRecordMNAM(unsigned char* pBuffer);
-		virtual								~Tes4SubRecordMNAM();
+											Tes4SubRecordSTATMNAM();
+											Tes4SubRecordSTATMNAM(unsigned char* pBuffer);
+		virtual								~Tes4SubRecordSTATMNAM();
 		
 		//  TesRecordFactory
 		static	TesRecordBase*				create(unsigned char* pBuffer);
@@ -34,4 +26,4 @@ class Tes4SubRecordMNAM : public TesRecordSub
 		virtual	void						writeFile(FILE* pFile);
 };
 
-#endif	/* TES4SUBRECORDMNAM_H */
+#endif	/* TES4SUBRECORDSTATMNAM_H */

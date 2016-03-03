@@ -46,7 +46,7 @@ Tes4Converter::~Tes4Converter()
 {}
 
 //-----------------------------------------------------------------------------
-void Tes4Converter::prepareData(Tes4SubRecordMNAM* pSubMNAM)
+void Tes4Converter::prepareData(Tes4SubRecordWRLDMNAM* pSubMNAM)
 {
 	Tes3SubRecordINTVLAND*		pSubLandIntv(nullptr);
 	Tes3SubRecordSingleULong*	pSubULong(nullptr);
@@ -105,7 +105,7 @@ bool Tes4Converter::convert(string const fileName, Bitmap* pBitmapVHGT, Bitmap* 
 	Tes4RecordGroup*			pGrpType6(nullptr);
 	Tes4RecordGroup*			pGrpType9(nullptr);
 	Tes4SubRecordHEDR*			pSubHEDR (new Tes4SubRecordHEDR());
-	Tes4SubRecordMNAM*			pSubMNAM (new Tes4SubRecordMNAM());
+	Tes4SubRecordWRLDMNAM*			pSubMNAM (new Tes4SubRecordWRLDMNAM());
 	Tes4SubRecordVHGT*			pSubVHGT (nullptr);
 	Tes4SubRecordVNML*			pSubVCLR (nullptr);
 	vector<Tes4RecordGeneric*>	usedLTEXs;

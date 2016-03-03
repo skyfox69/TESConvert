@@ -86,6 +86,9 @@ bool TesParser::parse(string const fileName)
 		}
 		
 		toString4(token, _pFileBuffer);
+		if (token == "STAT") {
+			int	iiii=0;
+		}
 		if (token == "TES3") {
 			if (_fileType == TesFileType::TES4) {
 				verbose0("  \x1B[31mskipping file %s: type TES4 doesn't match\033[0m", fileName.c_str());

@@ -72,6 +72,8 @@ void Tes4SubRecordSingleString::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["CELLXWEM"] = Tes4SubRecordSingleString::create;
 	mapRecords["WRLDMODL"] = Tes4SubRecordSingleString::create;
 	mapRecords["WRLDXWEM"] = Tes4SubRecordSingleString::create;
+	mapRecords["STATEDID"] = Tes4SubRecordSingleString::create;
+	mapRecords["STATMODL"] = Tes4SubRecordSingleString::create;
 }
 
 //-----------------------------------------------------------------------------
