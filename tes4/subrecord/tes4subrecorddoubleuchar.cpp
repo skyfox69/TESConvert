@@ -55,6 +55,7 @@ TesRecordBase* Tes4SubRecordDoubleUChar::create(unsigned char* pBuffer)
 void Tes4SubRecordDoubleUChar::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["LTEXHNAM"] = Tes4SubRecordDoubleUChar::create;
+	mapRecords["REFRXALP"] = Tes4SubRecordDoubleUChar::create;
 }
 
 //-----------------------------------------------------------------------------

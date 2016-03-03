@@ -53,6 +53,8 @@ void Tes4SubRecordSingleUChar::registerClass(map<string, TesCreateFunction>& map
 {
 	mapRecords["WRLDDATA"] = Tes4SubRecordSingleUChar::create;
 	mapRecords["LTEXSNAM"] = Tes4SubRecordSingleUChar::create;
+	mapRecords["REFRXAPD"] = Tes4SubRecordSingleUChar::create;
+	mapRecords["REFRFNAM"] = Tes4SubRecordSingleUChar::create;
 }
 
 //-----------------------------------------------------------------------------

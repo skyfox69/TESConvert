@@ -82,6 +82,7 @@ SRC = main.cpp \
       tes4/subrecord/tes4subrecordflags.cpp \
       tes4/subrecord/tes4subrecordignore.cpp \
       tes4/subrecord/tes4subrecorddnam.cpp \
+      tes4/subrecord/tes4subrecordrefrdata.cpp \
 
 OBJ = ${SRC:%.cpp=%.o}
 

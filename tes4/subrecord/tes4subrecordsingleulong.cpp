@@ -81,6 +81,20 @@ void Tes4SubRecordSingleULong::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["CELLXWCS"] = Tes4SubRecordSingleULong::create;
 	mapRecords["MATTHNAM"] = Tes4SubRecordSingleULong::create;
 	mapRecords["MATTPNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRNAME"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXLRM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXEMI"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXLIB"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXOWN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXLRT"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXMBR"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXTRI"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXACT"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXLCM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRLNAM"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXPWR"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXWCN"] = Tes4SubRecordSingleULong::create;
+	mapRecords["REFRXEZN"] = Tes4SubRecordSingleULong::create;
 }
 
 //-----------------------------------------------------------------------------

@@ -28,6 +28,7 @@
 #include "tes4/subrecord/tes4subrecordtriplefloat.h"
 #include "tes4/subrecord/tes4subrecorddnam.h"
 #include "tes4/subrecord/tes4subrecordstatmnam.h"
+#include "tes4/subrecord/tes4subrecordrefrdata.h"
 
 //-----------------------------------------------------------------------------
 Tes4RecordFactory::Tes4RecordFactory()
@@ -60,6 +61,7 @@ void Tes4RecordFactory::registerClasses()
 	Tes4SubRecordXXXX::registerClass(_mapKnownRecords);
 	Tes4SubRecordSTATMNAM::registerClass(_mapKnownRecords);
 	Tes4SubRecordXCLCCELL::registerClass(_mapKnownRecords);
+	Tes4SubRecordREFRDATA::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleFloat::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleString::registerClass(_mapKnownRecords);
 	Tes4SubRecordSingleULong::registerClass(_mapKnownRecords);

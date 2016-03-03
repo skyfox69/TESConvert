@@ -49,6 +49,8 @@ TesRecordBase* Tes4SubRecordTripleFloat::create(unsigned char* pBuffer)
 void Tes4SubRecordTripleFloat::registerClass(map<string, TesCreateFunction>& mapRecords)
 {
 	mapRecords["MATTCNAM"] = Tes4SubRecordTripleFloat::create;
+	mapRecords["REFRXMBO"] = Tes4SubRecordTripleFloat::create;
+	mapRecords["REFRXCVL"] = Tes4SubRecordTripleFloat::create;
 }
 
 //-----------------------------------------------------------------------------

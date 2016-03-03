@@ -62,6 +62,11 @@ void Tes4SubRecordSingleFloat::registerClass(map<string, TesCreateFunction>& map
 	mapRecords["WRLDNAM4"] = Tes4SubRecordSingleFloat::create;
 	mapRecords["WRLDNAMA"] = Tes4SubRecordSingleFloat::create;
 	mapRecords["MATTBNAM"] = Tes4SubRecordSingleFloat::create;
+	mapRecords["REFRXSCL"] = Tes4SubRecordSingleFloat::create;
+	mapRecords["REFRXPRD"] = Tes4SubRecordSingleFloat::create;
+	mapRecords["REFRXRDS"] = Tes4SubRecordSingleFloat::create;
+	mapRecords["REFRXFVC"] = Tes4SubRecordSingleFloat::create;
+	mapRecords["REFRXHTW"] = Tes4SubRecordSingleFloat::create;
 }
 
 //-----------------------------------------------------------------------------

@@ -63,6 +63,7 @@ void Tes4SubRecordSingleUShort::registerClass(map<string, TesCreateFunction>& ma
 	mapRecords["TXSTDNAM"] = Tes4SubRecordSingleUShort::create;
 	mapRecords["CELLXNAM"] = Tes4SubRecordSingleUShort::create;
 	mapRecords["WRLDPNAM"] = Tes4SubRecordSingleUShort::create;
+	mapRecords["REFRTNAM"] = Tes4SubRecordSingleUShort::create;
 }
 
 //-----------------------------------------------------------------------------

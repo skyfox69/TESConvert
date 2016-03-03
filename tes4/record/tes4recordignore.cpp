@@ -88,7 +88,6 @@ void Tes4RecordIgnore::registerClass(map<string, TesCreateFunction>& mapRecords)
 	mapRecords["RFCT"] = Tes4RecordIgnore::create;
 	mapRecords["REGN"] = Tes4RecordIgnore::create;
 	mapRecords["NAVI"] = Tes4RecordIgnore::create;
-	mapRecords["REFR"] = Tes4RecordIgnore::create;
 	mapRecords["ACHR"] = Tes4RecordIgnore::create;
 	mapRecords["NAVM"] = Tes4RecordIgnore::create;
 	mapRecords["NPC_"] = Tes4RecordIgnore::create;
